@@ -1,0 +1,18 @@
+{
+  "id": "pathlib",
+  "title": "pathlib：现代化路径处理",
+  "chapter": "python18",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-create-path.mdx" },
+    { "kind": "step", "file": "03-attributes.mdx" },
+    { "kind": "exercise", "file": "01-name-suffix-stem.json" },
+    { "kind": "step", "file": "04-joining.mdx" },
+    { "kind": "exercise", "file": "02-joining.json" },
+    { "kind": "exercise", "file": "03-parents.json" },
+    { "kind": "step", "file": "05-glob-and-iter.mdx" },
+    { "kind": "exercise", "file": "04-suffixes.json" }
+  ]
+}

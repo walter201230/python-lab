@@ -1,0 +1,50 @@
+# 四、多态
+
+多态的概念其实不难理解：**对不同类型的对象做相同的操作，会根据类型的不同表现出不同的行为**。
+
+简单说就是「**重写父类的方法**」——子类的同名方法盖掉父类的。
+
+## 例子
+
+```python
+class Animal:
+    def sound(self):
+        print('一些声音')
+
+class Dog(Animal):
+    def sound(self):
+        print('汪汪')
+
+class Cat(Animal):
+    def sound(self):
+        print('喵喵')
+
+# 注意：调用方都是 .sound()，但是行为完全不同
+animals = [Dog(), Cat(), Animal()]
+for a in animals:
+    a.sound()
+```
+
+输出：
+
+```
+汪汪
+喵喵
+一些声音
+```
+
+调用 `.sound()` 时，**实际执行的是哪段代码取决于对象的真实类型**。这就是多态——同一个方法名，不同的类有不同的实现。
+
+## 多态有什么用？
+
+最大的好处是**写代码的人不用关心具体类型**：
+
+```python
+def make_sound(animal):
+    animal.sound()
+
+make_sound(Dog())   # 汪汪
+make_sound(Cat())   # 喵喵
+```
+
+`make_sound` 只要求传进来的对象**有 `.sound()` 方法**就行——不管它是 Dog 还是 Cat 还是别的。这让代码更容易扩展。

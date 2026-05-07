@@ -1,0 +1,15 @@
+{
+  "id": "10-bool-logic",
+  "title": "布尔值：and / or / not",
+  "prompt": "用 `print` 分三行打印这三个布尔运算的结果（每个一行）：\n\n1. `True and False`\n2. `True or False`\n3. `not True`\n\n输出应该是：\n```\nFalse\nTrue\nFalse\n```",
+  "starterCode": "# 三行 print，分别打印三个布尔表达式的结果\n",
+  "solution": "print(True and False)\nprint(True or False)\nprint(not True)",
+  "grading": {
+    "stdoutEquals": "False\nTrue\nFalse\n"
+  },
+  "hints": [
+    "True、False 首字母都要大写",
+    "直接 print(表达式)，Python 会先算出 True/False 再打印",
+    "完整代码：\nprint(True and False)\nprint(True or False)\nprint(not True)"
+  ]
+}

@@ -1,0 +1,69 @@
+# 四、匿名函数 lambda
+
+有没有想过定义一个**很短的回调函数**，但又不想用 `def` 写一个那么长的形式呢？
+
+Python 用 **`lambda`** 创建匿名函数——一行表达式搞定。
+
+## 基本语法
+
+```python
+lambda 参数: 表达式
+```
+
+例子：
+
+```python
+add = lambda a, b: a + b
+print(add(3, 4))
+```
+
+输出：
+
+```
+7
+```
+
+## 匿名函数 vs 普通函数
+
+```python
+# 普通函数
+def add(a, b):
+    return a + b
+
+# 等价的 lambda
+add = lambda a, b: a + b
+```
+
+两种写法效果完全一样。
+
+## 适合 lambda 的场景
+
+lambda 最常见的用法是**当作参数传给别的函数**，比如 `sorted` 的 `key`：
+
+```python
+users = [
+    {'name': 'Alice', 'age': 30},
+    {'name': 'Bob', 'age': 25},
+    {'name': 'Carol', 'age': 28},
+]
+
+# 按年龄排序——临时写个 lambda 当 key
+sorted_users = sorted(users, key=lambda u: u['age'])
+
+for u in sorted_users:
+    print(u['name'], u['age'])
+```
+
+输出：
+
+```
+Bob 25
+Carol 28
+Alice 30
+```
+
+## lambda 的限制
+
+> ⚠️ lambda 表达式**只能是一个表达式**——不能写 if/else 多分支（虽然能写三元表达式）、不能写循环、不能写 return。
+>
+> 如果逻辑稍复杂一点，老老实实用 `def`，不要硬塞进 lambda。

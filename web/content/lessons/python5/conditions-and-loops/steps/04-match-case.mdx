@@ -1,0 +1,78 @@
+# 4、Python 3.10+ 的 match / case
+
+各位童鞋，如果你用的是 Python 3.10 或者更新的版本，那么除了 `if / elif / else` 之外，还多了一个更直观的家伙—— **`match / case`**，叫做「结构化模式匹配」（structural pattern matching）。
+
+我们先看一个需求，假设水哥想根据后台返回的「指令字符串」做不同的事情：
+
+```python
+command = 'start'
+
+if command == 'start':
+    print('启动')
+elif command == 'stop':
+    print('停止')
+elif command == 'pause':
+    print('暂停')
+else:
+    print('未知指令')
+```
+
+这样写没毛病，但是当分支多起来，一长串 `elif` 就显得啰嗦。我们用 `match / case` 重写：
+
+```python
+command = 'start'
+
+match command:
+    case 'start':
+        print('启动')
+    case 'stop':
+        print('停止')
+    case 'pause':
+        print('暂停')
+    case _:
+        print('未知指令')
+```
+
+`case _` 就是兜底分支，相当于 `else`，下划线 `_` 是个通配符。
+
+## match / case 真正的厉害之处：匹配「结构」
+
+它不只是值比较——还能匹配数据的「形状」并把变量解包出来：
+
+```python
+point = [10, 20]
+
+match point:
+    case [0, 0]:
+        print('原点')
+    case [x, 0]:
+        print(f'在 x 轴上，x = {x}')
+    case [0, y]:
+        print(f'在 y 轴上，y = {y}')
+    case [x, y]:
+        print(f'普通点，x = {x}，y = {y}')
+    case _:
+        print('不是二维坐标')
+```
+
+输出：
+
+```
+普通点，x = 10，y = 20
+```
+
+也能匹配 dict：
+
+```python
+response = {'status': 'ok', 'data': [1, 2, 3]}
+
+match response:
+    case {'status': 'ok', 'data': data}:
+        print(f'成功，拿到数据 {data}')
+    case {'status': 'error', 'message': msg}:
+        print(f'失败：{msg}')
+    case _:
+        print('未知响应')
+```
+
+> 💡 `match / case` **不是用来取代** `if / elif`。简单的值比较，写 `if` 反而更清楚；只有当你要根据「数据的结构」来分发逻辑时（如解析 JSON / 处理 AST），它才能真正发挥威力。

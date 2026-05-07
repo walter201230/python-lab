@@ -1,0 +1,82 @@
+# 四、枚举的比较
+
+## 1、`==` 和 `is`
+
+普通 `Enum` 成员既支持 `==`（值相等比较）也支持 `is`（同一对象）。因为 **每个成员都是单例**，两者结果一致：
+
+```python
+from enum import Enum
+
+class User(Enum):
+    Alice = 98
+    Bob = 30
+    Tom = 12
+
+a = User.Alice
+b = User.Bob
+
+print(a == b, a == User.Alice)   # False True
+print(a is b, a is User.Alice)   # False True
+```
+
+## 2、不支持 `<` `>`
+
+普通 `Enum` **不支持大小比较**——成员之间没有「天然顺序」：
+
+```python
+from enum import Enum
+
+class User(Enum):
+    Alice = 98
+    Bob = 30
+
+try:
+    print(User.Alice < User.Bob)
+except TypeError as e:
+    print('Error:', e)
+```
+
+输出：
+
+```
+Error: '<' not supported between instances of 'User' and 'User'
+```
+
+如果对它们 `sorted(...)`，也会因为同一个原因抛 `TypeError`。
+
+## 3、想比较大小？用 IntEnum
+
+如果业务上需要比较顺序（比如优先级），用 `IntEnum` 替代 `Enum`：
+
+```python
+from enum import IntEnum
+
+class User(IntEnum):
+    Alice = 98
+    Bob = 30
+    Tom = 12
+
+# 按 value 排序
+for u in sorted(User):
+    print(u.name)
+```
+
+输出：
+
+```
+Tom
+Bob
+Alice
+```
+
+`IntEnum` 的成员同时也是 `int`，所以可以用 `<` / `>` / `sorted` 等等。
+
+## 4、什么时候用枚举？
+
+总结一下：当你写下任何一段「这个变量只能取下面这几个值」的代码时，就应该考虑 `Enum`。
+
+- ✓ 状态机的状态：`Pending` / `Running` / `Done` / `Failed`
+- ✓ 类别 / 枚举类型：颜色、性别、文件类型
+- ✓ 优先级 / 等级：用 `IntEnum`，可以排序和比较
+
+代替散落的 `STATUS_PENDING = 0` 这种「字符串/整数魔法值」，让代码更安全、更清晰。

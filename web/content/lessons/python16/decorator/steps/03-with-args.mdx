@@ -1,0 +1,89 @@
+# 二、装饰带参数的函数
+
+上一节的 `punch` 是无参数的。可现实中函数往往是有参数的——昵称、部门都不能写死，得通过参数传：
+
+```python
+@decorator
+def punch(name, department):
+    print(f'昵称：{name}  部门：{department}  上班打卡成功')
+
+punch('两点水', '研发部')
+```
+
+如果还是用之前那个 `wrapper()`（没参数），`punch('两点水', '研发部')` 就会报「wrapper() takes 0 positional arguments」——因为真正被调用的是 `wrapper`，而 `wrapper` 没接参数。
+
+## 1、用 *args, **kwargs 接住所有参数
+
+> 装饰器中的 wrapper 函数可以使用 `*args` 接收所有位置参数。但仅 `*args` 不能涵盖**关键字参数**，所以还要加上 `**kwargs`。
+
+完整写法：
+
+```python
+def decorator(func):
+    def wrapper(*args, **kwargs):
+        print('[LOG] 开始执行')
+        func(*args, **kwargs)
+        print('[LOG] 执行结束')
+    return wrapper
+
+
+@decorator
+def punch(name, department):
+    print(f'昵称：{name}  部门：{department}  上班打卡成功')
+
+
+@decorator
+def print_info(reason, **kwargs):
+    print(reason)
+    print(kwargs)
+
+
+punch('两点水', '研发部')
+print_info('请假申请', sex='男', age=99)
+```
+
+输出：
+
+```
+[LOG] 开始执行
+昵称：两点水  部门：研发部  上班打卡成功
+[LOG] 执行结束
+[LOG] 开始执行
+请假申请
+{'sex': '男', 'age': 99}
+[LOG] 执行结束
+```
+
+这样一来，**任何参数形态的函数**都可以套上这个装饰器了。
+
+## 2、有返回值的函数怎么办
+
+如果原函数有返回值，wrapper 要把它**接住并 return 出去**，否则装饰之后返回值就丢了：
+
+```python
+def decorator(func):
+    def wrapper(*args, **kwargs):
+        print('[LOG] 开始执行')
+        result = func(*args, **kwargs)
+        print('[LOG] 执行结束')
+        return result
+    return wrapper
+
+
+@decorator
+def add(a, b):
+    return a + b
+
+
+print(add(3, 5))
+```
+
+输出：
+
+```
+[LOG] 开始执行
+[LOG] 执行结束
+8
+```
+
+这就是装饰器最常见、最完整的模板——**记下来，以后写各种通用装饰器都按这个套路**。

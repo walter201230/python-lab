@@ -1,0 +1,17 @@
+{
+  "id": "02-from-import",
+  "title": "from···import：直接拎出 sqrt",
+  "prompt": "用 `from···import` 语法 **直接** 从 `math` 模块导入 `sqrt` 函数（不要用 `import math`），然后：\n\n1. 计算 `sqrt(16)`\n2. 把结果赋给变量 `result`\n3. `print(result)`\n\n输出应该是：\n```\n4.0\n```",
+  "starterCode": "# from math import sqrt\n# result = sqrt(16)\n# print(result)\n",
+  "solution": "from math import sqrt\n\nresult = sqrt(16)\nprint(result)",
+  "grading": {
+    "stdoutEquals": "4.0\n",
+    "varsEqual": { "result": 4.0 },
+    "requiredAst": ["ImportFrom"]
+  },
+  "hints": [
+    "语法是 from 模块名 import 名字",
+    "from math import sqrt 之后可以直接写 sqrt(16)，不用前缀",
+    "完整代码：\nfrom math import sqrt\n\nresult = sqrt(16)\nprint(result)"
+  ]
+}

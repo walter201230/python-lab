@@ -1,0 +1,176 @@
+# uv add / uv run：日常工作流
+
+新项目跑起来了，现在加点东西进去。
+
+## uv add 添加依赖
+
+老办法：
+
+```bash
+pip install httpx
+# 然后手动打开 requirements.txt，加一行
+echo "httpx" >> requirements.txt
+```
+
+两步走，而且很容易忘记第二步。uv 的办法：
+
+```bash
+uv add httpx
+```
+
+一条命令搞定。这条命令背后做了什么？
+
+1. 解析 httpx 的最新版本（满足项目 `requires-python` 的）
+2. 装到项目的 `.venv/` 里
+3. 把 `httpx>=0.28` 写到 `pyproject.toml` 的 `dependencies` 里
+4. 更新 `uv.lock`，把 httpx 和它所有传递依赖的精确版本都钉下来
+
+打开 `pyproject.toml` 看看：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+]
+```
+
+`dependencies` 多了一行，自动添加。各位不需要手动维护这个列表。
+
+### 加多个依赖
+
+```bash
+uv add httpx click rich
+```
+
+一次加三个，依赖解析一起跑，比一个一个 `pip install` 快得多。
+
+### 加开发依赖
+
+测试用的 pytest、linter 用的 ruff，这些不是项目运行时需要的，只在开发时用，应该放在「开发依赖」里。uv 用 `--dev` 标志：
+
+```bash
+uv add --dev pytest ruff
+```
+
+这次 `pyproject.toml` 多了一段：
+
+```toml
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+```
+
+注意是 `[dependency-groups]` 而不是 `[project.optional-dependencies]`——这是 PEP 735 的新格式，uv 默认使用。
+
+### 删除依赖
+
+```bash
+uv remove rich
+```
+
+不光从 `pyproject.toml` 删除，还会从 `.venv/` 卸载，并且更新 `uv.lock`。删得干净。
+
+### 升级依赖
+
+```bash
+uv add httpx --upgrade
+```
+
+或者：
+
+```bash
+uv lock --upgrade-package httpx
+```
+
+升级到最新满足约束的版本。
+
+### 指定版本范围
+
+如果对版本有特殊要求：
+
+```bash
+uv add "httpx>=0.27,<0.30"
+```
+
+## uv run 跑命令
+
+`uv run` 不光能跑 `main.py`，能跑任何命令。
+
+跑一段 Python 脚本：
+
+```bash
+uv run python -c "import httpx; print(httpx.__version__)"
+```
+
+跑 pytest：
+
+```bash
+uv run pytest
+```
+
+跑自定义脚本：
+
+```bash
+uv run python scripts/build.py
+```
+
+`uv run` 的好处是：**它保证用的是项目的虚拟环境**。各位不用 `source .venv/bin/activate`，不用每次新开终端都重新激活，进入项目目录之后直接 `uv run` 就行。
+
+「那如果我就是想激活一下，跑一堆命令呢？」当然也可以：
+
+```bash
+source .venv/bin/activate
+python -c "import httpx; print(httpx.__version__)"
+pytest
+```
+
+激活之后跟传统流程一样。
+
+### 跑命令行工具
+
+很多包会装一个命令行工具，比如 ruff 装完会有 `ruff` 这个命令。在 uv 项目里这样跑：
+
+```bash
+uv run ruff check .
+```
+
+uv 会从 `.venv/bin/` 里找 ruff 来执行。
+
+### 跑临时一次性命令
+
+有时候各位想用一个工具，但不想把它加进项目依赖：
+
+```bash
+uvx httpie https://httpbin.org/get
+```
+
+`uvx` 是 `uv tool run` 的简写，它会在一个临时环境装上 httpie，跑完即丢，不污染项目。这相当于 `pipx run`，但快得多。
+
+## uv tool install：装 CLI 工具
+
+想全局装 ruff，让任何目录都能用？
+
+```bash
+uv tool install ruff
+```
+
+跟 `pipx install ruff` 一样，但快得多。装完之后 `ruff` 就在 `PATH` 里了。
+
+升级：
+
+```bash
+uv tool upgrade ruff
+```
+
+卸载：
+
+```bash
+uv tool uninstall ruff
+```
+
+各位可以拿 `uv tool` 替代 pipx、`brew install` 一些 Python CLI 工具。

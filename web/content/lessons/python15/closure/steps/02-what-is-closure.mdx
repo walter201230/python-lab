@@ -1,0 +1,62 @@
+# 一、什么是闭包
+
+## 1、用闭包解决累加问题
+
+我们直接看代码：
+
+```python
+def study_time(time):
+    def insert_time(min):
+        nonlocal time
+        time = time + min
+        return time
+
+    return insert_time
+
+
+f = study_time(0)
+print(f(2))
+print(f(10))
+```
+
+输出：
+
+```
+2
+12
+```
+
+这就是**闭包**——「函数里嵌套函数，内层函数返回出去带着外层变量」。
+
+## 2、闭包的定义
+
+> **当一个内部函数被当作对象返回时，它夹带了外部函数的局部变量，就形成了一个闭包。**
+
+换句话说：内部函数的局部作用域中可以访问外部函数局部作用域中的变量，这种行为就叫**闭包（Closure）**。
+
+回头看上面的代码：
+
+```python
+def study_time(time):              # 外层函数：接收一个 time
+    def insert_time(min):          # 内层函数：实现累加逻辑
+        nonlocal time
+        time = time + min
+        return time
+
+    return insert_time             # 外层返回内层函数对象（在 Python 中，函数也是对象）
+
+
+f = study_time(0)                  # 调用 study_time，f 现在等于 insert_time 函数
+print(f(2))                        # 相当于调用 insert_time(2)
+print(f(10))                       # 相当于调用 insert_time(10)
+```
+
+`f` 不是数字，不是字符串——它是一个**带着 time 这个变量的函数**。每次调用 `f` 时，那个 `time` 还在它身边，所以累加可以一直延续。
+
+## 3、闭包的好处
+
+- **避免使用全局变量** —— 数据藏在闭包里，不污染全局
+- **把函数和它操作的数据「绑定」起来** —— 类似一个超轻量的对象
+- 是后面要学的**装饰器**的基础
+
+听起来挺玄，下一节我们会重点讲让闭包修改外层变量的关键字 `nonlocal`，并做几道练习。

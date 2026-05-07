@@ -1,0 +1,16 @@
+{
+  "id": "08-type-conversion",
+  "title": "字符串转整数",
+  "prompt": "已经给你定义了 `age_str = '28'`——**字符串**，不是整数。\n\n直接对字符串做加法会报错，需要先用 `int()` 转成整数。请：\n\n1. 用 `int(age_str)` 把它转成整数，赋给变量 `age`\n2. 打印 `age + 2`\n\n输出应该是：\n```\n30\n```",
+  "starterCode": "age_str = '28'\n# 1. 用 int(age_str) 转成整数，赋给 age\n# 2. 打印 age + 2\n",
+  "solution": "age_str = '28'\nage = int(age_str)\nprint(age + 2)",
+  "grading": {
+    "varsEqual": { "age": 28 },
+    "stdoutEquals": "30\n"
+  },
+  "hints": [
+    "int('28') 返回整数 28",
+    "把它赋给变量：age = int(age_str)",
+    "完整代码：\nage_str = '28'\nage = int(age_str)\nprint(age + 2)"
+  ]
+}

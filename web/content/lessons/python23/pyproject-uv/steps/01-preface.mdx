@@ -1,0 +1,60 @@
+# pyproject.toml + uv：彻底告别「我电脑能跑你电脑跑不了」
+
+> **这一章是纯阅读章节，没有练习题。**
+>
+> `uv`、`pip`、虚拟环境这些都是命令行工具，浏览器里的 Pyodide 跑不起来。这一章我们把概念、命令、最佳实践讲清楚，各位在自己本地装好 Python 环境之后实际操作一遍就能熟练。
+
+各位有没有过这种崩溃时刻——把代码打包发给同事，同事跑了一下，报一堆 `ModuleNotFoundError`。「`pip install` 一下就好了。」「装哪个版本？」翻了翻自己的电脑，半天没找到一份完整的 `requirements.txt`，最后只好憋出一句：「呃，我电脑能跑啊，奇了怪了。」
+
+这种事在 Python 圈子里实在太常见了。直到 2018 年 PEP 518 出台，2021 年 PEP 621 跟进，社区才终于约定：**所有项目元数据、依赖、工具配置，统一塞进一个文件，叫 `pyproject.toml`**。
+
+到了 2024 年，又出了一个叫 `uv` 的工具，Astral 出品（就是写 ruff 那家），用 Rust 写的，比 pip 快 10 到 100 倍，单二进制，没有任何依赖，一条命令装上就能用。
+
+这两件武器加在一起，就是这一章要讲的内容。学完之后，开新项目从零到「一个能跑、能锁定依赖、能跑测试的项目」只需要四五条命令。
+
+## 老办法到底惨在哪
+
+先回忆一下老办法长什么样。一个「正经的」Python 项目，目录里通常有这些文件：
+
+```
+my-project/
+├── setup.py
+├── setup.cfg
+├── requirements.txt
+├── requirements-dev.txt
+├── MANIFEST.in
+├── pytest.ini
+├── .flake8
+├── tox.ini
+└── my_project/
+    └── __init__.py
+```
+
+光配置文件就八九个。每个文件管的事都不一样：
+
+- `setup.py`：打包用，告诉 `pip` 这个项目的名字、版本、入口
+- `setup.cfg`：`setup.py` 的一部分配置可以挪进来
+- `requirements.txt`：生产依赖列表
+- `requirements-dev.txt`：开发依赖列表（测试、linter、formatter）
+- `MANIFEST.in`：打包时要带上哪些非代码文件
+- `pytest.ini`：pytest 的配置
+- `.flake8`：flake8 的配置
+- `tox.ini`：多版本测试用
+
+而最惨的是：**`requirements.txt` 不锁版本**。
+
+```
+requests
+flask
+sqlalchemy
+```
+
+干干净净，三行搞定。半年后某天同事拉下来跑，`requests` 自动装了最新版，结果有个废弃的 API 被删了，代码挂掉。这就是著名的「能跑」和「能复现」之间的鸿沟。
+
+到了 2024 年，社区终于把场子收拾干净了：
+
+- **元数据格式** 统一成 `pyproject.toml`（PEP 621）
+- **依赖格式** 统一成 PEP 508
+- **工具** 推荐用 `uv`（速度王者）
+
+往下我们就一步步看，新办法到底有多省心。

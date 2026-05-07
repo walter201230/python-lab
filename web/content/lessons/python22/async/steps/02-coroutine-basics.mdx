@@ -1,0 +1,109 @@
+# 一、协程函数：和普通函数差在哪
+
+普通函数长这样：
+
+```python
+def hello():
+    return '你好'
+
+print(hello())   # 你好
+```
+
+加一个 `async` 关键字，它就成了**协程函数（coroutine function）**：
+
+```python
+async def hello():
+    return '你好'
+
+print(hello())
+```
+
+输出大致是这样：
+
+```
+<coroutine object hello at 0x...>
+RuntimeWarning: coroutine 'hello' was never awaited
+```
+
+各位看出区别了吗——同样写 `print(hello())`，普通函数返回的是字符串，协程函数返回的是一个 **协程对象**，而且还附赠一句警告：「这协程从来没被 await 过」。
+
+## 关键认知
+
+> **`async def` 定义的不是一个「会立刻跑的函数」**——它返回一张「待执行的任务单」。
+
+打个比方：
+
+| 函数类型      | `f()` 的行为                          |
+|---------------|---------------------------------------|
+| 普通函数       | 立刻派人去执行，立刻拿到结果          |
+| 协程函数       | 写一张任务单递给你；什么时候做、谁做，另说 |
+
+这张「任务单」就是协程对象。它必须被 **`await`** 或者扔给事件循环，里面的代码才会真正跑起来。
+
+## `await`：让协程跑起来
+
+那怎么让任务单真的执行？用 `await`：
+
+```python
+import asyncio
+
+async def hello():
+    return '你好'
+
+async def main():
+    result = await hello()    # ← 这里让 hello 真正跑
+    print(result)
+
+asyncio.run(main())
+```
+
+输出：
+
+```
+你好
+```
+
+`await hello()` 的语义是「请帮我把这张任务单完成，然后把结果给我」。
+
+但**`await` 只能写在 `async def` 函数体内部**。在普通函数里写 `await`，Python 会报 `SyntaxError: 'await' outside async function`。
+
+## `asyncio.run()`：进入异步世界的大门
+
+「那我想在普通脚本里调一个 `async def` 怎么办？」答案就是 `asyncio.run()`：
+
+```python
+import asyncio
+
+async def main():
+    print('我在异步世界里')
+    print('我还在异步世界里')
+
+asyncio.run(main())
+```
+
+输出：
+
+```
+我在异步世界里
+我还在异步世界里
+```
+
+`asyncio.run()` 是同步代码和异步代码之间的「门」：
+
+- 接收一个协程对象
+- 启动一个**事件循环（event loop）**
+- 把协程跑完，再关掉事件循环
+
+记住一条：**整个程序里通常只调一次 `asyncio.run()`**——它就是从同步世界踏进异步世界的入口。
+
+## 三件套：`async def` + `await` + `asyncio.run`
+
+到这里，最基础的三件套你已经齐了：
+
+| 工具            | 作用                              |
+|-----------------|-----------------------------------|
+| `async def f()` | 定义协程函数（写出一张任务单的能力） |
+| `await x`       | 等一张任务单跑完，拿结果           |
+| `asyncio.run(c)`| 从同步世界进入异步世界，跑一个协程 |
+
+下一题就用这三个东西写一个最小的 hello world。

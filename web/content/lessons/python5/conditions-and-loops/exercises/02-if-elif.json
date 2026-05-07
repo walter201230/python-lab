@@ -1,0 +1,15 @@
+{
+  "id": "02-if-elif",
+  "title": "elif：成绩等级",
+  "prompt": "已经给你定义了 `score = 85`。\n\n请用 `if / elif / else` 按下面的规则打印等级：\n\n- `>= 90`：`'优秀'`\n- `>= 80`：`'良好'`\n- `>= 60`：`'及格'`\n- 其它：`'不及格'`\n\n输出应该是：\n```\n良好\n```",
+  "starterCode": "score = 85\n# 用 if / elif / else 判断\n",
+  "solution": "score = 85\nif score >= 90:\n    print('优秀')\nelif score >= 80:\n    print('良好')\nelif score >= 60:\n    print('及格')\nelse:\n    print('不及格')",
+  "grading": {
+    "stdoutEquals": "良好\n"
+  },
+  "hints": [
+    "elif 是 else if 的简写",
+    "判断从严到松：>= 90 → >= 80 → >= 60 → else",
+    "完整代码：\nif score >= 90:\n    print('优秀')\nelif score >= 80:\n    print('良好')\nelif score >= 60:\n    print('及格')\nelse:\n    print('不及格')"
+  ]
+}

@@ -1,0 +1,79 @@
+# 四、contextlib 里的几个常用工具
+
+`contextlib` 不只有 `@contextmanager`，还有几个开箱即用的小工具，用过几次之后会觉得离不开。
+
+## 1、`suppress`：优雅地忽略某种异常
+
+有时候我们就是想忽略某个无关紧要的错误，老办法是：
+
+```python
+try:
+    do_something()
+except SomeError:
+    pass
+```
+
+写多了很啰嗦。`suppress` 让它变一行：
+
+```python
+from contextlib import suppress
+
+with suppress(FileNotFoundError):
+    import os
+    os.remove('not-exist.txt')   # 不存在也不会报错
+```
+
+如果文件不存在，`FileNotFoundError` 会被静默吞掉；如果是别的异常，照常往外抛。
+
+## 2、`closing`：把没实现 with 的对象包成上下文
+
+不是所有需要 `close` 的对象都实现了上下文管理器协议。`closing` 帮我们补上这一层：
+
+```python
+from contextlib import closing
+
+class MyResource:
+    def close(self):
+        print('资源已释放')
+
+
+with closing(MyResource()):
+    print('使用资源中…')
+```
+
+输出：
+
+```
+使用资源中…
+资源已释放
+```
+
+`closing` 的实现非常简单——它就是确保 `with` 块结束时调用对象的 `.close()` 方法。
+
+## 3、`redirect_stdout`：临时改写标准输出
+
+有时候你想把 `print` 的内容暂时收集起来——可以用 `redirect_stdout`：
+
+```python
+import io
+from contextlib import redirect_stdout
+
+buffer = io.StringIO()
+with redirect_stdout(buffer):
+    print('这一行不会出现在终端')
+    print('而是被收进了 buffer')
+
+captured = buffer.getvalue()
+print('外面打印捕获到的内容：')
+print(captured)
+```
+
+## 总结
+
+| 写上下文管理器的三种方式 | 适合什么场景 |
+|---|---|
+| 写类 + `__enter__/__exit__` | 资源对象有自己的状态、需要好几个属性 |
+| `@contextmanager` 装饰生成器 | 临时的、一次性的资源管理 |
+| `contextlib.suppress` / `closing` 等内置 | 标准模式，能用就直接用 |
+
+凡是「**有借有还、成对操作**」的事情——开/关、连/断、获取/释放——扔给 `with` 去管准没错。

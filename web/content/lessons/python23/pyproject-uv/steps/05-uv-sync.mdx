@@ -1,0 +1,223 @@
+# uv sync：环境字节级一致
+
+讲到这里，关键问题来了：**同事拉下来怎么跑？**
+
+老办法：
+
+```bash
+git clone <repo>
+cd <repo>
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+五条命令。跨平台还有差异，Windows 激活虚拟环境的命令不一样。
+
+uv 的办法：
+
+```bash
+git clone <repo>
+cd <repo>
+uv sync
+```
+
+完事。`uv sync` 会做：
+
+1. 检查 `.python-version` 指定的 Python 版本，没有就装
+2. 创建 `.venv/`（如果不存在）
+3. 按 `uv.lock` 里钉死的精确版本装所有依赖（包括开发依赖）
+
+「精确版本」是关键。`uv.lock` 里记录的不是 `httpx>=0.28`，而是 `httpx==0.28.1`、加上 httpx 的所有传递依赖也都钉到具体版本。所以 `uv sync` 出来的环境，跟开发者电脑上的环境，**字节级一模一样**。
+
+## uv.lock 长什么样
+
+```bash
+head -30 uv.lock
+```
+
+输出大致：
+
+```
+version = 1
+revision = 1
+requires-python = ">=3.12"
+
+[[package]]
+name = "anyio"
+version = "4.6.2.post1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "idna" },
+    { name = "sniffio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/.../anyio-4.6.2.post1.tar.gz", hash = "sha256:..." }
+```
+
+每个包记录了：
+
+- 名字、版本
+- 来源（PyPI、git、本地路径……）
+- 它依赖了哪些其他包
+- 源代码包（sdist）的下载地址、哈希值
+- 二进制轮子（wheel）的下载地址、哈希值
+
+哈希值是关键——`uv sync` 装的时候会校验，确保下载到的包跟 lock 时一模一样，避免了「PyPI 上的包被人篡改」这种供应链攻击。
+
+## 几个常用 sync 选项
+
+只装生产依赖，不装开发依赖（部署时常用）：
+
+```bash
+uv sync --no-dev
+```
+
+强制重新解析依赖（比如改了 `pyproject.toml` 之后）：
+
+```bash
+uv sync --reinstall
+```
+
+只装某个 dependency-group：
+
+```bash
+uv sync --only-group dev
+```
+
+各位平常 90% 的时间都只用 `uv sync` 不带任何参数，够了。
+
+## 自动管理虚拟环境
+
+老办法的虚拟环境流程，各位都熟：
+
+```bash
+python -m venv .venv
+source .venv/bin/activate    # macOS/Linux
+.venv\Scripts\activate       # Windows
+pip install ...
+```
+
+这一套有几个痛点：
+
+1. 容易忘记激活
+2. 跨平台不统一
+3. 切项目要先 `deactivate` 再激活新的
+4. 用错虚拟环境是常见 bug
+
+uv 的策略：**根本不需要激活**。每次跑命令用 `uv run`，uv 会自动找到当前目录的 `.venv/`，用里面的 Python 跑。
+
+要看当前用的是哪个 Python：
+
+```bash
+uv run which python
+```
+
+输出：
+
+```
+/Users/walter/projects/my-project/.venv/bin/python
+```
+
+## 实战：从零到「能跑、能锁、能测」
+
+需求：写一个「抓取一个 URL，打印响应状态码」的小工具，要求：
+
+1. 用 httpx 发请求
+2. 用 pytest 写一个测试
+3. 锁定依赖，发给同事能直接跑
+
+全套命令长这样：
+
+```bash
+# 1. 创建项目
+uv init url-checker
+cd url-checker
+
+# 2. 加生产依赖
+uv add httpx
+
+# 3. 加开发依赖
+uv add --dev pytest
+
+# 4. 写代码
+
+# 5. 跑测试
+uv run pytest
+
+# 6. 提交到 git
+git add .
+git commit -m "init project"
+```
+
+主逻辑文件 `url_checker.py`：
+
+```python
+import httpx
+
+
+def check_url(url: str) -> int:
+    """返回 URL 的响应状态码"""
+    response = httpx.get(url, timeout=5.0)
+    return response.status_code
+
+
+def main():
+    url = "https://httpbin.org/status/200"
+    code = check_url(url)
+    print(f"{url} -> {code}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+发给同事：
+
+```bash
+git push origin main
+```
+
+同事拉下来：
+
+```bash
+git clone <repo>
+cd url-checker
+uv sync
+uv run url_checker.py
+```
+
+三条命令，环境完全一致，能跑。这就是 2026 年的工作流。
+
+## 项目最终的目录结构
+
+```
+url-checker/
+├── .git/
+├── .gitignore
+├── .python-version
+├── .venv/              # uv 自动生成，不进 git
+├── README.md
+├── pyproject.toml
+├── tests/
+│   └── test_url_checker.py
+├── url_checker.py
+└── uv.lock
+```
+
+进 git 的有：
+
+- `.gitignore`
+- `.python-version`
+- `README.md`
+- `pyproject.toml`
+- `uv.lock`（**很重要**，别忘了提交）
+- `tests/`
+- `url_checker.py`
+
+不进 git 的：
+
+- `.venv/`
+- `__pycache__/`、`*.pyc`
+
+各位常犯的错是：忘了提交 `uv.lock`。没有 lock 文件，`uv sync` 没法保证版本一致。所以记住：**`uv.lock` 是项目的一部分，必须进 git**。

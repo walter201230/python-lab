@@ -1,0 +1,49 @@
+# 第十八节：pathlib——现代化路径处理
+
+先看一段「祖传代码」：
+
+```python
+import os
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+data_path = os.path.join(base_dir, 'data', 'sub', 'foo.txt')
+
+if os.path.exists(data_path) and os.path.isfile(data_path):
+    with open(data_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    print(content)
+```
+
+是不是看着头大？
+
+- `os.path.dirname` 套 `os.path.abspath` 套 `os.path.join`
+- 判断要 `os.path.exists` 加 `os.path.isfile`
+- 方法散落在 `os`、`os.path` 两个模块
+
+更要命的是——**路径在这里只是个普通字符串**。字符串不知道自己代表的是文件还是目录，所有操作都得拿着字符串去喂给一堆函数。
+
+## 有没有一种写法，让路径自己「活」起来？
+
+让 `Path('data/foo.txt')` 这个对象本身就知道：
+
+- 自己叫什么名字（`p.name`）
+- 自己的后缀是什么（`p.suffix`）
+- 自己的父目录是哪儿（`p.parent`）
+- 自己存不存在（`p.exists()`）
+- 自己里面装着什么内容（`p.read_text()`）
+
+有的——这就是 Python 标准库 `pathlib`。
+
+## 老 vs 新对照
+
+| 操作 | 老写法（`os.path`） | 新写法（`pathlib`） |
+|---|---|---|
+| 拼接路径 | `os.path.join(a, b, c)` | `Path(a) / b / c` |
+| 文件名 | `os.path.basename(p)` | `Path(p).name` |
+| 扩展名 | `os.path.splitext(p)[1]` | `Path(p).suffix` |
+| 父目录 | `os.path.dirname(p)` | `Path(p).parent` |
+| 是否存在 | `os.path.exists(p)` | `Path(p).exists()` |
+
+记住一句话：**写新代码就用 pathlib，别再 `os.path.join` 一条道走到黑了**。
+
+> 本章我们专注于「路径解析、属性提取、拼接」这些**纯路径操作**——它们在浏览器环境里也能正常运行。`read_text` / `write_text` / `mkdir` 这类**真访问文件系统**的方法，我们留给本地环境去玩。

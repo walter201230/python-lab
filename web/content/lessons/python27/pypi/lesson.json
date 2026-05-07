@@ -1,0 +1,15 @@
+{
+  "id": "pypi",
+  "title": "打包发布到 PyPI",
+  "chapter": "python27",
+  "order": 1,
+  "estimatedMinutes": 25,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-project-layout.mdx" },
+    { "kind": "step", "file": "03-build-and-publish.mdx" },
+    { "kind": "step", "file": "04-typer-basics.mdx" },
+    { "kind": "step", "file": "05-typer-advanced.mdx" },
+    { "kind": "step", "file": "06-real-world.mdx" }
+  ]
+}

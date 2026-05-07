@@ -1,0 +1,20 @@
+{
+  "id": "iteration",
+  "title": "迭代",
+  "chapter": "python7",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-iteration.mdx" },
+    { "kind": "exercise", "file": "01-for-iterate.json" },
+    { "kind": "step", "file": "03-iterator.mdx" },
+    { "kind": "exercise", "file": "02-iter-next.json" },
+    { "kind": "step", "file": "04-list-comprehension.mdx" },
+    { "kind": "exercise", "file": "03-list-comp.json" },
+    { "kind": "step", "file": "05-generator.mdx" },
+    { "kind": "exercise", "file": "04-generator.json" },
+    { "kind": "step", "file": "06-combined.mdx" },
+    { "kind": "exercise", "file": "05-zip-pair.json" }
+  ]
+}

@@ -1,0 +1,72 @@
+# 一、好命名
+
+写代码 80% 的时间在「读」，只有 20% 在「写」。所以**命名好不好，直接决定代码读起来累不累**。
+
+## 1、变量用名词，函数用动词
+
+变量装的是「东西」——用名词：
+
+```python
+user_name = '张三'
+total_price = 100
+order_list = []
+```
+
+函数做的是「动作」——用动词或动词短语：
+
+```python
+def get_user(uid): ...
+def calculate_total(items): ...
+def send_email(to, body): ...
+```
+
+反例（让读者皱眉）：
+
+```python
+def user(uid): ...        # 这是函数还是属性？
+def data(items): ...       # 处理 data？还是返回 data？
+```
+
+## 2、布尔值用 `is_` / `has_` / `can_` 开头
+
+```python
+is_active = True       # 一眼看出是布尔
+has_permission = False
+can_edit = True
+```
+
+反例：
+
+```python
+active = True          # active 是状态值还是布尔？要去看赋值才知道
+permission = False     # 这是权限对象还是 True/False？
+```
+
+## 3、避免无意义的缩写
+
+```python
+# 不好
+def calc(u, p):
+    return u * p
+
+# 好
+def calculate_total(unit_price, quantity):
+    return unit_price * quantity
+```
+
+注意：**通用缩写**（比如 `i` 当循环变量、`url`、`id`、`db`）大家都懂，可以用。但 `usr`、`prc`、`amt` 这种「省两个字母」的缩写就别写了，省的那点字符根本不值得读者去猜。
+
+## 4、长度跟作用域成正比
+
+```python
+for i in range(10):       # i 作用域很小，用一个字母没问题
+    print(i)
+
+# 但模块级的全局变量就要起得清楚
+USER_ROLE_ADMIN = 'admin'
+DEFAULT_TIMEOUT_SECONDS = 30
+```
+
+## 一句话总结
+
+> **看到这个名字，读者还要不要去翻定义才能懂？要——名字没起好。**

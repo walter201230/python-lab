@@ -1,0 +1,16 @@
+{
+  "id": "04-dict-merge",
+  "title": "用 | 合并两个 dict",
+  "prompt": "已经给你定义了：\n```python\nold = {'a': 1, 'b': 2}\nnew = {'b': 99, 'c': 3}\n```\n\n请用 `|` 把它们合并成 `merged`（注意：右边覆盖左边，所以 `'b'` 应该取 99），然后 `print(merged)`。\n\n输出应该是：\n```\n{'a': 1, 'b': 99, 'c': 3}\n```",
+  "starterCode": "old = {'a': 1, 'b': 2}\nnew = {'b': 99, 'c': 3}\n# merged = old | new\n# print(merged)\n",
+  "solution": "old = {'a': 1, 'b': 2}\nnew = {'b': 99, 'c': 3}\nmerged = old | new\nprint(merged)",
+  "grading": {
+    "varsEqual": { "merged": { "a": 1, "b": 99, "c": 3 } },
+    "stdoutEquals": "{'a': 1, 'b': 99, 'c': 3}\n"
+  },
+  "hints": [
+    "Python 3.9+ 才有 | 合并写法",
+    "右边的 'b': 99 会覆盖左边的 'b': 2",
+    "完整代码：\nmerged = old | new\nprint(merged)"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "02-variable-assign",
+  "title": "变量赋值并打印",
+  "prompt": "创建一个变量 `name`，把字符串 `'水哥'` 赋给它，然后用 `print` 打印 `name`。\n\n输出应该是：\n```\n水哥\n```",
+  "starterCode": "# 在这里写你的代码\n",
+  "solution": "name = '水哥'\nprint(name)",
+  "grading": {
+    "varsEqual": { "name": "水哥" },
+    "stdoutEquals": "水哥\n"
+  },
+  "hints": [
+    "用 = 把字符串 '水哥' 赋给变量 name",
+    "再用 print(name) 打印它（注意是 print(name)，不是 print('name')）",
+    "完整代码：\nname = '水哥'\nprint(name)"
+  ]
+}

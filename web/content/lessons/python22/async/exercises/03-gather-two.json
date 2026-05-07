@@ -1,0 +1,16 @@
+{
+  "id": "03-gather-two",
+  "title": "用 gather 并发跑两个协程",
+  "prompt": "请定义协程函数 `task(name)`：\n\n- `await asyncio.sleep(0.01)`\n- 返回 `f'{name} done'`\n\n在 `main` 里用 `asyncio.gather(task('A'), task('B'))` 同时跑两个，把结果赋给 `r1, r2`，然后**按顺序**：\n\n```python\nprint(r1)\nprint(r2)\n```\n\n用 `asyncio.run(main())` 启动。\n\n输出应该是：\n```\nA done\nB done\n```\n\n（注意：`gather` 返回结果的顺序和传入顺序一致，所以这里是确定性的。）",
+  "starterCode": "import asyncio\n\n# async def task(name):\n#     await asyncio.sleep(0.01)\n#     return f'{name} done'\n\n# async def main():\n#     r1, r2 = await asyncio.gather(task('A'), task('B'))\n#     print(r1)\n#     print(r2)\n\n# asyncio.run(main())\n",
+  "solution": "import asyncio\n\nasync def task(name):\n    await asyncio.sleep(0.01)\n    return f'{name} done'\n\nasync def main():\n    r1, r2 = await asyncio.gather(task('A'), task('B'))\n    print(r1)\n    print(r2)\n\nasyncio.run(main())",
+  "grading": {
+    "stdoutEquals": "A done\nB done\n",
+    "requiredAst": ["AsyncFunctionDef:task", "AsyncFunctionDef:main"]
+  },
+  "hints": [
+    "task 里要先 await asyncio.sleep(0.01) 再 return",
+    "gather 接收多个协程对象：asyncio.gather(task('A'), task('B'))",
+    "gather 返回的是一个结果列表，可以解包成 r1, r2"
+  ]
+}

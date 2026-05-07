@@ -1,0 +1,16 @@
+{
+  "id": "01-for-iterate",
+  "title": "用 for 把 list 累加",
+  "prompt": "已经给了你一个 list：\n\n```python\nnumbers = [1, 2, 3, 4, 5]\n```\n\n请用 `for` 循环把 `numbers` 里的所有元素加起来，放进变量 `total`，然后 `print(total)`。\n\n输出应该是：\n```\n15\n```",
+  "starterCode": "numbers = [1, 2, 3, 4, 5]\ntotal = 0\n# for n in numbers:\n#     total = total + n\n# print(total)\n",
+  "solution": "numbers = [1, 2, 3, 4, 5]\ntotal = 0\nfor n in numbers:\n    total = total + n\nprint(total)",
+  "grading": {
+    "varsEqual": { "total": 15 },
+    "stdoutEquals": "15\n"
+  },
+  "hints": [
+    "在 for 循环里把每个 n 累加到 total",
+    "别忘了循环结束后再 print(total)，不要写在循环里",
+    "完整代码：\nnumbers = [1, 2, 3, 4, 5]\ntotal = 0\nfor n in numbers:\n    total = total + n\nprint(total)"
+  ]
+}

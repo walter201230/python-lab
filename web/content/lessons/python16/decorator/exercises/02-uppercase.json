@@ -1,0 +1,16 @@
+{
+  "id": "02-uppercase",
+  "title": "@uppercase：改造返回值",
+  "prompt": "请写一个装饰器 `uppercase`：\n\n- 接收一个函数 `func`\n- 调用原函数拿到返回结果 `result`\n- 把 `result.upper()`（转大写）作为 wrapper 的返回值\n\n然后用 `@uppercase` 装饰一个函数 `greet(name)`，函数体 `return 'hello ' + name`。\n\n最后：\n```python\nprint(greet('alice'))\nprint(greet('bob'))\n```\n\n输出应该是：\n```\nHELLO ALICE\nHELLO BOB\n```",
+  "starterCode": "# def uppercase(func):\n#     def wrapper(*args, **kwargs):\n#         result = func(*args, **kwargs)\n#         return result.upper()\n#     return wrapper\n#\n# @uppercase\n# def greet(name):\n#     return 'hello ' + name\n#\n# print(greet('alice'))\n# print(greet('bob'))\n",
+  "solution": "def uppercase(func):\n    def wrapper(*args, **kwargs):\n        result = func(*args, **kwargs)\n        return result.upper()\n    return wrapper\n\n@uppercase\ndef greet(name):\n    return 'hello ' + name\n\nprint(greet('alice'))\nprint(greet('bob'))",
+  "grading": {
+    "stdoutEquals": "HELLO ALICE\nHELLO BOB\n",
+    "requiredAst": ["FunctionDef:uppercase"]
+  },
+  "hints": [
+    "wrapper 里要把原函数的返回值接住：result = func(*args, **kwargs)",
+    "再 return result.upper() —— 这样 print(greet(...)) 拿到的就是大写的结果",
+    "完整代码：\ndef uppercase(func):\n    def wrapper(*args, **kwargs):\n        result = func(*args, **kwargs)\n        return result.upper()\n    return wrapper\n\n@uppercase\ndef greet(name):\n    return 'hello ' + name\n\nprint(greet('alice'))\nprint(greet('bob'))"
+  ]
+}

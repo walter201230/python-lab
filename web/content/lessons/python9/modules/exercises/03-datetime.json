@@ -1,0 +1,16 @@
+{
+  "id": "03-datetime",
+  "title": "用 datetime 模块构造日期",
+  "prompt": "用 `from···import` 从 `datetime` 模块导入 `date` 类，然后：\n\n1. 创建 `2026 年 1 月 1 日` 这个日期，赋给变量 `d`：`d = date(2026, 1, 1)`\n2. 分别 `print` 它的 `year`、`month`、`day` 三个属性\n\n输出应该是：\n```\n2026\n1\n1\n```",
+  "starterCode": "# from datetime import date\n# d = date(2026, 1, 1)\n# print(d.year)\n# print(d.month)\n# print(d.day)\n",
+  "solution": "from datetime import date\n\nd = date(2026, 1, 1)\nprint(d.year)\nprint(d.month)\nprint(d.day)",
+  "grading": {
+    "stdoutEquals": "2026\n1\n1\n",
+    "requiredAst": ["ImportFrom"]
+  },
+  "hints": [
+    "from datetime import date",
+    "date(年, 月, 日) 构造一个日期对象，再用 .year / .month / .day 取属性",
+    "完整代码：\nfrom datetime import date\n\nd = date(2026, 1, 1)\nprint(d.year)\nprint(d.month)\nprint(d.day)"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "04-json",
+  "title": "用 json 模块序列化字典",
+  "prompt": "请用 `import` 引入 `json` 模块，然后：\n\n1. 定义字典 `data = {'name': 'Alice', 'age': 18}`\n2. 用 `json.dumps(data)` 把它转成 JSON 字符串，赋给变量 `s`\n3. `print(s)`\n\n输出应该是：\n```\n{\"name\": \"Alice\", \"age\": 18}\n```\n\n> 提示：`json.dumps` 默认会在键和值之间加空格（`, ` 和 `: `），别自己手写字符串。",
+  "starterCode": "# import json\n# data = {'name': 'Alice', 'age': 18}\n# s = json.dumps(data)\n# print(s)\n",
+  "solution": "import json\n\ndata = {'name': 'Alice', 'age': 18}\ns = json.dumps(data)\nprint(s)",
+  "grading": {
+    "stdoutEquals": "{\"name\": \"Alice\", \"age\": 18}\n",
+    "requiredAst": ["Import"]
+  },
+  "hints": [
+    "import json",
+    "json.dumps(字典) 返回 JSON 字符串",
+    "完整代码：\nimport json\n\ndata = {'name': 'Alice', 'age': 18}\ns = json.dumps(data)\nprint(s)"
+  ]
+}

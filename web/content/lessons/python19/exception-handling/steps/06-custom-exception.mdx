@@ -1,0 +1,151 @@
+# 五、自定义异常类
+
+刚才那个 `ConfigError` 看到了吧？自定义异常类其实就一行：
+
+```python
+class ConfigError(Exception):
+    pass
+```
+
+继承 `Exception` 就行。但是为啥要自定义？直接用内置的 `ValueError`、`RuntimeError` 不行吗？
+
+## 问题：内置异常分不清场景
+
+来用一个「打卡」业务场景说明。某打卡系统业务规则有：
+
+- 还没到上班时间，不能打卡
+- 已经打过卡了，不能重复打
+- 不在公司网络，不能打卡
+
+如果用内置异常：
+
+```python
+def punch(user, time, ip):
+    if time < 9:
+        raise ValueError('未到上班时间')
+    if user.already_punched_today:
+        raise ValueError('今天已经打过卡了')
+    if not ip.startswith('192.168.'):
+        raise ValueError('不在公司网络')
+```
+
+调用方接到 `ValueError`，根本分不清是哪种情况。如果想分别处理，只能去字符串匹配——这非常脆弱。
+
+## 解法：自定义异常体系
+
+```python
+class PunchError(Exception):
+    """打卡相关错误的基类。"""
+    pass
+
+
+class PunchTimeError(PunchError):
+    pass
+
+
+class PunchDuplicateError(PunchError):
+    pass
+
+
+class PunchLocationError(PunchError):
+    pass
+
+
+def punch(user_already_punched, hour, ip):
+    if hour < 9:
+        raise PunchTimeError('未到上班时间')
+    if user_already_punched:
+        raise PunchDuplicateError('今天已经打过卡了')
+    if not ip.startswith('192.168.'):
+        raise PunchLocationError('不在公司网络')
+    return '打卡成功'
+
+
+# 调用方
+try:
+    punch(False, 8, '192.168.1.1')
+except PunchTimeError as e:
+    print(f'时间问题：{e}，请等到 9 点')
+except PunchDuplicateError as e:
+    print(f'已打卡：{e}')
+except PunchLocationError as e:
+    print(f'位置问题：{e}，请连公司 wifi')
+except PunchError as e:
+    print(f'打卡失败：{e}')
+```
+
+输出：
+
+```
+时间问题：未到上班时间，请等到 9 点
+```
+
+这个写法的好处：
+
+- 每种错误有自己的类，调用方可以**精确捕获**
+- 一个公共父类 `PunchError`，调用方也可以**一锅端兜底**
+- 类名本身就是文档——不用看消息，光看类名就知道出啥事了
+
+这就是自定义异常类的价值——**让错误也变成代码结构的一部分**。
+
+## 自定义异常带数据
+
+自定义异常类还可以带数据，比如：
+
+```python
+class PunchError(Exception):
+    def __init__(self, message, user_id=None, hour=None):
+        super().__init__(message)
+        self.user_id = user_id
+        self.hour = hour
+
+
+try:
+    raise PunchError('未到上班时间', user_id=123, hour=8)
+except PunchError as e:
+    print(f'消息：{e}')
+    print(f'用户：{e.user_id}')
+    print(f'时间：{e.hour}')
+```
+
+输出：
+
+```
+消息：未到上班时间
+用户：123
+时间：8
+```
+
+需要更多上下文信息时，把它放进异常对象。后端写日志、做监控的时候，这种结构化错误就特别值钱。
+
+## 内置异常速查表
+
+工作里 90% 的场景能覆盖：
+
+| 异常类 | 触发场景 | 例子 |
+|---|---|---|
+| `ValueError` | 类型对了但值不合法 | `int('abc')` |
+| `TypeError` | 类型不对 | `'a' + 1` |
+| `KeyError` | 字典里没这个键 | `{'a': 1}['b']` |
+| `IndexError` | 序列下标越界 | `[1, 2][5]` |
+| `AttributeError` | 对象没这个属性 | `'abc'.foo` |
+| `NameError` | 引用了未定义的变量 | `print(undefined_x)` |
+| `FileNotFoundError` | 文件不存在 | `open('not_exist.txt')` |
+| `ZeroDivisionError` | 除以零 | `1 / 0` |
+| `RuntimeError` | 运行时通用错误 | 用得不多，能避就避 |
+| `KeyboardInterrupt` | 用户按 Ctrl+C | 这个**别**接住 |
+| `SystemExit` | `sys.exit()` 抛的 | 这个也**别**接住 |
+
+最后那两个再强调一下：`KeyboardInterrupt` 和 `SystemExit` 都是 `BaseException` 的直接子类，不是 `Exception` 的子类。所以正常写 `except Exception` 是接不到它们的——这是好事，避免误伤。
+
+## 小结
+
+把这一节的内容捋一遍：
+
+1. **`try / except`** 是 Python 处理错误的核心结构，记住「子在前，父在后」
+2. **多异常**用 `except (A, B)` 一锅端；用 `as e` 拿到异常对象
+3. **`else`** 是「没出错才走」，**`finally`** 是「无论如何都走」
+4. **`raise`** 主动抛异常，**`raise ... from e`** 显式异常链
+5. **自定义异常类** 让错误也变成代码结构的一部分
+
+异常处理写得好不好，是新手和老手最大的分水岭之一。新手要么完全不写——程序一炸就完蛋；要么乱写——`except Exception: pass` 把所有错误都吞了，出问题神仙都救不回来。老手会精确捕捉、合理传递、必要时包装、绝不偷偷吞。

@@ -1,0 +1,15 @@
+{
+  "id": "06-set-add",
+  "title": "set 的 add",
+  "prompt": "已经给你定义了：\n```python\ntags = {'python', 'web'}\n```\n\n请：\n\n1. 用 `add` 添加 `'ai'`\n2. 再用 `add` 添加一次 `'python'`（已存在，不会有变化）\n3. 用 `print(sorted(tags))` 把元素**排序后**打印（这样输出稳定）\n\n输出应该是：\n```\n['ai', 'python', 'web']\n```",
+  "starterCode": "tags = {'python', 'web'}\n# 1. tags.add('ai')\n# 2. tags.add('python')\n# 3. print(sorted(tags))\n",
+  "solution": "tags = {'python', 'web'}\ntags.add('ai')\ntags.add('python')\nprint(sorted(tags))",
+  "grading": {
+    "stdoutEquals": "['ai', 'python', 'web']\n"
+  },
+  "hints": [
+    "tags.add(x) 添加元素，重复添加同一个值无效",
+    "set 是无序的，print 顺序不固定——所以题目让你 sorted 再 print",
+    "完整代码：\ntags.add('ai')\ntags.add('python')\nprint(sorted(tags))"
+  ]
+}

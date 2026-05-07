@@ -1,0 +1,16 @@
+{
+  "id": "04-eq",
+  "title": "自动 __eq__：按字段值比较",
+  "prompt": "请用 `@dataclass` 定义一个 `Book` 类：\n\n- `title: str`\n- `author: str`\n- `pages: int`\n\n然后实例化三本书：\n\n```python\nb1 = Book('Python 入门', '小明', 300)\nb2 = Book('Python 入门', '小明', 300)\nb3 = Book('Python 入门', '小明', 500)\nprint(b1 == b2)\nprint(b1 == b3)\nprint(b1 is b2)\n```\n\n输出应该是：\n```\nTrue\nFalse\nFalse\n```\n\n说明：`==` 比的是字段值（`b1` 和 `b2` 完全相同所以是 `True`），`is` 比的是对象身份（`b1` 和 `b2` 是两个不同的对象，所以是 `False`）。",
+  "starterCode": "# from dataclasses import dataclass\n#\n# @dataclass\n# class Book:\n#     title: str\n#     author: str\n#     pages: int\n#\n# b1 = Book('Python 入门', '小明', 300)\n# b2 = Book('Python 入门', '小明', 300)\n# b3 = Book('Python 入门', '小明', 500)\n# print(b1 == b2)\n# print(b1 == b3)\n# print(b1 is b2)\n",
+  "solution": "from dataclasses import dataclass\n\n@dataclass\nclass Book:\n    title: str\n    author: str\n    pages: int\n\nb1 = Book('Python 入门', '小明', 300)\nb2 = Book('Python 入门', '小明', 300)\nb3 = Book('Python 入门', '小明', 500)\nprint(b1 == b2)\nprint(b1 == b3)\nprint(b1 is b2)",
+  "grading": {
+    "stdoutEquals": "True\nFalse\nFalse\n",
+    "requiredAst": ["ClassDef:Book"]
+  },
+  "hints": [
+    "@dataclass 默认会生成 __eq__，逐字段比较",
+    "== 比字段值，is 比对象身份，是两件事",
+    "完整代码：\nfrom dataclasses import dataclass\n\n@dataclass\nclass Book:\n    title: str\n    author: str\n    pages: int\n\nb1 = Book('Python 入门', '小明', 300)\nb2 = Book('Python 入门', '小明', 300)\nb3 = Book('Python 入门', '小明', 500)\nprint(b1 == b2)\nprint(b1 == b3)\nprint(b1 is b2)"
+  ]
+}

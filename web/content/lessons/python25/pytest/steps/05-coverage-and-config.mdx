@@ -1,0 +1,255 @@
+# 覆盖率与配置
+
+## 覆盖率——哪些代码还没被测到
+
+各位项目里写了一堆测试，跑起来全绿，开心。可是真的「测全了」吗？
+
+「覆盖率」（coverage）这个概念就是用来回答这个问题的——**到底有多少代码在测试中被执行过**。100 行代码，测试只跑到了 60 行，覆盖率就是 60%。剩下那 40 行可能藏着 bug。
+
+Python 圈测覆盖率的工具是 `coverage`，跟 pytest 配套用一般装 `pytest-cov` 这个插件，更简洁。
+
+```bash
+uv add --dev pytest-cov
+```
+
+跑：
+
+```bash
+# 跑测试 + 输出覆盖率报告
+pytest --cov=src
+
+# 也可以指定包名
+pytest --cov=mypackage
+
+# 输出更详细的「哪几行没测到」
+pytest --cov=src --cov-report=term-missing
+```
+
+输出大概长这样：
+
+```
+---------- coverage: platform darwin, python 3.13.1 -----------
+Name              Stmts   Miss  Cover   Missing
+-----------------------------------------------
+src/mymath.py        12      2    83%   15-16
+src/utils.py          8      0   100%
+-----------------------------------------------
+TOTAL                20      2    90%
+```
+
+看 `Missing` 那列——`mymath.py` 的第 15、16 行没被测到。各位拉过去看一下，很可能就是某个边界条件没覆盖到。
+
+要更直观，生成 HTML 报告：
+
+```bash
+pytest --cov=src --cov-report=html
+```
+
+会在 `htmlcov/` 目录下生成网页报告。打开 `htmlcov/index.html`，每个文件点进去能看到**哪一行被测了（绿色）、哪一行没测（红色）**，特别直观。
+
+`pytest-cov` 还能写到 `pyproject.toml` 里设默认参数：
+
+```toml
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing"
+```
+
+这样以后跑 `pytest` 就自动带覆盖率报告。
+
+那覆盖率多少算合格？社区的「常识值」是这样的——
+
+- **80% 以上**：基本及格线
+- **90% 以上**：项目质量比较高
+- **100%**：理想，但通常代价很高（要测各种「不可能发生」的分支）
+
+建议是——**别死追 100%**。强追覆盖率会逼出来一堆「为了凑数而写的测试」，反而拖累项目。重点是关键业务路径、复杂逻辑、边界条件这些地方测全。覆盖率工具是用来「找漏」的，不是用来「打分」的。
+
+各位不用一上来就给老项目设 90% 的硬指标。从 50% 起步、每个 PR 守住「不下降」这条底线，长期下来项目就会越来越健壮。
+
+## pyproject.toml 里配置 pytest
+
+pytest 默认零配置就能用，但项目大了之后，几个常用配置写到 `pyproject.toml` 里能省很多事。
+
+```toml
+[tool.pytest.ini_options]
+# 测试文件去哪找
+testpaths = ["tests"]
+
+# 默认参数（每次跑 pytest 都自动加上）
+addopts = [
+    "-v",                          # 详细输出
+    "--strict-markers",            # 用了未登记的 marker 报错
+    "--cov=src",                   # 跑覆盖率
+    "--cov-report=term-missing",   # 显示未覆盖的行
+]
+
+# 自定义 marker 登记
+markers = [
+    "slow: 慢测试",
+    "db: 需要数据库的测试",
+    "network: 需要网络的测试",
+]
+
+# 最低 Python 版本
+minversion = "8.0"
+```
+
+老项目里如果是 `setup.cfg` 或 `pytest.ini`，迁移到 `pyproject.toml` 也很顺利——把 `[pytest]` 段改成 `[tool.pytest.ini_options]` 就行。pytest 8.x 之后 `pyproject.toml` 的支持已经非常成熟，新项目直接用它。
+
+## 一个完整小实战——给 Wallet 类写测试
+
+来个完整一点的例子。先看 `wallet.py`：
+
+```python
+from __future__ import annotations
+import json
+from pathlib import Path
+
+
+class InsufficientFundsError(Exception):
+    """余额不足时抛出。"""
+
+
+class Wallet:
+    """一个简单的钱包。"""
+
+    def __init__(self, initial: float = 0) -> None:
+        if initial < 0:
+            raise ValueError("初始余额不能为负数")
+        self.balance: float = initial
+
+    def deposit(self, amount: float) -> float:
+        if amount <= 0:
+            raise ValueError("存入金额必须大于 0")
+        self.balance += amount
+        return self.balance
+
+    def withdraw(self, amount: float) -> float:
+        if amount <= 0:
+            raise ValueError("取出金额必须大于 0")
+        if amount > self.balance:
+            raise InsufficientFundsError(
+                f"余额不足：当前 {self.balance}，想取 {amount}"
+            )
+        self.balance -= amount
+        return self.balance
+
+    def can_afford(self, price: float) -> bool:
+        return self.balance >= price
+
+    def save(self, path: Path) -> None:
+        path.write_text(
+            json.dumps({"balance": self.balance}),
+            encoding="utf-8",
+        )
+
+    @classmethod
+    def load(cls, path: Path) -> Wallet:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return cls(initial=data["balance"])
+```
+
+测试 `test_wallet.py`：
+
+```python
+import json
+import pytest
+from wallet import Wallet, InsufficientFundsError
+
+
+# ---------- fixture ----------
+
+@pytest.fixture
+def empty_wallet() -> Wallet:
+    """每个测试拿一个空钱包。"""
+    return Wallet()
+
+
+@pytest.fixture
+def rich_wallet() -> Wallet:
+    """每个测试拿一个 1000 块的钱包。"""
+    return Wallet(initial=1000)
+
+
+# ---------- 初始化 ----------
+
+def test_default_balance(empty_wallet):
+    assert empty_wallet.balance == 0
+
+
+def test_init_with_money():
+    w = Wallet(initial=500)
+    assert w.balance == 500
+
+
+def test_negative_initial_raises():
+    with pytest.raises(ValueError, match="不能为负数"):
+        Wallet(initial=-1)
+
+
+# ---------- deposit ----------
+
+@pytest.mark.parametrize("amount, expected", [
+    (100, 1100),
+    (0.5, 1000.5),
+    (1, 1001),
+])
+def test_deposit(rich_wallet, amount, expected):
+    assert rich_wallet.deposit(amount) == expected
+    assert rich_wallet.balance == expected
+
+
+@pytest.mark.parametrize("bad_amount", [0, -1, -100])
+def test_deposit_invalid(empty_wallet, bad_amount):
+    with pytest.raises(ValueError, match="必须大于 0"):
+        empty_wallet.deposit(bad_amount)
+
+
+# ---------- withdraw ----------
+
+def test_withdraw_normal(rich_wallet):
+    assert rich_wallet.withdraw(300) == 700
+    assert rich_wallet.balance == 700
+
+
+def test_withdraw_too_much(rich_wallet):
+    with pytest.raises(InsufficientFundsError) as exc_info:
+        rich_wallet.withdraw(2000)
+    assert "余额不足" in str(exc_info.value)
+
+
+# ---------- can_afford ----------
+
+@pytest.mark.parametrize("price, ok", [
+    (500, True),    # 低于余额
+    (1000, True),   # 等于余额
+    (1001, False),  # 高于余额
+    (0, True),      # 0 块也买得起（边界）
+])
+def test_can_afford(rich_wallet, price, ok):
+    assert rich_wallet.can_afford(price) is ok
+
+
+# ---------- save / load 用 tmp_path ----------
+
+def test_save_and_load_roundtrip(rich_wallet, tmp_path):
+    file = tmp_path / "wallet.json"
+    rich_wallet.save(file)
+
+    assert file.exists()
+    data = json.loads(file.read_text(encoding="utf-8"))
+    assert data == {"balance": 1000}
+
+    loaded = Wallet.load(file)
+    assert loaded.balance == 1000
+```
+
+跑一下：
+
+```bash
+uv run pytest -v
+```
+
+各位数一下——一共 12 个测试函数，但是因为有参数化，**实际跑了 19 个用例**。19 个用例 0.05 秒跑完，覆盖了正常路径、边界条件、异常分支、文件 IO。
+
+这就是各位以后每写一个类、一个模块都该做的事——**功能代码 + 测试代码**像孪生兄弟一样一起出现，缺一不可。

@@ -1,0 +1,58 @@
+# ruff：一个工具替掉 black + flake8 + isort + pyupgrade
+
+> **这一章是纯阅读章节，没有练习题。**
+>
+> ruff 是命令行工具，浏览器里的 Pyodide 跑不起来。这一章我们把概念、用法、配置讲清楚，各位在自己本地装好 Python 环境之后实际跑一遍就能掌握。
+
+各位还记不记得 2022 年那会儿，开一个 Python 新项目，光「保证代码风格统一」这件事就要装一堆东西：
+
+- `black`：自动格式化代码，管缩进、换行、引号
+- `flake8`：检查语法错误、未使用变量、命名不规范
+- `isort`：把 `import` 语句按字母顺序、按分组重新排列
+- `pyupgrade`：把老语法升级到新版本，比如 `Dict[str, int]` 改成 `dict[str, int]`
+- `pydocstyle`：检查 docstring 写得规不规范
+- `bandit`：扫一扫有没有安全漏洞
+
+六个工具，六份配置文件，六套规则，每个工具自己装一遍，CI 上每个跑一遍，commit 之前每个调一遍。配一个新项目的 lint 流水线，光研究这些工具怎么互相不打架就能花掉半天。
+
+直到 2022 年底，Astral 公司——就是上一章那个写 `uv` 的 Astral——丢出来一个叫 `ruff` 的东西。这家公司有个特点：用 Rust 重写 Python 工具链，并且**比原版快 10 到 100 倍**。
+
+ruff 一上来就把 flake8、isort、pyupgrade、pydocstyle、bandit 这些工具的规则一口气全实现了，后来又补上了 `format` 子命令，把 black 的功能也吃掉了。一个二进制文件，一份配置，一套命令。
+
+到 2024 年，ruff 已经是 Python 社区的事实标准，Pandas、FastAPI、Pydantic、Hugging Face Transformers、Apache Airflow 都换了过去。到 2026 年的今天，各位开新项目，几乎不会再有人推荐用 `flake8 + black + isort` 这套老组合了。
+
+这一章学完之后，各位应该能：
+
+1. 在新项目里五分钟内配好 ruff
+2. 看懂别人 `pyproject.toml` 里那一坨 `[tool.ruff]` 配置
+3. 把 ruff 接进 pre-commit、CI、编辑器
+4. 把老项目从 `black + flake8 + isort` 平滑迁移过来
+
+## 老办法到底烦在哪
+
+先回忆一下老办法是怎么个用法。一个比较「正经」的项目，根目录下通常会出现这些配置：
+
+```
+my-project/
+├── pyproject.toml         # 部分工具的配置
+├── setup.cfg              # flake8 必须放这里（或单独的 .flake8）
+├── .flake8                # flake8 配置（可选）
+├── .isort.cfg             # isort 配置（可选）
+├── .pre-commit-config.yaml
+└── ...
+```
+
+每个工具有自己偏好的配置文件位置：
+
+- black 看 `pyproject.toml` 的 `[tool.black]`
+- flake8 死活不支持 `pyproject.toml`，只能用 `.flake8` 或 `setup.cfg`
+- isort 可以放 `pyproject.toml`、`.isort.cfg`、`setup.cfg`，看心情
+- pyupgrade 没配置文件，全靠命令行参数
+
+这就埋了第一个坑——**配置散落各处**，新人接手项目，光找配置文件就要找半天。
+
+第二个坑是**工具之间会打架**。最经典的就是 black 和 flake8 冲突。black 默认行宽 88 字符，flake8 默认行宽 79 字符。两个不调一致，black 格式化完，flake8 就报 `E501 line too long`。
+
+isort 和 black 也会打架。isort 默认按某种风格排 `import`，black 不一定接受，要给 isort 加上 `--profile black` 才能一致。
+
+第三个坑是**慢**。一个中型项目，跑 `flake8 .` 几秒到几十秒；跑 `black .` 几秒到十几秒；跑 `isort .` 也要几秒。CI 上串起来跑一遍，几十秒就没了。本地保存文件时想跑一遍 lint，慢到没法接进编辑器。

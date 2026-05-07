@@ -1,0 +1,97 @@
+# 三、推导式（Comprehension）
+
+Python 写「从一组数据生成另一组数据」这件事，有专门的优雅写法——**推导式**。
+
+## 1、列表推导式
+
+写一个「把 `nums` 里所有正数挑出来」的需求。老写法：
+
+```python
+nums = [-2, 1, -3, 4, 0, -5, 6]
+positives = []
+for x in nums:
+    if x > 0:
+        positives.append(x)
+print(positives)
+```
+
+输出：
+
+```
+[1, 4, 6]
+```
+
+四行——其实就是说一句话：「把 nums 里 x > 0 的 x 收集成一个列表」。
+
+列表推导式直接把这句话翻译成代码：
+
+```python
+nums = [-2, 1, -3, 4, 0, -5, 6]
+positives = [x for x in nums if x > 0]
+print(positives)
+```
+
+输出一样：
+
+```
+[1, 4, 6]
+```
+
+读法：「**把 `x` 收集起来，对每个 `x` 来自 `nums`，且 `x > 0`**」。
+
+## 2、推导式的通用结构
+
+```
+[表达式 for 变量 in 可迭代对象 if 条件]
+```
+
+- **表达式**：每个元素被收集前要做什么变换（不变换就直接写变量名）
+- **for ... in**：遍历哪个序列
+- **if**：可选过滤条件，不需要就省掉
+
+举几个例子：
+
+```python
+# 把每个数字平方
+[x * x for x in [1, 2, 3, 4]]   # [1, 4, 9, 16]
+
+# 全部转大写
+[s.upper() for s in ['ab', 'cd']]  # ['AB', 'CD']
+
+# 偶数的平方
+[x * x for x in range(10) if x % 2 == 0]  # [0, 4, 16, 36, 64]
+```
+
+## 3、字典推导式
+
+把一个字典的所有值翻倍，老写法：
+
+```python
+prices = {'apple': 5, 'banana': 3, 'cherry': 10}
+doubled = {}
+for k, v in prices.items():
+    doubled[k] = v * 2
+print(doubled)
+```
+
+字典推导式：
+
+```python
+prices = {'apple': 5, 'banana': 3, 'cherry': 10}
+doubled = {k: v * 2 for k, v in prices.items()}
+print(doubled)
+```
+
+结构：`{键: 值 for 变量 in 可迭代对象}`。
+
+## 4、什么时候不要用推导式
+
+推导式很爽，但**不是越短越好**。如果一行推导式塞了：
+
+- 多重 `for` 循环
+- 复杂的条件判断
+- 复杂的表达式
+
+那就停下来——回到老老实实的 `for` 循环。一行写不下、要拐三个弯的推导式，比四行 for 循环难读多了。
+
+记住这个标准：**一眼能读懂——用推导式；要停下来翻译——用 for 循环**。

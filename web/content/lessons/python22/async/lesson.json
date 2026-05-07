@@ -1,0 +1,18 @@
+{
+  "id": "async",
+  "title": "async / await",
+  "chapter": "python22",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-coroutine-basics.mdx" },
+    { "kind": "exercise", "file": "01-hello.json" },
+    { "kind": "step", "file": "03-await-and-sleep.mdx" },
+    { "kind": "exercise", "file": "02-sleep-order.json" },
+    { "kind": "step", "file": "04-gather.mdx" },
+    { "kind": "exercise", "file": "03-gather-two.json" },
+    { "kind": "exercise", "file": "04-gather-fetch.json" },
+    { "kind": "step", "file": "05-when-to-use.mdx" }
+  ]
+}

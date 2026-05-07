@@ -1,0 +1,15 @@
+{
+  "id": "03-dict-modify",
+  "title": "新增 + 修改",
+  "prompt": "已经给你定义了：\n```python\nscores = {'语文': 90, '数学': 85}\n```\n\n请：\n\n1. 新增一项 `'英语': 78`\n2. 把 `'数学'` 的分数改成 `92`\n3. `print(scores)`\n\n输出应该是：\n```\n{'语文': 90, '数学': 92, '英语': 78}\n```",
+  "starterCode": "scores = {'语文': 90, '数学': 85}\n# 1. 新增 scores['英语'] = 78\n# 2. 修改 scores['数学'] = 92\n# 3. print(scores)\n",
+  "solution": "scores = {'语文': 90, '数学': 85}\nscores['英语'] = 78\nscores['数学'] = 92\nprint(scores)",
+  "grading": {
+    "varsEqual": { "scores": { "语文": 90, "数学": 92, "英语": 78 } },
+    "stdoutEquals": "{'语文': 90, '数学': 92, '英语': 78}\n"
+  },
+  "hints": [
+    "新增和修改都是 dict[key] = value——key 不存在就新增，存在就覆盖",
+    "完整代码：\nscores['英语'] = 78\nscores['数学'] = 92\nprint(scores)"
+  ]
+}

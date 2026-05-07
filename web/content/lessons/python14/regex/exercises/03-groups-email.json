@@ -1,0 +1,16 @@
+{
+  "id": "03-groups-email",
+  "title": "用分组提取邮箱的用户名和域名",
+  "prompt": "已知字符串 `email = 'alice@example.com'`。\n\n请用 `re.match` + 分组 `(...)`，把**用户名**和**域名**分别抽出来，依次 `print`。\n\n要求：\n- 第 1 个分组匹配用户名（`@` 之前的部分）\n- 第 2 个分组匹配域名（`@` 之后的部分）\n- 用 `m.group(1)` 取用户名，`m.group(2)` 取域名\n\n输出应该是：\n```\nalice\nexample.com\n```\n\n提示：可以用正则 `(\\w+)@(\\w+\\.\\w+)`。",
+  "starterCode": "import re\n\nemail = 'alice@example.com'\n# m = re.match(...)\n# print(m.group(1))\n# print(m.group(2))\n",
+  "solution": "import re\n\nemail = 'alice@example.com'\nm = re.match(r'(\\w+)@(\\w+\\.\\w+)', email)\nprint(m.group(1))\nprint(m.group(2))",
+  "grading": {
+    "stdoutEquals": "alice\nexample.com\n",
+    "requiredAst": ["Import:re"]
+  },
+  "hints": [
+    "分组就是把想抽出来的部分用 () 包起来",
+    "`\\.` 匹配字面意义的点；不加反斜杠 `.` 是任意字符",
+    "完整代码：\nimport re\nemail = 'alice@example.com'\nm = re.match(r'(\\w+)@(\\w+\\.\\w+)', email)\nprint(m.group(1))\nprint(m.group(2))"
+  ]
+}

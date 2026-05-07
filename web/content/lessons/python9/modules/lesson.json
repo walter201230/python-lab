@@ -1,0 +1,19 @@
+{
+  "id": "modules",
+  "title": "模块",
+  "chapter": "python9",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-intro.mdx" },
+    { "kind": "step", "file": "03-import.mdx" },
+    { "kind": "exercise", "file": "01-import-math.json" },
+    { "kind": "exercise", "file": "02-from-import.json" },
+    { "kind": "step", "file": "04-main.mdx" },
+    { "kind": "step", "file": "05-package-scope.mdx" },
+    { "kind": "step", "file": "06-stdlib.mdx" },
+    { "kind": "exercise", "file": "03-datetime.json" },
+    { "kind": "exercise", "file": "04-json.json" }
+  ]
+}

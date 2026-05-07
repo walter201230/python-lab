@@ -1,0 +1,201 @@
+# 参数化与标记
+
+## 参数化——同一个测试跑多组数据
+
+各位写测试时是不是经常这样：
+
+```python
+def test_add_positive():
+    assert add(2, 3) == 5
+
+
+def test_add_negative():
+    assert add(-1, -2) == -3
+
+
+def test_add_zero():
+    assert add(0, 0) == 0
+
+
+def test_add_mixed():
+    assert add(-5, 10) == 5
+```
+
+测一个加法，写四个函数，函数体几乎一模一样，只是数据不同。重复啊重复。
+
+pytest 的参数化（`@pytest.mark.parametrize`）能把它压成一个：
+
+```python
+import pytest
+
+
+@pytest.mark.parametrize("a, b, expected", [
+    (2, 3, 5),
+    (-1, -2, -3),
+    (0, 0, 0),
+    (-5, 10, 5),
+])
+def test_add(a, b, expected):
+    assert add(a, b) == expected
+```
+
+跑出来 pytest 会把它当成 4 个独立测试：
+
+```
+test_mymath.py::test_add[2-3-5] PASSED
+test_mymath.py::test_add[-1--2--3] PASSED
+test_mymath.py::test_add[0-0-0] PASSED
+test_mymath.py::test_add[-5-10-5] PASSED
+```
+
+挂了哪一组、过了哪一组，一目了然。
+
+参数化的语法两个要点：
+
+1. 第一个参数是字符串，写**测试函数要接收的参数名**，多个用逗号分隔
+2. 第二个参数是列表，每一项是一组测试数据（参数顺序跟第一个字符串对应）
+
+每组数据还能起个名字，方便看输出：
+
+```python
+@pytest.mark.parametrize("a, b, expected", [
+    pytest.param(2, 3, 5, id="正数相加"),
+    pytest.param(-1, -2, -3, id="负数相加"),
+    pytest.param(0, 0, 0, id="零相加"),
+])
+def test_add(a, b, expected):
+    assert add(a, b) == expected
+```
+
+跑起来：
+
+```
+test_mymath.py::test_add[正数相加] PASSED
+test_mymath.py::test_add[负数相加] PASSED
+test_mymath.py::test_add[零相加] PASSED
+```
+
+各位用中文给 case 起名也完全没问题，看起来更直观。
+
+参数化还能堆——多个 `@pytest.mark.parametrize` 叠加，会自动算笛卡尔积：
+
+```python
+@pytest.mark.parametrize("x", [1, 2, 3])
+@pytest.mark.parametrize("y", [10, 20])
+def test_combo(x, y):
+    print(x, y)
+```
+
+跑出来一共 `3 × 2 = 6` 个用例：`(1,10) (1,20) (2,10) (2,20) (3,10) (3,20)`。
+
+参数化是 pytest 最杀手锏的功能之一，**能用参数化就尽量用，别复制粘贴写一堆相似的测试**。
+
+## 跳过和标记——挑着跑测试
+
+写测试时，各位经常会遇到这种场景：
+
+- 这个测试只在 Linux 上能跑，Windows 上没法跑
+- 这个测试只对 Python 3.11+ 有效
+- 这个测试很慢（要十几秒），平时不想跑，CI 才跑
+- 这个测试还在写，先标个「待办」
+
+pytest 的解法是「mark」（标记）系统。
+
+### skip——直接跳过
+
+```python
+import pytest
+
+
+@pytest.mark.skip(reason="这个还没实现完")
+def test_new_feature():
+    assert do_something() == "expected"
+```
+
+跑起来 pytest 会显示一个 `s`：
+
+```
+test_demo.py s                                                           [100%]
+================== 1 skipped in 0.01s ==================
+```
+
+测试不会执行，也不会算失败。
+
+### skipif——条件跳过
+
+```python
+import sys
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Windows 上不支持")
+def test_unix_specific():
+    assert "/usr/bin" in PATH
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="需要 Python 3.11+")
+def test_exception_group():
+    pass
+```
+
+第一个参数是表达式，为 True 就跳过。
+
+### xfail——预期失败
+
+有些测试目前过不了，但又不想完全跳过。比如某个 bug 还没修，想让测试存在着提醒大家。
+
+```python
+@pytest.mark.xfail(reason="bug #42 还没修")
+def test_buggy_feature():
+    assert buggy_function() == "expected"
+```
+
+xfail 的逻辑是「我预期它会挂」：
+
+- 如果挂了：算 PASS（符合预期）
+- 如果意外通过了：算 XPASS（提醒你 bug 可能修好了）
+
+### 自定义 marker——给测试分类
+
+各位有时候想给测试分类。比如「慢测试」「需要数据库的测试」「网络测试」。
+
+```python
+@pytest.mark.slow
+def test_big_data():
+    process_one_million_rows()
+
+
+@pytest.mark.db
+def test_query_user():
+    pass
+
+
+@pytest.mark.network
+def test_fetch_api():
+    pass
+```
+
+然后命令行用 `-m` 挑着跑：
+
+```bash
+# 只跑慢测试
+pytest -m slow
+
+# 跑除了慢测试以外的
+pytest -m "not slow"
+
+# 跑慢测试或网络测试
+pytest -m "slow or network"
+```
+
+自定义 marker 用之前要先在配置里登记一下，不然 pytest 会警告。在 `pyproject.toml` 里：
+
+```toml
+[tool.pytest.ini_options]
+markers = [
+    "slow: 慢测试（耗时 > 1 秒）",
+    "db: 需要数据库的测试",
+    "network: 需要网络的测试",
+]
+```
+
+这样写好处有两个——一是消除警告，二是新人来看 `pyproject.toml` 就知道项目里都有哪些测试分类。

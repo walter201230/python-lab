@@ -1,0 +1,87 @@
+# 三、自定义类型、@unique、auto()
+
+## 1、值可以是任意类型
+
+`Enum` 成员的值不一定要是数字，字符串、元组、对象都行：
+
+```python
+from enum import Enum
+
+class Month(Enum):
+    Jan = 'January'
+    Feb = 'February'
+    Mar = 'March'
+    # ...
+    Dec = 'December'
+
+print(Month.Jan)         # Month.Jan
+print(Month.Jan.name)    # 'Jan'
+print(Month.Jan.value)   # 'January'
+```
+
+## 2、@unique：禁止重复值
+
+默认情况下，Enum **允许** 多个成员有相同的值——后定义的会变成前面的别名。
+
+```python
+from enum import Enum
+
+class Color(Enum):
+    RED = 1
+    SCARLET = 1   # 不报错，SCARLET 成了 RED 的别名
+
+print(Color.SCARLET is Color.RED)   # True
+```
+
+如果你不想这样，加上 `@unique` 装饰器，就强制每个值唯一，重复时直接抛错：
+
+```python
+from enum import Enum, unique
+
+@unique
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+    # SCARLET = 1   ← 加上这一行就会 ValueError
+```
+
+## 3、auto()：让 Python 自动给值
+
+成员太多、又不在乎具体的值是几？用 `auto()` 让 Python 自动分配：
+
+```python
+from enum import Enum, auto
+
+class Weekday(Enum):
+    MON = auto()
+    TUE = auto()
+    WED = auto()
+    THU = auto()
+    FRI = auto()
+    SAT = auto()
+    SUN = auto()
+
+print(Weekday.MON.value)   # 1
+print(Weekday.SUN.value)   # 7
+```
+
+`auto()` 默认从 1 开始递增。需要自定义起始值或步长，可以重写 `_generate_next_value_` 方法（进阶用法，先跳过）。
+
+## 4、IntEnum / StrEnum
+
+如果希望 Enum 成员 **同时是 int**（可以参与算术运算、可以和 int 比大小），用 `IntEnum`：
+
+```python
+from enum import IntEnum
+
+class Priority(IntEnum):
+    LOW = 1
+    MID = 5
+    HIGH = 10
+
+print(Priority.LOW < Priority.HIGH)   # True
+print(Priority.MID + 1)               # 6
+```
+
+`StrEnum`（Python 3.11+）是同理的字符串版本。

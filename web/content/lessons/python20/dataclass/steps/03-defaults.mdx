@@ -1,0 +1,140 @@
+# 二、默认值与 field()
+
+跟普通函数参数一样，dataclass 字段也能有默认值：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Employee:
+    name: str
+    dept: str = '研发部'
+    salary: int = 8000
+
+
+e1 = Employee('两点水')
+e2 = Employee('小明', '设计部', 15000)
+print(e1)
+print(e2)
+```
+
+输出：
+
+```
+Employee(name='两点水', dept='研发部', salary=8000)
+Employee(name='小明', dept='设计部', salary=15000)
+```
+
+有没有注意到，跟函数参数一个道理——「带默认值的字段」必须放在「不带默认值的字段」后面。下面这种写法，Python 会直接拍死：
+
+```python
+@dataclass
+class BadOrder:
+    qty: int = 1
+    name: str   # 错！没默认值的字段不能跟在有默认值的后面
+```
+
+报错：
+
+```
+TypeError: non-default argument 'name' follows default argument
+```
+
+## 可变默认值的坑
+
+那如果默认值是一个「可变对象」呢？比如默认值是个空列表：
+
+```python
+@dataclass
+class Team:
+    name: str
+    members: list = []   # 直接报错
+```
+
+报错：
+
+```
+ValueError: mutable default <class 'list'> for field members is not allowed: use default_factory
+```
+
+Python 这次是个负责任的爹，直接把你拦在门外。为啥不让你写？因为如果允许，所有 `Team` 实例都会共享同一个 `members` 列表，往一个里 append，所有实例的 `members` 都会跟着变。这是 Python 一个非常老的坑了，老到 dataclass 设计的时候直接把这条路堵死。
+
+## 解法：field(default_factory=...)
+
+`field()` 是 `dataclasses` 模块里另一个主角。它专门用来给字段做更细的配置。最常见的用法就是「可变默认值」：
+
+```python
+from dataclasses import dataclass, field
+
+
+@dataclass
+class Team:
+    name: str
+    members: list = field(default_factory=list)
+
+
+t1 = Team('A 队')
+t2 = Team('B 队')
+t1.members.append('两点水')
+print(t1)
+print(t2)
+```
+
+输出：
+
+```
+Team(name='A 队', members=['两点水'])
+Team(name='B 队', members=[])
+```
+
+`default_factory=list` 的意思是：「每次创建实例的时候，调一下 `list()`，拿一个全新的空列表当默认值」。这样两个实例就各持一份自己的列表，互不干扰。
+
+`default_factory` 还能接任何「无参数可调用对象」。比如：
+
+```python
+from dataclasses import dataclass, field
+
+
+@dataclass
+class Counter:
+    name: str
+    counts: dict = field(default_factory=dict)
+    tags: set = field(default_factory=set)
+    history: list = field(default_factory=lambda: ['初始记录'])
+
+
+c = Counter('点击计数')
+print(c)
+```
+
+输出：
+
+```
+Counter(name='点击计数', counts={}, tags=set(), history=['初始记录'])
+```
+
+最后一个 `history` 是 `default_factory=lambda: ['初始记录']`。这种「每次都返回一个有初始值的列表」也是常见用法。
+
+## field() 还能干什么
+
+`field()` 还有几个常用参数：
+
+```python
+from dataclasses import dataclass, field
+
+
+@dataclass
+class Product:
+    name: str
+    price: float
+    discount: float = field(default=0.0)             # 跟 = 0.0 等价，但写法更显式
+    tags: list = field(default_factory=list)         # 可变默认值
+    internal_id: str = field(repr=False, default='') # 不在 repr 里显示
+    cache: dict = field(default_factory=dict, compare=False)  # 不参与 == 比较
+```
+
+挑两个最有用的讲讲：
+
+- `repr=False`：这个字段不会出现在 `repr` 里。适合放敏感信息（密码、token）或者你不想被打印出来污染日志的内部状态
+- `compare=False`：这个字段不参与 `__eq__` 比较。适合放那种「不影响业务身份」的辅助字段，比如缓存、临时计数器

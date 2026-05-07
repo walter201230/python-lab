@@ -1,0 +1,14 @@
+{
+  "id": "02-dict-access",
+  "title": "按 key 取值",
+  "prompt": "已经给你定义了：\n```python\nscores = {'语文': 90, '数学': 85, '英语': 78}\n```\n\n请用 `print` 打印 `数学` 这一科的分数（用 `scores['数学']`）。\n\n输出应该是：\n```\n85\n```",
+  "starterCode": "scores = {'语文': 90, '数学': 85, '英语': 78}\n# 用 scores['数学'] 取出分数并 print\n",
+  "solution": "scores = {'语文': 90, '数学': 85, '英语': 78}\nprint(scores['数学'])",
+  "grading": {
+    "stdoutEquals": "85\n"
+  },
+  "hints": [
+    "用 dict[key] 的形式取值",
+    "完整代码：print(scores['数学'])"
+  ]
+}

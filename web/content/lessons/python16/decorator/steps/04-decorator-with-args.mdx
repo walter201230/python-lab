@@ -1,0 +1,106 @@
+# 三、带参数的装饰器与 functools.wraps
+
+## 1、装饰器自己也想带参数
+
+有时我们希望**装饰器本身也接受参数**——比如「日志带级别」：
+
+```python
+@log(level='INFO')
+def hello():
+    print('hi')
+```
+
+这就需要**三层嵌套**：
+
+- 最外层接收装饰器参数
+- 中间层接收原函数
+- 最内层是真正的 wrapper
+
+代码模板如下：
+
+```python
+def log(level):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            print(f'[{level}] 开始执行')
+            result = func(*args, **kwargs)
+            print(f'[{level}] 执行结束')
+            return result
+        return wrapper
+    return decorator
+
+
+@log(level='INFO')
+def hello():
+    print('hi')
+
+
+hello()
+```
+
+输出：
+
+```
+[INFO] 开始执行
+hi
+[INFO] 执行结束
+```
+
+理解三层结构的关键：`@log(level='INFO')` 先调用 `log('INFO')`，得到中间那个 `decorator`，再用它去装饰 `hello`。所以本质上还是「decorator(hello)」——只不过 `decorator` 是临时生成的、带着 `level` 这个闭包变量。
+
+## 2、functools.wraps 保留元信息
+
+装饰器有一个副作用：装饰之后，原函数的 `__name__`、`__doc__` 都会被替换成 `wrapper` 的：
+
+```python
+def decorator(func):
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+
+@decorator
+def hello():
+    """打个招呼"""
+    print('hi')
+
+
+print(hello.__name__)   # wrapper —— 不是 hello！
+print(hello.__doc__)    # None —— 文档丢了！
+```
+
+调试时这很烦人。解决办法是用 `functools.wraps` 把原函数的元信息抄过来：
+
+```python
+import functools
+
+
+def decorator(func):
+    @functools.wraps(func)            # 关键这一行
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+
+@decorator
+def hello():
+    """打个招呼"""
+    print('hi')
+
+
+print(hello.__name__)   # hello
+print(hello.__doc__)    # 打个招呼
+```
+
+> **写装饰器时，给 wrapper 函数加 `@functools.wraps(func)` 是一个好习惯**——它把原函数的名字、文档、签名等信息保留下来，调试和文档生成时都不会出问题。
+
+## 3、小结
+
+回顾这一章学到的：
+
+- 装饰器 = **闭包 + @ 语法糖**——不改原函数、不改调用方式给函数加功能
+- wrapper 用 `*args, **kwargs` 接所有参数；有返回值要 return
+- 带参数的装饰器 = **三层嵌套**
+- 别忘了 `@functools.wraps`
+
+接下来在练习里动手写几个常用装饰器吧。

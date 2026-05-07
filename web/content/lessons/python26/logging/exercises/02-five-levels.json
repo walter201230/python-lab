@@ -1,0 +1,15 @@
+{
+  "id": "02-five-levels",
+  "title": "5 个日志级别",
+  "prompt": "starterCode 已经把日志级别调到 `DEBUG`（最低级别，所有日志都显示）。\n\n请按顺序调用 5 个级别：\n\n1. `logging.debug('调试')`\n2. `logging.info('信息')`\n3. `logging.warning('警告')`\n4. `logging.error('错误')`\n5. `logging.critical('致命')`\n\n输出应该是：\n```\nDEBUG:调试\nINFO:信息\nWARNING:警告\nERROR:错误\nCRITICAL:致命\n```",
+  "starterCode": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.DEBUG,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\n# TODO: 按 debug → info → warning → error → critical 顺序打印\n",
+  "solution": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.DEBUG,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogging.debug('调试')\nlogging.info('信息')\nlogging.warning('警告')\nlogging.error('错误')\nlogging.critical('致命')",
+  "grading": {
+    "stdoutEquals": "DEBUG:调试\nINFO:信息\nWARNING:警告\nERROR:错误\nCRITICAL:致命\n"
+  },
+  "hints": [
+    "level=logging.DEBUG 让所有级别都打出来",
+    "顺序：debug → info → warning → error → critical",
+    "完整代码：5 个 logging.xxx 调用"
+  ]
+}

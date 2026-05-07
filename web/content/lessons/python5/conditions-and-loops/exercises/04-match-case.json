@@ -1,0 +1,15 @@
+{
+  "id": "04-match-case",
+  "title": "match / case：处理指令",
+  "prompt": "已经给你定义了 `command = 'pause'`。\n\n请用 `match / case` 按下面规则 `print`：\n\n- `'start'` → `'启动'`\n- `'stop'` → `'停止'`\n- `'pause'` → `'暂停'`\n- 其它 → `'未知指令'`\n\n输出应该是：\n```\n暂停\n```",
+  "starterCode": "command = 'pause'\n# match command:\n#     case 'start': print('启动')\n#     case ...:\n",
+  "solution": "command = 'pause'\nmatch command:\n    case 'start':\n        print('启动')\n    case 'stop':\n        print('停止')\n    case 'pause':\n        print('暂停')\n    case _:\n        print('未知指令')",
+  "grading": {
+    "stdoutEquals": "暂停\n"
+  },
+  "hints": [
+    "match 后面是要匹配的变量；每个 case 后面是要匹配的值",
+    "case _ 是兜底，相当于 else",
+    "需要 Python 3.10+（咱们的 Pyodide 是 3.12，没问题）"
+  ]
+}

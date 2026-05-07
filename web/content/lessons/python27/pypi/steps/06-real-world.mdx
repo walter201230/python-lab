@@ -1,0 +1,259 @@
+# 实战：todo-cli 从零到发布
+
+跟着写一个完整的 todo-cli 工具，最后发到 PyPI（演练版本发到 TestPyPI）。这个工具支持三个命令——
+
+- `todo-cli add "买菜"`：添加一项 todo
+- `todo-cli list`：列出所有 todo
+- `todo-cli done 1`：标记第 1 项完成
+
+数据存在用户家目录下的 `~/.todo-cli.json`，最简单的本地存储。
+
+## 第一步：起项目骨架
+
+```bash
+uv init --package todo-cli
+cd todo-cli
+uv add typer
+```
+
+uv 自动生成 `src/todo_cli/__init__.py`。我们再加一个文件 `src/todo_cli/cli.py`。
+
+## 第二步：实现核心逻辑
+
+```python
+import json
+from pathlib import Path
+
+import typer
+
+app = typer.Typer(help="两点水的小型 todo 工具")
+
+DATA_FILE = Path.home() / ".todo-cli.json"
+
+
+def load_todos() -> list[dict]:
+    """读 todo 列表，文件不存在返回空 list。"""
+    if not DATA_FILE.exists():
+        return []
+    return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+
+
+def save_todos(todos: list[dict]) -> None:
+    """把 todo 列表写回文件。"""
+    DATA_FILE.write_text(
+        json.dumps(todos, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+@app.command()
+def add(item: str):
+    """添加一项 todo。"""
+    todos = load_todos()
+    todos.append({"item": item, "done": False})
+    save_todos(todos)
+    print(f"已添加：{item}")
+
+
+@app.command(name="list")
+def list_todos():
+    """列出所有 todo。"""
+    todos = load_todos()
+    if not todos:
+        print("还没有 todo，先 add 一个吧")
+        return
+    for i, t in enumerate(todos, start=1):
+        mark = "[x]" if t["done"] else "[ ]"
+        print(f"{i}. {mark} {t['item']}")
+
+
+@app.command()
+def done(index: int):
+    """把第 index 项 todo 标记为完成。"""
+    todos = load_todos()
+    if index < 1 or index > len(todos):
+        print(f"序号要在 1 到 {len(todos)} 之间")
+        raise typer.Exit(code=1)
+    todos[index - 1]["done"] = True
+    save_todos(todos)
+    print(f"已完成：{todos[index - 1]['item']}")
+
+
+if __name__ == "__main__":
+    app()
+```
+
+注意几个细节——
+
+- `list` 是 Python 内置函数，不能直接当函数名，所以函数叫 `list_todos`，但是用 `@app.command(name="list")` 把它注册成 list 命令
+- `Path.home() / ".todo-cli.json"` 用 pathlib，比 `os.path.join` 优雅
+- `typer.Exit(code=1)` 抛一个特殊异常，让 CLI 退出时返回非零退出码
+- 文件用 `encoding="utf-8"`，Windows 上中文不挂
+
+## 第三步：配置 pyproject.toml
+
+完整的 `pyproject.toml`：
+
+```toml
+[project]
+name = "todo-cli"
+version = "0.1.0"
+description = "两点水写的最小 todo 命令行工具"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "两点水", email = "liangdianshui@example.com" },
+]
+license = { file = "LICENSE" }
+dependencies = [
+    "typer>=0.12",
+]
+
+[project.scripts]
+todo-cli = "todo_cli.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+```
+
+注意 `[project.scripts]` 那一行——发包之后，用户 `pip install todo-cli`，会自动多出一个叫 `todo-cli` 的命令。
+
+## 第四步：本地装一下试试
+
+```bash
+uv pip install -e .
+todo-cli add "写完 python27"
+todo-cli add "去吃饭"
+todo-cli list
+todo-cli done 1
+todo-cli list
+```
+
+输出大概是——
+
+```
+已添加：写完 python27
+已添加：去吃饭
+1. [ ] 写完 python27
+2. [ ] 去吃饭
+已完成：写完 python27
+1. [x] 写完 python27
+2. [ ] 去吃饭
+```
+
+打开 `~/.todo-cli.json` 看看：
+
+```json
+[
+  {
+    "item": "写完 python27",
+    "done": true
+  },
+  {
+    "item": "去吃饭",
+    "done": false
+  }
+]
+```
+
+数据被持久化了，下次重启电脑，todo 还在。
+
+## 第五步：补 README 和 LICENSE
+
+`README.md`：
+
+```markdown
+# todo-cli
+
+两点水写的最小 todo 命令行工具。
+
+## 安装
+
+pip install todo-cli
+
+## 用法
+
+todo-cli add "学 typer"
+todo-cli list
+todo-cli done 1
+
+## License
+
+MIT
+```
+
+`LICENSE` 文件直接抄一份 MIT，把年份和名字改成自己的。
+
+## 第六步：构建并发到 TestPyPI
+
+```bash
+uv build
+ls dist/
+```
+
+得到——
+
+```
+dist/
+├── todo_cli-0.1.0-py3-none-any.whl
+└── todo_cli-0.1.0.tar.gz
+```
+
+发 TestPyPI 演练：
+
+```bash
+export UV_PUBLISH_TOKEN=pypi-...（TestPyPI token）
+uv publish --publish-url https://test.pypi.org/legacy/
+```
+
+成功之后，找一台干净的电脑（或者新建一个虚拟环境）测一下：
+
+```bash
+uv venv .test-env
+source .test-env/bin/activate
+pip install --index-url https://test.pypi.org/simple/ \
+    --extra-index-url https://pypi.org/simple/ \
+    todo-cli
+todo-cli --help
+```
+
+能跑就发正式 PyPI：
+
+```bash
+export UV_PUBLISH_TOKEN=pypi-...（正式 PyPI token）
+uv publish
+```
+
+打开 https://pypi.org/project/todo-cli/ ，自己的小工具上线了。这就是「全世界一行 `pip install todo-cli` 就能用」的感觉。
+
+「这个名字是 PyPI 上唯一的吗？」名字起得太常见，PyPI 上很可能已经被占用，请各位实际发包时换一个独特点的名字，比如 `todo-cli-by-walter`、`my-todo-cli` 之类。
+
+到这里，整套流程一遍走通了——从写代码、改 pyproject.toml、本地装、本地测、TestPyPI 演练、正式 PyPI 发布。
+
+## 小结
+
+一章下来，咱们把「打包发布」和「写 CLI」两件事都拿下了。回顾一下要点——
+
+**关于 PyPI**：
+
+1. **PyPI 是 Python 全球公共包仓库**，pip install 的源头
+2. **TestPyPI 是演练场**，发正式版本之前先在它上面试一遍，因为 PyPI 版本不可撤回
+3. **现代 Python 项目用 src layout + pyproject.toml**，所有元数据集中在一个文件
+4. **`[project]` 段最低必填**：name、version、description、readme、requires-python、dependencies
+5. **`[build-system]` 段写打包后端**，新项目首选 hatchling
+6. **`uv build` 一条命令打包**，生成 wheel（二进制）和 sdist（源码）
+7. **`uv publish` 一条命令上传**，靠 token 或者可信发布
+8. **版本号建议自动化**——用 hatch-vcs 从 git tag 自动算
+9. **CI 自动发包推荐用可信发布**，比 token 干净——打 tag 即发版
+
+**关于 typer**：
+
+10. **typer 用类型注解直接当 CLI 参数**，比 argparse 简洁 10 倍
+11. **`typer.run(func)` 适合单命令工具**，`Typer()` + `@app.command()` 适合多命令工具
+12. **类型即验证**——int 类型自动验证、Path 类型自动包装、Enum 类型自动限定值
+13. **没默认值是位置参数（必填），有默认值是选项参数（可选）**
+14. **`[project.scripts]` 把函数变成系统命令**，装包之后命令全局可用
+15. **docstring 自动变成命令帮助文本**，写代码就是写文档
+
+到这里，各位手里就握着一套「写工具 → 打包 → 发布 → 让全世界用上」的完整链条。下一次再想把自己的小工具分享给朋友，不用微信发 `tool.py` 了——直接说「pip install xxx」，潇洒。

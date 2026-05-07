@@ -1,0 +1,17 @@
+{
+  "id": "metaclass",
+  "title": "元类",
+  "chapter": "python12",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-type-introspection.mdx" },
+    { "kind": "exercise", "file": "01-detect-meta.json" },
+    { "kind": "step", "file": "03-type-three-args.mdx" },
+    { "kind": "exercise", "file": "02-build-greeter.json" },
+    { "kind": "step", "file": "04-custom-metaclass.mdx" },
+    { "kind": "exercise", "file": "03-custom-meta.json" },
+    { "kind": "step", "file": "05-when-to-use.mdx" }
+  ]
+}

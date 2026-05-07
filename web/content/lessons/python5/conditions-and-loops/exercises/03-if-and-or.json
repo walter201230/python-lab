@@ -1,0 +1,15 @@
+{
+  "id": "03-if-and-or",
+  "title": "and / or：联合条件",
+  "prompt": "已经给你定义了：\n```python\nage = 22\nhas_id = True\n```\n\n请用 `and` 判断：**当 `age >= 18` 而且 `has_id` 为 True**，打印 `'可以进入'`，否则打印 `'谢绝入内'`。\n\n输出应该是：\n```\n可以进入\n```",
+  "starterCode": "age = 22\nhas_id = True\n# 用 if + and 判断\n",
+  "solution": "age = 22\nhas_id = True\nif age >= 18 and has_id:\n    print('可以进入')\nelse:\n    print('谢绝入内')",
+  "grading": {
+    "stdoutEquals": "可以进入\n"
+  },
+  "hints": [
+    "两个条件都成立才行：用 and 把它们连起来",
+    "has_id 已经是 bool，直接 has_id 即可，不用 has_id == True",
+    "完整代码：\nif age >= 18 and has_id:\n    print('可以进入')\nelse:\n    print('谢绝入内')"
+  ]
+}

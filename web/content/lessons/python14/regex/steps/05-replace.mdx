@@ -1,0 +1,90 @@
+# 五、`re.sub`：基于规则替换
+
+字符串自带的 `s.replace(old, new)` 只能替换**固定子串**。如果想「按规则」替换——比如「把所有数字替换成 `*`」——就要用 `re.sub`。
+
+## 1、基本用法
+
+```python
+re.sub(pattern, repl, string, count=0)
+```
+
+| 参数 | 含义 |
+|---|---|
+| `pattern` | 正则规则 |
+| `repl` | 用来替换的字符串（或函数，见下） |
+| `string` | 原字符串 |
+| `count` | 最多替换几次（0 表示全部） |
+
+```python
+import re
+
+a = 'Python*Android*Java-888'
+
+# 把 * 替换成 &
+print(re.sub(r'\*', '&', a))
+# Python&Android&Java-888
+
+# 只替换第一个
+print(re.sub(r'\*', '&', a, count=1))
+# Python&Android*Java-888
+```
+
+## 2、最实用的例子：清洗多余空白
+
+写正则最经典的小工具——把**多个连续空白**替换成**一个空格**：
+
+```python
+import re
+
+s = 'hello   world  python  is   cool'
+print(re.sub(r'\s+', ' ', s))
+# hello world python is cool
+```
+
+`\s+` 匹配「一个或多个空白字符」。整段被替换成单个空格——多个变一个。
+
+## 3、用 lambda 做复杂替换
+
+`repl` 可以是一个**函数**——它接收 `Match` 对象，返回一个字符串作为替换值。
+
+```python
+import re
+
+a = 'Python*Android*Java-888'
+
+def convert(m):
+    g = m.group()
+    if g == '*':
+        return '&'
+    elif g == '-':
+        return '|'
+
+print(re.sub(r'[\*\-]', convert, a))
+# Python&Android&Java|888
+```
+
+或者用 lambda 简写：
+
+```python
+import re
+
+# 把所有数字翻倍
+print(re.sub(r'\d+', lambda m: str(int(m.group()) * 2), 'a1 b2 c3'))
+# a2 b4 c6
+```
+
+这是 `re.sub` 比 `str.replace` 强大的关键——你能**对每一个匹配，按它的内容动态决定**替换值。
+
+## 本节小结
+
+学完这一章，你已经掌握了：
+
+- 字符集 `[abc]`、`\d` / `\w` / `\s`、`.`
+- 量词 `?` / `+` / `*` / `{n,m}`，以及贪婪 / 非贪婪
+- `re.match` / `re.search` / `re.findall` 三个查找函数
+- 分组 `(...)` 提取片段，命名分组 `(?P<name>...)`，不捕获分组 `(?:...)`
+- `re.sub` 基于规则替换，可传函数
+
+下面去做练习，把这些工具用起来。
+
+> 正则是非常强的工具——通常用来解决字符串内置函数解决不了的问题。爬虫、数据清洗、日志分析里几乎离不开它。

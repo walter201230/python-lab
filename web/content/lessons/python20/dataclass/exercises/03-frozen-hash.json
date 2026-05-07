@@ -1,0 +1,16 @@
+{
+  "id": "03-frozen-hash",
+  "title": "frozen=True：不可变 + 可 hash",
+  "prompt": "请用 `@dataclass(frozen=True)` 定义一个 `Point` 类（字段 `x: int`、`y: int`），让它不可变同时能进 `set`。\n\n然后：\n\n```python\np1 = Point(1, 2)\np2 = Point(1, 2)\np3 = Point(3, 4)\ns = {p1, p2, p3}\nprint(len(s))\n```\n\n因为 `p1` 和 `p2` 字段值一样，被 set 当成同一个元素，所以输出应该是：\n```\n2\n```\n\n这正是 `frozen=True` 的副产品——自动生成 `__hash__`。",
+  "starterCode": "# from dataclasses import dataclass\n#\n# @dataclass(frozen=True)\n# class Point:\n#     x: int\n#     y: int\n#\n# p1 = Point(1, 2)\n# p2 = Point(1, 2)\n# p3 = Point(3, 4)\n# s = {p1, p2, p3}\n# print(len(s))\n",
+  "solution": "from dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Point:\n    x: int\n    y: int\n\np1 = Point(1, 2)\np2 = Point(1, 2)\np3 = Point(3, 4)\ns = {p1, p2, p3}\nprint(len(s))",
+  "grading": {
+    "stdoutEquals": "2\n",
+    "requiredAst": ["ClassDef:Point"]
+  },
+  "hints": [
+    "装饰器要写成 @dataclass(frozen=True)",
+    "frozen=True 会自动生成 __hash__，让对象能进 set",
+    "完整代码：\nfrom dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Point:\n    x: int\n    y: int\n\np1 = Point(1, 2)\np2 = Point(1, 2)\np3 = Point(3, 4)\ns = {p1, p2, p3}\nprint(len(s))"
+  ]
+}

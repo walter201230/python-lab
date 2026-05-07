@@ -1,0 +1,18 @@
+{
+  "id": "enum",
+  "title": "枚举类",
+  "chapter": "python11",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-why-enum.mdx" },
+    { "kind": "step", "file": "03-basic-usage.mdx" },
+    { "kind": "exercise", "file": "01-define-color.json" },
+    { "kind": "exercise", "file": "02-name-value.json" },
+    { "kind": "exercise", "file": "03-iterate.json" },
+    { "kind": "step", "file": "04-advanced.mdx" },
+    { "kind": "exercise", "file": "04-auto.json" },
+    { "kind": "step", "file": "05-comparison.mdx" }
+  ]
+}

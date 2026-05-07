@@ -1,0 +1,16 @@
+{
+  "id": "03-finally",
+  "title": "finally：清理一定要跑",
+  "prompt": "请写一个函数 `do_work(x)`：\n\n- 在 `try` 里打印 `'开始工作'`，然后执行 `10 / x`\n- 用 `except ZeroDivisionError` 捕获除零，打印 `'除数为零'`\n- 用 `finally` 打印 `'清理完成'`\n\n然后依次调用：\n\n```python\ndo_work(2)\nprint('---')\ndo_work(0)\n```\n\n输出应该是：\n```\n开始工作\n清理完成\n---\n开始工作\n除数为零\n清理完成\n```\n\n注意：`do_work(2)` 时不会触发 `except`，但 `finally` 一定会跑。",
+  "starterCode": "# def do_work(x):\n#     try:\n#         print('开始工作')\n#         10 / x\n#     except ZeroDivisionError:\n#         print('除数为零')\n#     finally:\n#         print('清理完成')\n#\n# do_work(2)\n# print('---')\n# do_work(0)\n",
+  "solution": "def do_work(x):\n    try:\n        print('开始工作')\n        10 / x\n    except ZeroDivisionError:\n        print('除数为零')\n    finally:\n        print('清理完成')\n\ndo_work(2)\nprint('---')\ndo_work(0)",
+  "grading": {
+    "stdoutEquals": "开始工作\n清理完成\n---\n开始工作\n除数为零\n清理完成\n",
+    "requiredAst": ["FunctionDef:do_work"]
+  },
+  "hints": [
+    "顺序：try → except → finally",
+    "不管成功还是失败，finally 都会执行",
+    "完整代码：\ndef do_work(x):\n    try:\n        print('开始工作')\n        10 / x\n    except ZeroDivisionError:\n        print('除数为零')\n    finally:\n        print('清理完成')\n\ndo_work(2)\nprint('---')\ndo_work(0)"
+  ]
+}

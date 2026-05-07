@@ -1,0 +1,100 @@
+# 一、第一个 dataclass
+
+把上面那个 `Employee` 类，用 `dataclass` 重写一遍：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Employee:
+    name: str
+    dept: str
+    emp_id: int
+    hire_date: str
+    salary: int
+
+
+e = Employee('两点水', '研发部', 1001, '2020-03-15', 12000)
+print(e)
+```
+
+输出：
+
+```
+Employee(name='两点水', dept='研发部', emp_id=1001, hire_date='2020-03-15', salary=12000)
+```
+
+二十多行的代码，缩成了不到十行。`@dataclass` 这个装饰器一贴，Python 就帮我们干了这些事：
+
+- 看到 `name: str`、`dept: str` 这些「带类型注解的类变量」，自动当成字段
+- 自动生成一个 `__init__`，参数顺序就是字段顺序
+- 自动生成一个 `__repr__`，长得跟咱们手写的那种「`类名(字段=值, 字段=值)`」一模一样
+- 自动生成一个 `__eq__`，按字段逐个比较
+
+整个过程，你只需要把字段名和它的类型写出来，剩下的全是 `dataclass` 在帮你干活。
+
+## 类型注解必须有
+
+那「类型注解」是不是必须的？**是的**。这是 `dataclass` 识别字段的依据。你如果只写 `name = ''` 而不写 `name: str`，`dataclass` 就认不出来——它会把 `name` 当成一个普通的类属性，不会进 `__init__` 的参数列表。
+
+记住一句话：在 `dataclass` 里，`name: str` 是「字段声明」，`name = '默认值'` 是「类属性」，两者作用截然不同。
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Demo:
+    a: int        # 这是字段，会进 __init__
+    b: int = 10   # 这是有默认值的字段，也会进 __init__
+    c = 20        # 注意：这里没有类型注解，被当成普通类属性，不会进 __init__
+
+
+d = Demo(1)
+print(d)
+print(d.c)
+```
+
+输出：
+
+```
+Demo(a=1, b=10)
+20
+```
+
+看到没？`c` 没出现在 `repr` 里，因为它根本不是一个字段，只是个挂在类上的常量。
+
+## 比较两个 dataclass 对象
+
+`dataclass` 默认会生成 `__eq__`，所以两个字段值完全相同的对象，会被判为相等：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Employee:
+    name: str
+    dept: str
+    salary: int
+
+
+a = Employee('两点水', '研发部', 12000)
+b = Employee('两点水', '研发部', 12000)
+c = Employee('两点水', '研发部', 15000)
+
+print(a == b)
+print(a == c)
+print(a is b)
+```
+
+输出：
+
+```
+True
+False
+False
+```
+
+注意第三行——`a is b` 是 `False`。`==` 比的是「字段值是否相等」，`is` 比的是「是不是同一个对象」。这两个事完全两码事，别混。

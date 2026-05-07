@@ -1,0 +1,16 @@
+{
+  "id": "03-dict-comp",
+  "title": "字典推导式：把所有价格翻倍",
+  "prompt": "已经给你一个价格表 `prices = {'apple': 5, 'banana': 3, 'cherry': 10}`。\n\n请用**字典推导式**生成一个新字典 `doubled`——所有键不变，但每个值翻倍。\n\n然后 `print(doubled)`。\n\n输出应该是：\n```\n{'apple': 10, 'banana': 6, 'cherry': 20}\n```",
+  "starterCode": "prices = {'apple': 5, 'banana': 3, 'cherry': 10}\n\n# 用字典推导式生成 doubled\n# doubled = {...}\n\n# print(doubled)\n",
+  "solution": "prices = {'apple': 5, 'banana': 3, 'cherry': 10}\ndoubled = {k: v * 2 for k, v in prices.items()}\nprint(doubled)",
+  "grading": {
+    "stdoutEquals": "{'apple': 10, 'banana': 6, 'cherry': 20}\n",
+    "requiredAst": ["DictComp"]
+  },
+  "hints": [
+    "结构是：{键: 值 for 变量 in 可迭代对象}",
+    "用 prices.items() 同时拿到键 k 和值 v",
+    "完整代码：\ndoubled = {k: v * 2 for k, v in prices.items()}\nprint(doubled)"
+  ]
+}

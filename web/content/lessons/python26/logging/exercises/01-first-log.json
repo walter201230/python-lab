@@ -1,0 +1,15 @@
+{
+  "id": "01-first-log",
+  "title": "第一条 log",
+  "prompt": "用 `logging.basicConfig` 把日志级别调到 `INFO`，再用 `logging.info` 打印 `'第一条日志'`。\n\n注意：starterCode 已经把 logging 配置成输出到 stdout 并使用 `format='%(levelname)s:%(message)s'` 简化格式，你只需写最后一行 `logging.info(...)`。\n\n输出应该是：\n```\nINFO:第一条日志\n```",
+  "starterCode": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.INFO,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\n# TODO: 用 logging.info 打印 '第一条日志'\n",
+  "solution": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.INFO,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogging.info('第一条日志')",
+  "grading": {
+    "stdoutEquals": "INFO:第一条日志\n"
+  },
+  "hints": [
+    "logging.info('内容') 是调用 root logger 打印 INFO 级别日志",
+    "格式由 basicConfig 的 format 控制，咱们已经预设成 '级别:内容'",
+    "完整代码：\nlogging.info('第一条日志')"
+  ]
+}

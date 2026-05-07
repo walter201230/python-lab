@@ -1,0 +1,18 @@
+{
+  "id": "readable-code",
+  "title": "代码可读性",
+  "chapter": "python17",
+  "order": 1,
+  "estimatedMinutes": 40,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-naming.mdx" },
+    { "kind": "step", "file": "03-early-return.mdx" },
+    { "kind": "exercise", "file": "01-early-return.json" },
+    { "kind": "step", "file": "04-comprehension.mdx" },
+    { "kind": "exercise", "file": "02-list-comp.json" },
+    { "kind": "exercise", "file": "03-dict-comp.json" },
+    { "kind": "step", "file": "05-type-hints.mdx" },
+    { "kind": "exercise", "file": "04-type-hints.json" }
+  ]
+}

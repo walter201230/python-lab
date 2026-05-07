@@ -1,0 +1,15 @@
+{
+  "id": "05-tuple-create",
+  "title": "单元素 tuple 的逗号陷阱",
+  "prompt": "请创建一个**只有一个元素** `42` 的元组 `t`，然后 `print(t)`。\n\n注意：单元素的 tuple **必须**在元素后面加逗号 —— `(42,)` 才是 tuple，`(42)` 是数字 42。\n\n输出应该是：\n```\n(42,)\n```",
+  "starterCode": "# 单元素 tuple 必须加逗号\n",
+  "solution": "t = (42,)\nprint(t)",
+  "grading": {
+    "stdoutEquals": "(42,)\n"
+  },
+  "hints": [
+    "(42) 是一个数字表达式，不是 tuple",
+    "(42,) 才是 tuple — 注意逗号",
+    "完整代码：\nt = (42,)\nprint(t)"
+  ]
+}

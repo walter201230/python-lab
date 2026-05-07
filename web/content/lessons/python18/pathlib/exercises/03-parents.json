@@ -1,0 +1,16 @@
+{
+  "id": "03-parents",
+  "title": "拿父目录和祖先目录",
+  "prompt": "已经给你 `p = Path('/a/b/c/d.txt')`。\n\n请：\n\n1. `print(p.parent)` —— 一级父目录\n2. `print(p.parents[1])` —— 二级祖先\n\n输出应该是：\n```\n/a/b/c\n/a/b\n```\n\n注意：`.parent` 是属性（不带括号），`.parents[i]` 是序列下标——`[0]` 是直接父目录、`[1]` 是再上一层。",
+  "starterCode": "from pathlib import Path\n\np = Path('/a/b/c/d.txt')\n\n# print(p.parent)\n# print(p.parents[1])\n",
+  "solution": "from pathlib import Path\n\np = Path('/a/b/c/d.txt')\nprint(p.parent)\nprint(p.parents[1])",
+  "grading": {
+    "stdoutEquals": "/a/b/c\n/a/b\n",
+    "requiredAst": ["ImportFrom"]
+  },
+  "hints": [
+    ".parent 跟 .parents[0] 等价——都是直接父目录",
+    ".parents[1] 是 .parent.parent，再往上一层",
+    "完整代码：\nprint(p.parent)\nprint(p.parents[1])"
+  ]
+}

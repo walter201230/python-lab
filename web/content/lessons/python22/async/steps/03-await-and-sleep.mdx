@@ -1,0 +1,105 @@
+# 二、`asyncio.sleep`：模拟「等」
+
+真实场景里，协程主要在等什么？答案是 IO——等网络包、等磁盘、等数据库。
+
+浏览器里咱们没法发真请求，但可以用 `asyncio.sleep` 模拟「等」的过程，行为完全等价：
+
+```python
+import asyncio
+
+async def task():
+    print('开始')
+    await asyncio.sleep(0.01)   # 模拟 IO 等待
+    print('结束')
+
+asyncio.run(task())
+```
+
+输出：
+
+```
+开始
+结束
+```
+
+注意中间那行——**`await asyncio.sleep(0.01)`**。这就是协程的「等待点」：执行到这一句时，协程会告诉事件循环「我要等 0.01 秒，这段时间你随便调度别人」，然后让出 CPU。
+
+## 串行 await：一行接一行
+
+只要把 `await` 一个接一个写下来，多个协程就是**串行**执行的——前一个跑完，后一个才开始：
+
+```python
+import asyncio
+
+async def step(name):
+    print(f'{name} 开始')
+    await asyncio.sleep(0)
+    print(f'{name} 结束')
+
+async def main():
+    await step('A')
+    await step('B')
+
+asyncio.run(main())
+```
+
+输出：
+
+```
+A 开始
+A 结束
+B 开始
+B 结束
+```
+
+`await step('A')` 的意思是「等 A 跑完，再继续」。所以 B 一定排在 A 后面。
+
+> 划重点：**`async/await` 不会自动并发**。一个 `await` 接一个 `await`，本质上是按顺序跑的。
+
+## 「忘了 await」的经典坑
+
+异步编程最经典的陷阱是**调了协程函数但没 `await`**：
+
+```python
+import asyncio
+
+async def task():
+    print('我跑了吗？')
+
+async def main():
+    task()              # ← 漏了 await！
+    print('main 跑完了')
+
+asyncio.run(main())
+```
+
+输出：
+
+```
+main 跑完了
+```
+
+`'我跑了吗？'` 根本没打印——`task()` 只是创建了一个协程对象就被丢掉了，里面的代码一行都没跑。同步世界里写函数名加括号就等于执行；异步世界里，**没 `await` 的协程等于没写**。
+
+正确写法当然是 `await task()`。
+
+## 阻塞坑：`time.sleep` 不能用
+
+最后一条铁律。在 `async` 函数里，**绝对不要用 `time.sleep`**：
+
+```python
+import time
+
+async def task():
+    time.sleep(0.5)   # 这里把整个事件循环卡死了
+```
+
+`time.sleep` 是同步阻塞的——调用时不会让出 CPU。整个事件循环会被卡住，所有协程一起停。
+
+| 同步（阻塞，禁用）  | 异步（替代品）          |
+|---------------------|-------------------------|
+| `time.sleep(s)`     | `await asyncio.sleep(s)` |
+| `requests.get(...)` | `await httpx.AsyncClient().get(...)` |
+| `open(f).read()`    | `aiofiles` 库 / 线程池   |
+
+记一条原则：**在 `async` 函数里，凡是会阻塞的同步调用都要换成异步版本**。

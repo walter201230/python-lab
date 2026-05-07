@@ -1,0 +1,144 @@
+# 二、常用属性，一锅端
+
+拿到一个路径，最常见的需求是「**取出某一部分**」——文件名、扩展名、父目录……
+
+老写法散布在 `os.path.basename`、`os.path.splitext`、`os.path.dirname` 一堆函数里。`Path` 把这些都做成了**属性**。
+
+## 1、`.name`：完整文件名（带后缀）
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/demo/foo.txt')
+print(p.name)
+```
+
+输出：
+
+```
+foo.txt
+```
+
+相当于以前的 `os.path.basename(...)`。
+
+## 2、`.stem`：去掉后缀的「主干」
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/demo/foo.txt')
+print(p.stem)
+```
+
+输出：
+
+```
+foo
+```
+
+特别适合用来生成「同名换格式」的新文件——比如 `foo.txt` 转 `foo.json`。
+
+## 3、`.suffix`：扩展名（带点）
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/demo/foo.txt')
+print(p.suffix)
+```
+
+输出：
+
+```
+.txt
+```
+
+注意是**带点的**。需要不带点的，自己 `[1:]` 切一下就好。
+
+## 4、`.suffixes`：所有扩展名（用于多后缀文件）
+
+`foo.tar.gz` 这种「多后缀」的怎么办？
+
+```python
+from pathlib import Path
+
+p = Path('archive.tar.gz')
+print(p.suffix)
+print(p.suffixes)
+```
+
+输出：
+
+```
+.gz
+['.tar', '.gz']
+```
+
+- `.suffix` 只给**最后一个**后缀
+- `.suffixes` 给一个**列表**，包含所有后缀
+
+## 5、`.parent`：父目录
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/demo/sub/foo.txt')
+print(p.parent)
+```
+
+输出：
+
+```
+/tmp/demo/sub
+```
+
+相当于 `os.path.dirname(...)`，但读起来自然多了。
+
+## 6、`.parents`：所有祖先目录
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/demo/sub/foo.txt')
+print(p.parents[0])    # 一级父目录
+print(p.parents[1])    # 二级祖先
+print(p.parents[2])    # 三级祖先
+```
+
+输出：
+
+```
+/tmp/demo/sub
+/tmp/demo
+/tmp
+```
+
+`.parents` 是一个**序列**，可以用下标访问，也可以 `for` 循环遍历。
+
+## 7、综合演示
+
+```python
+from pathlib import Path
+
+p = Path('/Users/walter/projects/demo/main.py')
+
+print('name   :', p.name)
+print('stem   :', p.stem)
+print('suffix :', p.suffix)
+print('parent :', p.parent)
+print('parts  :', p.parts)
+```
+
+输出：
+
+```
+name   : main.py
+stem   : main
+suffix : .py
+parent : /Users/walter/projects/demo
+parts  : ('/', 'Users', 'walter', 'projects', 'demo', 'main.py')
+```
+
+最后一个 `.parts` 把整个路径切成元组，逐段处理特别方便。
+
+是不是发现路径在 `pathlib` 里彻底**不是字符串了**——它是一个有属性、有方法的「对象」？

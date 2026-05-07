@@ -1,0 +1,19 @@
+{
+  "id": "magic-methods",
+  "title": "魔法方法",
+  "chapter": "python10",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-str-repr.mdx" },
+    { "kind": "exercise", "file": "01-str.json" },
+    { "kind": "step", "file": "03-eq-hash.mdx" },
+    { "kind": "exercise", "file": "02-eq.json" },
+    { "kind": "step", "file": "04-len-getitem.mdx" },
+    { "kind": "exercise", "file": "03-len.json" },
+    { "kind": "exercise", "file": "05-getitem.json" },
+    { "kind": "step", "file": "05-add.mdx" },
+    { "kind": "exercise", "file": "04-add.json" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "01-detect-meta",
+  "title": "类的类是什么？",
+  "prompt": "请定义一个最普通的类 `Foo`（里面写 `pass` 即可）。\n\n然后用 `type()` 检查 `Foo` 的类型，再用 `is` 判断它是不是 `type`，按下面的格式打印两行：\n\n```\n<class 'type'>\nTrue\n```\n\n提示：第一行是 `print(type(Foo))`，第二行是 `print(type(Foo) is type)`。",
+  "starterCode": "# class Foo:\n#     pass\n# print(type(Foo))\n# print(type(Foo) is type)\n",
+  "solution": "class Foo:\n    pass\n\nprint(type(Foo))\nprint(type(Foo) is type)",
+  "grading": {
+    "stdoutEquals": "<class 'type'>\nTrue\n",
+    "requiredAst": ["ClassDef:Foo"]
+  },
+  "hints": [
+    "用 class Foo: pass 定义一个最简类",
+    "type(Foo) 会返回 <class 'type'>",
+    "完整代码：\nclass Foo:\n    pass\n\nprint(type(Foo))\nprint(type(Foo) is type)"
+  ]
+}

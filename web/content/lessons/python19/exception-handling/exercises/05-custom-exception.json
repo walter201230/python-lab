@@ -1,0 +1,16 @@
+{
+  "id": "05-custom-exception",
+  "title": "自定义异常：InvalidScoreError",
+  "prompt": "请定义一个自定义异常类 `InvalidScoreError`，继承自 `Exception`。\n\n再写一个函数 `check_score(score)`：\n\n- 如果 `score < 0` 或 `score > 100`，抛 `InvalidScoreError(f'分数 {score} 不合法')`\n- 否则打印 `f'分数合法：{score}'`\n\n然后用 `try / except InvalidScoreError as e` 依次调用：\n\n```python\ncheck_score(85)\ntry:\n    check_score(120)\nexcept InvalidScoreError as e:\n    print(f'捕获到异常：{e}')\n```\n\n输出应该是：\n```\n分数合法：85\n捕获到异常：分数 120 不合法\n```",
+  "starterCode": "# class InvalidScoreError(Exception):\n#     pass\n#\n# def check_score(score):\n#     if score < 0 or score > 100:\n#         raise InvalidScoreError(f'分数 {score} 不合法')\n#     print(f'分数合法：{score}')\n#\n# check_score(85)\n# try:\n#     check_score(120)\n# except InvalidScoreError as e:\n#     print(f'捕获到异常：{e}')\n",
+  "solution": "class InvalidScoreError(Exception):\n    pass\n\ndef check_score(score):\n    if score < 0 or score > 100:\n        raise InvalidScoreError(f'分数 {score} 不合法')\n    print(f'分数合法：{score}')\n\ncheck_score(85)\ntry:\n    check_score(120)\nexcept InvalidScoreError as e:\n    print(f'捕获到异常：{e}')",
+  "grading": {
+    "stdoutEquals": "分数合法：85\n捕获到异常：分数 120 不合法\n",
+    "requiredAst": ["ClassDef:InvalidScoreError", "FunctionDef:check_score"]
+  },
+  "hints": [
+    "class InvalidScoreError(Exception): pass 一行就够",
+    "在 check_score 里用 raise InvalidScoreError(...) 抛出",
+    "完整代码：\nclass InvalidScoreError(Exception):\n    pass\n\ndef check_score(score):\n    if score < 0 or score > 100:\n        raise InvalidScoreError(f'分数 {score} 不合法')\n    print(f'分数合法：{score}')\n\ncheck_score(85)\ntry:\n    check_score(120)\nexcept InvalidScoreError as e:\n    print(f'捕获到异常：{e}')"
+  ]
+}

@@ -1,0 +1,75 @@
+# 三、自定义元类
+
+到这里我们已经知道：
+
+- 类是对象
+- 类的类是 `type`
+- `type()` 三参数能动态造类
+
+那「**自定义元类**」就是顺理成章的下一步——**继承 `type` 写一个自己的元类**，让它在创建类的时候做一些定制操作。
+
+## 元类的工作时机
+
+记住这条因果链：
+
+> **先有 metaclass，再用它创建 class，最后用 class 创建实例。**
+
+普通类是 `type` 创建的；自定义元类替代 `type`，在「类被创建的那一刻」插一脚——可以**修改类的属性、方法、注册到表里、检查命名规范**等等。
+
+## 写法：继承 `type`，重写 `__new__`
+
+```python
+class AnimalMeta(type):
+    def __new__(mcs, name, bases, attrs):
+        # mcs   = 元类自身（AnimalMeta）
+        # name  = 正在创建的类的名字（字符串）
+        # bases = 父类元组
+        # attrs = 类体里定义的属性字典
+
+        # 给所有用此元类的类自动加一个 species 属性
+        attrs['species'] = 'animal'
+
+        # 复用父类（type）的 __new__ 真正创建类
+        return super().__new__(mcs, name, bases, attrs)
+```
+
+## 用法：`class X(metaclass=...)`
+
+Python 3 里指定元类的语法是在 `class` 头部加 `metaclass=` 关键字参数：
+
+```python
+class Dog(metaclass=AnimalMeta):
+    pass
+
+class Cat(metaclass=AnimalMeta):
+    pass
+
+print(Dog.species)
+print(Cat.species)
+```
+
+输出：
+
+```
+animal
+animal
+```
+
+注意——**`Dog` 类体里我们一行 `species` 都没写**，是 `AnimalMeta.__new__` 在创建类时偷偷塞进去的。这就是元类的能力。
+
+## `__new__` 的四个参数
+
+| 参数    | 含义                                                |
+|---------|-----------------------------------------------------|
+| `mcs`   | 元类自己（类似实例方法里的 `self`）                 |
+| `name`  | 正在创建的类的名字（字符串）                        |
+| `bases` | 父类元组                                            |
+| `attrs` | 类体里所有名字 → 值的字典（包括方法）               |
+
+所以元类做的就三件事：
+
+1. **拦截**类的创建
+2. **修改** `attrs`（加属性、改方法、做检查）
+3. **返回**修改后的类
+
+> 概念上很简单——元类就是「负责造类的工厂」。

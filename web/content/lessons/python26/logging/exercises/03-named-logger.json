@@ -1,0 +1,15 @@
+{
+  "id": "03-named-logger",
+  "title": "用 getLogger 给 logger 取名字",
+  "prompt": "请用 `logging.getLogger('app.punch')` 创建一个有名字的 logger，赋给变量 `logger`，然后用它打印 `'用户开始打卡'`。\n\nstarterCode 已经把 format 改成 `'%(name)s:%(levelname)s:%(message)s'`——`%(name)s` 会输出 logger 的名字。\n\n输出应该是：\n```\napp.punch:INFO:用户开始打卡\n```",
+  "starterCode": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.INFO,\n    format='%(name)s:%(levelname)s:%(message)s',\n    force=True,\n)\n\n# TODO: logger = logging.getLogger('app.punch')\n# TODO: logger.info('用户开始打卡')\n",
+  "solution": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.INFO,\n    format='%(name)s:%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogger = logging.getLogger('app.punch')\nlogger.info('用户开始打卡')",
+  "grading": {
+    "stdoutEquals": "app.punch:INFO:用户开始打卡\n"
+  },
+  "hints": [
+    "logging.getLogger('名字') 拿一个有名字的 logger",
+    "用这个 logger 打印日志：logger.info(...)",
+    "完整代码：\nlogger = logging.getLogger('app.punch')\nlogger.info('用户开始打卡')"
+  ]
+}

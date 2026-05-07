@@ -1,0 +1,16 @@
+{
+  "id": "03-study-time",
+  "title": "用闭包累加学习时间",
+  "prompt": "回到本章开头的需求——用闭包累加学习时间。\n\n请定义函数 `study_time(time)`：\n\n- 接收初始 `time`\n- 返回一个内层函数 `insert_time(min)`，每次调用时把 `min` 累加到 `time` 上并返回当前总时间（记得用 `nonlocal`）\n\n然后：\n\n1. `f = study_time(0)`\n2. `print(f(2))` —— 学了 2 分钟\n3. `print(f(10))` —— 又学了 10 分钟\n4. `print(f(5))` —— 又学了 5 分钟\n\n输出应该是：\n```\n2\n12\n17\n```",
+  "starterCode": "# def study_time(time):\n#     def insert_time(min):\n#         nonlocal time\n#         time = time + min\n#         return time\n#     return insert_time\n#\n# f = study_time(0)\n# print(f(2))\n# print(f(10))\n# print(f(5))\n",
+  "solution": "def study_time(time):\n    def insert_time(min):\n        nonlocal time\n        time = time + min\n        return time\n    return insert_time\n\nf = study_time(0)\nprint(f(2))\nprint(f(10))\nprint(f(5))",
+  "grading": {
+    "stdoutEquals": "2\n12\n17\n",
+    "requiredAst": ["FunctionDef:study_time"]
+  },
+  "hints": [
+    "外层 study_time 接收 time 作为参数；内层 insert_time 通过 nonlocal time 修改它",
+    "外层函数 return 内层函数对象 insert_time（不要带括号）",
+    "完整代码：\ndef study_time(time):\n    def insert_time(min):\n        nonlocal time\n        time = time + min\n        return time\n    return insert_time\n\nf = study_time(0)\nprint(f(2))\nprint(f(10))\nprint(f(5))"
+  ]
+}

@@ -1,0 +1,46 @@
+# 二、函数返回值
+
+`return` 语句用于退出函数，并向调用方**返回一个值**。
+
+不带值的 `return` 等同于返回 `None`。
+
+```python
+def add(num1, num2):
+    return num1 + num2
+
+result = add(1, 2)
+print(result)
+```
+
+输出：
+
+```
+3
+```
+
+## 函数也可以返回多个值
+
+```python
+def division(num1, num2):
+    """求商与余数"""
+    a = num1 % num2
+    b = (num1 - a) / num2
+    return b, a
+
+quotient, remainder = division(9, 4)
+print(quotient, remainder)
+
+t = division(9, 4)
+print(t)
+```
+
+输出：
+
+```
+2.0 1
+(2.0, 1)
+```
+
+观察一下——函数 `return b, a` 实际上是返回了一个**元组（tuple）**`(b, a)`，调用方可以直接「解包」赋给两个变量，也可以整个拿到一个 tuple。
+
+> 💡 「Python 一次接受多个返回值的数据类型就是元组。」这是相比其他语言的一个简便特性。

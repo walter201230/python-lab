@@ -1,0 +1,77 @@
+# 方向二：Web 后端开发
+
+## 为什么选这个方向
+
+「Web 后端」听起来很老，2026 年还有人写吗？
+
+有，而且**特别多**。原因很简单——所有公司都需要 API。前端框架换了一茬又一茬（Vue、React、Svelte），App 端从原生到混合到跨平台，但是后端始终在那儿，吭哧吭哧地处理请求、读数据库、调外部服务、返回 JSON。
+
+Web 后端**不会消失**，只会变得更重要——因为：
+
+1. **AI 应用本质上是 Web 应用**。看 ChatGPT、Claude、Cursor，前端是个聊天框，后端就是一堆 API 在调模型。LLM 工程师 90% 的工作其实是**写后端**，只不过加了一个「调模型」的环节。
+2. **微服务还在普及**。一个公司一个大应用变成几十个小服务，每个服务都是一个 Web 后端项目。Python 在这种小服务场景下开发效率非常高。
+3. **招聘面最广**。投简历搜「Python 后端」，全国一线城市每天新挂的岗位都是几百个起步——比 AI 岗位多，门槛也低一点。
+
+那 Python 写后端跟 Java、Go、Node 比有啥优势？三点——
+
+- **开发速度快**：写一个 CRUD API，Python 大概 100 行，Java 同样的功能至少 300 行
+- **跟 AI 生态无缝衔接**：后端里要塞一段「调 LLM 处理用户输入」的逻辑，Python 一行 import 就完事
+- **2024 年之后 Python 后端的工程化追上来了**：`fastapi` + `pydantic` + `sqlmodel` + `uv` 这套现代栈，类型安全、文档自动生成、性能也跟得上，跟 Go 比不再被吊打
+
+## 必备库清单
+
+| 角色 | 代表库 | 干啥用的 |
+| --- | --- | --- |
+| Web 框架 | `fastapi`、`starlette` | 写 API，主流首选 |
+| 数据校验 | `pydantic` | 请求体、响应体的类型校验，跟 `fastapi` 深度集成 |
+| ASGI 服务器 | `uvicorn`、`hypercorn`、`granian` | 跑 `fastapi` 的服务器，生产环境一般是 uvicorn + gunicorn |
+| ORM | `sqlalchemy 2.x`、`sqlmodel` | 操作数据库，`sqlmodel` 是 `fastapi` 作者写的 SQLAlchemy 简化版 |
+| 数据库迁移 | `alembic` | 表结构变更管理，加一个字段、改一个类型 |
+| 缓存 | `redis-py`、`aiocache` | Redis 客户端、内存缓存 |
+| 异步任务 | `celery`、`dramatiq`、`arq` | 后台跑邮件、爬虫、定时任务 |
+| 认证 | `python-jose`、`passlib`、`authlib` | JWT、密码哈希、OAuth |
+| HTTP 客户端 | `httpx` | 调外部 API，同步异步都行 |
+| 测试 | `pytest`、`httpx.AsyncClient` | 接口测试 |
+
+「列了这么多咋下手？」从下往上分阶段——
+
+1. **第一阶段：单文件 API**。装 `fastapi` 和 `uvicorn`，写一个 50 行的 `main.py` 跑起来，用浏览器打开 `http://localhost:8000/docs` 看自动生成的 Swagger 文档。这一步 30 分钟搞定，立马上瘾。
+2. **第二阶段：加数据库**。装 `sqlmodel`，加一个 SQLite 数据库（不用单独装，Python 自带），写一组 CRUD 接口（增删改查）。这一步走通，你已经能写一个像样的 API 了。
+3. **第三阶段：加鉴权**。装 `python-jose` 和 `passlib`，加一个 `/login` 接口发 JWT，加一个 `Depends(get_current_user)` 保护其他接口。这一步搞完，你的 API 就是「企业级」的了。
+4. **第四阶段：加异步任务**。装 `celery` 或者更轻量的 `dramatiq`，把「发邮件」、「生成 PDF」这种耗时任务丢到后台跑。这一步进入「**真生产**」级别。
+
+「Django 呢？」Django 5.x 在 2026 年仍然活得很好——它跟 `fastapi` 是两种哲学：
+
+- **`fastapi` 是「积木式」**：从空白开始，需要啥装啥，适合 API、微服务、AI 后端
+- **`django` 是「全家桶式」**：Admin 后台、ORM、模板、表单、用户系统全自带，适合**「一个团队从零做一个完整网站」**这种场景
+
+如果你以后想做内容站、电商、企业内部系统，Django 仍然是好选择。但如果你的目标是 AI 后端、微服务、移动 App 后端，`fastapi` 是 2026 年的默认答案。
+
+## 三个起点项目
+
+### 项目 1：todo API（CRUD + sqlmodel）
+
+- **做什么**：写一个待办事项 API，接口包括「创建 todo」、「列出所有 todo」、「按 ID 查 todo」、「更新 todo」、「删除 todo」。数据存 SQLite，用 `sqlmodel` 做 ORM，用 `pytest` 写 5 个接口测试
+- **难度**：★☆☆☆☆
+- **代码量**：200-300 行
+- **学到啥**：`fastapi` 路由、`pydantic` 模型、`sqlmodel` ORM 的 `select`/`session.add`/`session.commit`、`pytest` 写接口测试、Swagger 文档怎么用
+
+这个项目建议**所有想学 Web 后端的人都做一遍**。它麻雀虽小，五脏俱全——做完之后，你会真切体会到「**用 Python 写 API 真的快**」这个事情。
+
+### 项目 2：给 todo API 加 JWT 鉴权
+
+- **做什么**：在项目 1 的基础上加用户系统——加一张 `User` 表、一个 `/register` 注册接口、一个 `/login` 登录接口（返回 JWT）、其他接口全部加 `Depends(get_current_user)` 保护起来。每个 todo 关联一个 `user_id`，只能查/改自己的
+- **难度**：★★★☆☆
+- **代码量**：300-500 行
+- **学到啥**：JWT 的工作原理、`passlib` 怎么做密码哈希、`fastapi` 的 `Depends` 依赖注入、关系型数据库的外键和 join、权限的「行级隔离」
+
+JWT 是 2026 年 Web 后端**最常考**的概念。这一关过了之后，看任何后端项目都不慌。
+
+### 项目 3：加后台任务（celery 发邮件）
+
+- **做什么**：在项目 2 的基础上加一个功能——用户注册之后给他发欢迎邮件，但是**不阻塞 API 响应**。装 `celery` + `redis`，把发邮件函数标成 `@app.task`，注册接口里 `send_welcome_email.delay(user.email)` 一发就返回，邮件由 worker 在后台真去发
+- **难度**：★★★★☆
+- **代码量**：400-600 行
+- **学到啥**：消息队列的概念、`celery` 的 broker 和 backend、`redis` 怎么当队列、worker 怎么部署、为啥要异步任务（用户体验、稳定性）
+
+这个项目做完，你已经摸到了**「分布式后端」**的门。后面学 Kafka、学微服务，都是基于这个思路扩展出去的。

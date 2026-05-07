@@ -1,0 +1,16 @@
+{
+  "id": "02-parse-int",
+  "title": "多 except：处理 ValueError",
+  "prompt": "请写一个函数 `parse_int(s)`：\n\n- 尝试把 `s` 转成 `int` 并返回\n- 如果 `int(s)` 抛 `ValueError`，捕获之后打印 `f'无法转换：{s}'`，然后返回 `0`\n\n然后调用：\n\n```python\nprint(parse_int('42'))\nprint(parse_int('abc'))\nprint(parse_int('100'))\n```\n\n输出应该是：\n```\n42\n无法转换：abc\n0\n100\n```",
+  "starterCode": "# def parse_int(s):\n#     try:\n#         return int(s)\n#     except ValueError:\n#         print(f'无法转换：{s}')\n#         return 0\n#\n# print(parse_int('42'))\n# print(parse_int('abc'))\n# print(parse_int('100'))\n",
+  "solution": "def parse_int(s):\n    try:\n        return int(s)\n    except ValueError:\n        print(f'无法转换：{s}')\n        return 0\n\nprint(parse_int('42'))\nprint(parse_int('abc'))\nprint(parse_int('100'))",
+  "grading": {
+    "stdoutEquals": "42\n无法转换：abc\n0\n100\n",
+    "requiredAst": ["FunctionDef:parse_int"]
+  },
+  "hints": [
+    "用 try / except ValueError 包住 int(s)",
+    "except 分支里先 print，再 return 0",
+    "完整代码：\ndef parse_int(s):\n    try:\n        return int(s)\n    except ValueError:\n        print(f'无法转换：{s}')\n        return 0\n\nprint(parse_int('42'))\nprint(parse_int('abc'))\nprint(parse_int('100'))"
+  ]
+}

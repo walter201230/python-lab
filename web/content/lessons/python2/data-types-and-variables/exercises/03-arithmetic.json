@@ -1,0 +1,14 @@
+{
+  "id": "03-arithmetic",
+  "title": "基础算术",
+  "prompt": "用 `print` 打印 `48 + 56` 的结果。\n\n直接把 `48 + 56` 写在 `print()` 括号里就行——Python 会先算出来再打印。\n\n输出应该是：\n```\n104\n```",
+  "starterCode": "# 用 print 打印 48 + 56 的结果\n",
+  "solution": "print(48 + 56)",
+  "grading": {
+    "stdoutEquals": "104\n"
+  },
+  "hints": [
+    "数字不用加引号，直接写 48 + 56",
+    "整体放在 print() 里：print(48 + 56)"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "02-list-access",
+  "title": "索引和切片",
+  "prompt": "已经给你定义了 `fruits = ['apple', 'banana', 'cherry', 'date', 'fig']`。\n\n请：\n\n1. 用索引 `print` 出第 3 个元素（也就是 `cherry`）\n2. 用切片 `print` 出 `fruits[1:4]`\n\n输出应该是：\n```\ncherry\n['banana', 'cherry', 'date']\n```",
+  "starterCode": "fruits = ['apple', 'banana', 'cherry', 'date', 'fig']\n# 1. print 第 3 个元素（索引从 0 开始）\n# 2. print 切片 fruits[1:4]\n",
+  "solution": "fruits = ['apple', 'banana', 'cherry', 'date', 'fig']\nprint(fruits[2])\nprint(fruits[1:4])",
+  "grading": {
+    "stdoutEquals": "cherry\n['banana', 'cherry', 'date']\n"
+  },
+  "hints": [
+    "索引从 0 开始：第 3 个元素是 fruits[2]",
+    "切片 [1:4] 是左闭右开，包含索引 1、2、3，不包含 4",
+    "完整代码：\nprint(fruits[2])\nprint(fruits[1:4])"
+  ]
+}

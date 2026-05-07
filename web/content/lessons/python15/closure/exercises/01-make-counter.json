@@ -1,0 +1,16 @@
+{
+  "id": "01-make-counter",
+  "title": "用闭包实现计数器",
+  "prompt": "请定义一个函数 `make_counter()`：\n\n- 内部维护一个 `count = 0`\n- 返回一个内层函数 `counter()`，每次调用 `counter()` 时让 `count + 1` 并返回新值（记得用 `nonlocal`）\n\n然后：\n\n1. `c = make_counter()`\n2. 连续调用 3 次 `c()`，每次都 `print` 它的返回值\n\n输出应该是：\n```\n1\n2\n3\n```",
+  "starterCode": "# def make_counter():\n#     count = 0\n#     def counter():\n#         nonlocal count\n#         count = count + 1\n#         return count\n#     return counter\n#\n# c = make_counter()\n# print(c())\n# print(c())\n# print(c())\n",
+  "solution": "def make_counter():\n    count = 0\n    def counter():\n        nonlocal count\n        count = count + 1\n        return count\n    return counter\n\nc = make_counter()\nprint(c())\nprint(c())\nprint(c())",
+  "grading": {
+    "stdoutEquals": "1\n2\n3\n",
+    "requiredAst": ["FunctionDef:make_counter"]
+  },
+  "hints": [
+    "外层函数定义 count = 0，内层函数用 nonlocal count 才能改它",
+    "外层函数 return 内层函数对象（注意：return counter，不是 return counter()）",
+    "完整代码：\ndef make_counter():\n    count = 0\n    def counter():\n        nonlocal count\n        count = count + 1\n        return count\n    return counter\n\nc = make_counter()\nprint(c())\nprint(c())\nprint(c())"
+  ]
+}

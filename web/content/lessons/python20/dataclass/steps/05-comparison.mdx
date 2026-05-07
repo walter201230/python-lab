@@ -1,0 +1,146 @@
+# 四、自动 __eq__ 与 __post_init__
+
+## 自动 __eq__：按字段比较
+
+刚才提过 dataclass 默认会生成 `__eq__`。这里再细致看一下它的语义：**逐字段比较**。
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Book:
+    title: str
+    author: str
+    pages: int
+
+
+b1 = Book('Python 入门', '小明', 300)
+b2 = Book('Python 入门', '小明', 300)
+b3 = Book('Python 入门', '小明', 500)
+
+print(b1 == b2)
+print(b1 == b3)
+```
+
+输出：
+
+```
+True
+False
+```
+
+只要所有字段值都一样，两个对象就被判为相等。这跟手写 `__eq__` 一个一个比的效果完全一样，但是免费送的。
+
+## eq=False 关掉它
+
+如果你不想要自动生成的 `__eq__`，传 `eq=False` 就行：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass(eq=False)
+class Employee:
+    name: str
+
+
+a = Employee('两点水')
+b = Employee('两点水')
+print(a == b)
+```
+
+输出：
+
+```
+False
+```
+
+这时候 `==` 退化回「比对象身份」，跟 `is` 一个效果。一般不建议关，关了这个 `dataclass` 就跟普通 class 没啥区别了。
+
+## __post_init__——构造完之后再算点东西
+
+有没有想过这种需求：我有一个 `Order` 类，字段是单价 `unit_price` 和数量 `qty`，我希望对象一构造好，自动算出一个 `total` 字段（总价 = 单价 × 数量）。这个 `total` 不该是用户传进来的，而是「派生出来」的。
+
+`dataclass` 给我们准备了一个钩子：`__post_init__`。它会在 `__init__` 跑完之后被自动调用，正好用来做「派生计算」。
+
+```python
+from dataclasses import dataclass, field
+
+
+@dataclass
+class Order:
+    unit_price: float
+    qty: int
+    total: float = field(init=False)   # init=False 意味着不进 __init__ 参数列表
+
+    def __post_init__(self):
+        self.total = self.unit_price * self.qty
+
+
+o = Order(unit_price=12.5, qty=8)
+print(o)
+```
+
+输出：
+
+```
+Order(unit_price=12.5, qty=8, total=100.0)
+```
+
+这里有两个细节，重点看：
+
+1. `total: float = field(init=False)`——`init=False` 让 `total` 不出现在 `__init__` 的参数里。用户构造 `Order` 的时候不需要也不该传 `total`
+2. `__post_init__` 是 `dataclass` 自动调用的，名字必须就是这个，连下划线数量都不能错
+
+## 在 __post_init__ 里做校验
+
+那如果想在构造时**校验**字段呢？也是 `__post_init__` 的活儿：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Employee:
+    name: str
+    salary: int
+
+    def __post_init__(self):
+        if self.salary < 0:
+            raise ValueError(f'工资不能是负数，收到：{self.salary}')
+        if not self.name:
+            raise ValueError('姓名不能为空')
+
+
+try:
+    bad = Employee('两点水', -100)
+except ValueError as e:
+    print('炸了：', e)
+
+ok = Employee('两点水', 12000)
+print(ok)
+```
+
+输出：
+
+```
+炸了： 工资不能是负数，收到：-100
+Employee(name='两点水', salary=12000)
+```
+
+不过注意，`__post_init__` 里写校验只是「权宜之计」。它的活儿性质偏向「派生计算」，校验逻辑写多了会显得别扭。生产里如果数据来自外部（HTTP 请求、JSON 配置），更推荐用 Pydantic 这类库专门做校验。
+
+## 小结
+
+这一节内容捋一遍：
+
+- **`@dataclass`** 一行装饰器，自动生成 `__init__` / `__repr__` / `__eq__`
+- **类型注解必须写**——`name: str` 是字段，`name = ''` 不是
+- **可变默认值**用 `field(default_factory=list)`，不能直接 `= []`
+- **`frozen=True`** 让 dataclass 不可变，副产品是自动生成 `__hash__`
+- **dataclass + frozen=True + slots=True**（3.10+）是「值类型」的黄金三件套
+- **`__post_init__`** 是构造钩子——派生计算、校验都靠它
+- **dataclass 不做运行时校验**——类型注解只给 mypy/IDE 看，外部脏数据要靠 Pydantic 这类工具
+
+各位以后写真实项目，**dataclass 处理「内」**——程序内部自己写自己用的数据结构。**Pydantic 处理「外」**——外部 JSON、HTTP 请求体这些。这条线划清楚了，工具选型就不会乱。

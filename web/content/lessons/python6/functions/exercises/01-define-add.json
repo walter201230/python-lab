@@ -1,0 +1,17 @@
+{
+  "id": "01-define-add",
+  "title": "定义一个 add 函数",
+  "prompt": "请定义一个函数 `add(a, b)`，返回 `a + b`。\n\n然后调用 `add(3, 5)` 把结果赋给 `result`，再 `print(result)`。\n\n输出应该是：\n```\n8\n```",
+  "starterCode": "# def add(a, b):\n#     return a + b\n# result = add(3, 5)\n# print(result)\n",
+  "solution": "def add(a, b):\n    return a + b\n\nresult = add(3, 5)\nprint(result)",
+  "grading": {
+    "varsEqual": { "result": 8 },
+    "stdoutEquals": "8\n",
+    "requiredAst": ["FunctionDef:add"]
+  },
+  "hints": [
+    "用 def 关键字定义函数",
+    "函数体里 return a + b",
+    "完整代码：\ndef add(a, b):\n    return a + b\n\nresult = add(3, 5)\nprint(result)"
+  ]
+}

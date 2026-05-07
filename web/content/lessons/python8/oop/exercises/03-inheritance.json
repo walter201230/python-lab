@@ -1,0 +1,16 @@
+{
+  "id": "03-inheritance",
+  "title": "继承：Student 继承 Person",
+  "prompt": "已经给你定义了：\n```python\nclass Person:\n    def __init__(self, name):\n        self.name = name\n    def greet(self):\n        print(f'我叫 {self.name}')\n```\n\n请定义一个**继承自 `Person`** 的类 `Student`，给它加一个方法 `study`，打印 `f'{self.name} 在学习'`。\n\n然后实例化 `Student('小明')` 赋给 `s`，依次调用 `s.greet()` 和 `s.study()`。\n\n输出应该是：\n```\n我叫 小明\n小明 在学习\n```",
+  "starterCode": "class Person:\n    def __init__(self, name):\n        self.name = name\n    def greet(self):\n        print(f'我叫 {self.name}')\n\n# class Student(Person):\n#     def study(self):\n#         print(f'{self.name} 在学习')\n# s = Student('小明')\n# s.greet()\n# s.study()\n",
+  "solution": "class Person:\n    def __init__(self, name):\n        self.name = name\n    def greet(self):\n        print(f'我叫 {self.name}')\n\nclass Student(Person):\n    def study(self):\n        print(f'{self.name} 在学习')\n\ns = Student('小明')\ns.greet()\ns.study()",
+  "grading": {
+    "stdoutEquals": "我叫 小明\n小明 在学习\n",
+    "requiredAst": ["ClassDef:Student"]
+  },
+  "hints": [
+    "继承写法：class Student(Person):",
+    "Student 没写 __init__ 也没关系——会自动用父类的",
+    "完整代码：\nclass Student(Person):\n    def study(self):\n        print(f'{self.name} 在学习')\n\ns = Student('小明')\ns.greet()\ns.study()"
+  ]
+}

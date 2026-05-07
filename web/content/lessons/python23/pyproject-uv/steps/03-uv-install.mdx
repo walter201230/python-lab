@@ -1,0 +1,164 @@
+# uv 是什么 & 怎么装
+
+讲完文件格式，现在轮到工具了。
+
+`uv` 是 Astral 出的 Python 包管理器和项目管理器。Astral 这家公司各位应该不陌生，他们做的 ruff 现在是 Python linter 兼 formatter 的事实标准。`uv` 是他们的下一款产品，目标是替代 pip、pip-tools、pipenv、poetry、virtualenv、pyenv 一整套老工具。
+
+它的卖点：
+
+- **快**：用 Rust 写的，依赖解析比 pip 快 10-100 倍。装个 numpy 半秒搞定
+- **单二进制**：uv 本身没有 Python 依赖，一个可执行文件，往哪里一放就能用
+- **统一**：项目管理（创建项目、加依赖、跑脚本）、Python 版本管理（装 Python 解释器）、虚拟环境管理（venv），全在一个工具里
+- **兼容**：`uv pip install` 跟 `pip install` 用法一致；`pyproject.toml` 用的是 PEP 621 标准，迁出迁入没壁垒
+
+2024 年初发布以来，uv 已经被各大公司、开源项目快速采用。2026 年的现在，开新项目首选 uv，几乎没有疑问。
+
+## 安装 uv
+
+macOS 用户最简单：
+
+```bash
+brew install uv
+```
+
+跨平台通用方案：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Windows 用户用 PowerShell：
+
+```bash
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+如果各位电脑里已经有 pip：
+
+```bash
+pip install uv
+```
+
+但更推荐独立安装——uv 本来就是为了脱离 pip 而设计的，没必要绑着 pip 装。
+
+装完之后看一下版本：
+
+```bash
+uv --version
+```
+
+输出大概是：
+
+```
+uv 0.5.20
+```
+
+## 顺便：装 Python 本身
+
+很多童鞋的电脑里没有合适版本的 Python，或者只有系统自带的 Python 3.9。uv 还能帮各位装 Python：
+
+```bash
+uv python install 3.12
+```
+
+跑完之后，Python 3.12 就装到 uv 管理的目录里了。这相当于一个轻量版的 pyenv。
+
+看看装了哪些 Python：
+
+```bash
+uv python list
+```
+
+输出大致：
+
+```
+cpython-3.12.7-macos-aarch64-none           /Users/foo/.local/share/uv/python/...
+cpython-3.11.10-macos-aarch64-none          /Users/foo/.local/share/uv/python/...
+cpython-3.10.15-macos-aarch64-none          /Users/foo/.local/share/uv/python/...
+```
+
+以后开新项目直接挑想用的版本，不用纠结电脑里装了什么。
+
+## uv init 创建一个项目
+
+理论讲够了，开干：
+
+```bash
+uv init my-project
+```
+
+这一条命令做了一堆事。看看生成的目录：
+
+```bash
+cd my-project
+ls -la
+```
+
+输出大致：
+
+```
+.git/
+.gitignore
+.python-version
+README.md
+main.py
+pyproject.toml
+```
+
+逐个文件看一下。
+
+### .python-version
+
+```
+3.12
+```
+
+这一个文件钉死了项目用的 Python 版本。各位到任何一台装了 uv 的电脑上，进入这个目录，uv 会自动用 3.12，没装就自动装。
+
+### pyproject.toml
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+```
+
+跟我们前面手写的最小例子很像，只多了 `description` 和 `readme`。
+
+### main.py
+
+```python
+def main():
+    print("Hello from my-project!")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+一个可以直接跑的「Hello World」入口。
+
+### 跑一下试试
+
+```bash
+uv run main.py
+```
+
+输出：
+
+```
+Hello from my-project!
+```
+
+`uv run` 这个命令是 uv 的核心入口之一，它会做这几件事：
+
+1. 检查项目的 Python 版本是否合适，没有就自动装
+2. 检查 `.venv/` 虚拟环境是否存在，不存在就自动建
+3. 检查依赖是否齐全，不齐全就自动装
+4. 用项目的虚拟环境跑命令
+
+所以从 `uv init` 到代码跑起来，**两条命令**：`uv init my-project`、`uv run main.py`。中间没有任何「先创建虚拟环境、再激活、再装依赖」的步骤。这就是 uv 的体验。

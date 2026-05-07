@@ -1,0 +1,15 @@
+{
+  "id": "whats-next",
+  "title": "学完之后",
+  "chapter": "python28",
+  "order": 1,
+  "estimatedMinutes": 12,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-direction-ai.mdx" },
+    { "kind": "step", "file": "03-direction-web.mdx" },
+    { "kind": "step", "file": "04-direction-ops.mdx" },
+    { "kind": "step", "file": "05-cross-skills.mdx" },
+    { "kind": "step", "file": "06-how-to-choose.mdx" }
+  ]
+}

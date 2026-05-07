@@ -1,0 +1,15 @@
+{
+  "id": "07-tuple-ops",
+  "title": "list 转 tuple + max",
+  "prompt": "已经给你定义了 `nums = [3, 1, 4, 1, 5, 9, 2, 6]`。\n\n请：\n\n1. 用 `tuple()` 把它转成元组，赋给 `t`\n2. `print` 这个 tuple 的元素个数（`len`）\n3. `print` 这个 tuple 里的最大值（`max`）\n\n输出应该是：\n```\n8\n9\n```",
+  "starterCode": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\n# 1. t = tuple(nums)\n# 2. print(len(t))\n# 3. print(max(t))\n",
+  "solution": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\nt = tuple(nums)\nprint(len(t))\nprint(max(t))",
+  "grading": {
+    "stdoutEquals": "8\n9\n"
+  },
+  "hints": [
+    "tuple(nums) 把 list 转成 tuple",
+    "len 算个数，max 取最大值",
+    "完整代码：\nt = tuple(nums)\nprint(len(t))\nprint(max(t))"
+  ]
+}

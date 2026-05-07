@@ -1,0 +1,14 @@
+{
+  "id": "01-if-basic",
+  "title": "if / else：判断及格",
+  "prompt": "已经给你定义了 `score = 75`。\n\n请用 `if / else` 判断：\n\n- 如果 `score >= 60`：`print('及格')`\n- 否则：`print('不及格')`\n\n输出应该是：\n```\n及格\n```",
+  "starterCode": "score = 75\n# 用 if / else 判断\n",
+  "solution": "score = 75\nif score >= 60:\n    print('及格')\nelse:\n    print('不及格')",
+  "grading": {
+    "stdoutEquals": "及格\n"
+  },
+  "hints": [
+    "if 后面要冒号，下一行缩进 4 个空格",
+    "完整代码：\nif score >= 60:\n    print('及格')\nelse:\n    print('不及格')"
+  ]
+}

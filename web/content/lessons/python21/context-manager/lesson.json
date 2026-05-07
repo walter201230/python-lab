@@ -1,0 +1,18 @@
+{
+  "id": "context-manager",
+  "title": "上下文管理器（with）",
+  "chapter": "python21",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-protocol.mdx" },
+    { "kind": "exercise", "file": "01-with-stringio.json" },
+    { "kind": "step", "file": "03-custom-class.mdx" },
+    { "kind": "exercise", "file": "02-custom-class.json" },
+    { "kind": "step", "file": "04-contextmanager.mdx" },
+    { "kind": "exercise", "file": "03-contextmanager.json" },
+    { "kind": "step", "file": "05-helpers.mdx" },
+    { "kind": "exercise", "file": "04-suppress.json" }
+  ]
+}

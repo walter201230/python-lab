@@ -1,0 +1,16 @@
+{
+  "id": "04-gather-fetch",
+  "title": "并发抓取（模拟）",
+  "prompt": "浏览器沙盒不能联网，咱们用 `asyncio.sleep` 模拟一次抓取。\n\n请定义协程函数 `fetch(url)`：\n\n- `await asyncio.sleep(0.01)`（模拟等网络）\n- 返回 `f'fetched {url}'`\n\n在 `main` 里用 `asyncio.gather` 并发抓取三个 URL：`'a'`、`'b'`、`'c'`，把返回的列表赋给 `results`。然后用 `for` 循环按顺序 `print` 每个结果。\n\n用 `asyncio.run(main())` 启动。\n\n输出应该是：\n```\nfetched a\nfetched b\nfetched c\n```",
+  "starterCode": "import asyncio\n\n# async def fetch(url):\n#     await asyncio.sleep(0.01)\n#     return f'fetched {url}'\n\n# async def main():\n#     results = await asyncio.gather(fetch('a'), fetch('b'), fetch('c'))\n#     for r in results:\n#         print(r)\n\n# asyncio.run(main())\n",
+  "solution": "import asyncio\n\nasync def fetch(url):\n    await asyncio.sleep(0.01)\n    return f'fetched {url}'\n\nasync def main():\n    results = await asyncio.gather(fetch('a'), fetch('b'), fetch('c'))\n    for r in results:\n        print(r)\n\nasyncio.run(main())",
+  "grading": {
+    "stdoutEquals": "fetched a\nfetched b\nfetched c\n",
+    "requiredAst": ["AsyncFunctionDef:fetch", "AsyncFunctionDef:main"]
+  },
+  "hints": [
+    "fetch 函数：await asyncio.sleep(0.01) 之后 return f'fetched {url}'",
+    "gather 三个协程：asyncio.gather(fetch('a'), fetch('b'), fetch('c'))",
+    "gather 返回的列表顺序和传入顺序一致，for r in results 直接 print 即可"
+  ]
+}

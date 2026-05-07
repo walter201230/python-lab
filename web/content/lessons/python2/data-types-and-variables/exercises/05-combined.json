@@ -1,0 +1,17 @@
+{
+  "id": "05-combined",
+  "title": "综合：变量 + 计算 + f-string",
+  "prompt": "已经给你定义了 `apples = 12` 和 `oranges = 8`。\n\n请你做两件事：\n\n1. 把 `apples` 和 `oranges` 加起来，赋给变量 `total`\n2. 用 **f-string** 打印 `一共 20 个水果。`（其中 `20` 必须用 `total` 变量插入，不能直接写死数字）\n\n输出应该是：\n```\n一共 20 个水果。\n```",
+  "starterCode": "apples = 12\noranges = 8\n# 1. 把 apples + oranges 赋给 total\n# 2. 用 f-string 打印 \"一共 X 个水果。\"，X 用 total 插入\n",
+  "solution": "apples = 12\noranges = 8\ntotal = apples + oranges\nprint(f'一共 {total} 个水果。')",
+  "grading": {
+    "varsEqual": { "total": 20 },
+    "stdoutEquals": "一共 20 个水果。\n",
+    "requiredAst": ["Assign:total"]
+  },
+  "hints": [
+    "第 1 步：total = apples + oranges",
+    "第 2 步：print(f'一共 {total} 个水果。')",
+    "注意中文逗号「，」是错的——题目要求是「一共 20 个水果。」中间是英文的 ASCII 空格"
+  ]
+}

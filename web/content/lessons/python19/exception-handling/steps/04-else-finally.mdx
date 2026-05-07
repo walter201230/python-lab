@@ -1,0 +1,113 @@
+# 三、else 和 finally——四件套补全
+
+`try / except` 还有两个好搭档：`else` 和 `finally`。
+
+## else——没出错的时候才走
+
+```python
+def divide(a, b):
+    try:
+        result = a / b
+    except ZeroDivisionError:
+        print('除数不能是零')
+    else:
+        print(f'计算成功，结果是 {result}')
+
+
+divide(10, 2)
+divide(10, 0)
+```
+
+输出：
+
+```
+计算成功，结果是 5.0
+除数不能是零
+```
+
+`else` 块只在 `try` 块**没有**抛异常的时候执行。可能要问：「我把那行 `print` 直接写在 `try` 里不也一样吗？」
+
+不一样。区别在于「捕获范围」：
+
+```python
+def divide(a, b):
+    try:
+        result = a / b
+        print(f'计算成功，结果是 {result}')   # 假设这里也可能抛异常
+    except ZeroDivisionError:
+        print('除数不能是零')
+```
+
+如果 `print` 那一行也抛了 `ZeroDivisionError`（举例而已），它会被同一个 `except` 接住——可这就**误伤**了，因为本意是只接住「计算」那一步的错误。
+
+`else` 把「成功后才做的事」隔离出来，让 `try` 块里只放「真正可能出错的那一行」，逻辑更干净。这是它的核心价值。
+
+## finally——不管啥情况都得跑
+
+`finally` 块更狠：**不管 `try` 块成功还是失败，不管异常被接住还是没被接住，`finally` 一定会执行**。
+
+```python
+def safe_divide(a, b):
+    try:
+        result = a / b
+        print(f'结果：{result}')
+    except ZeroDivisionError:
+        print('除数不能是零')
+    finally:
+        print('清理工作执行了')
+
+
+safe_divide(10, 2)
+print('---')
+safe_divide(10, 0)
+```
+
+输出：
+
+```
+结果：5.0
+清理工作执行了
+---
+除数不能是零
+清理工作执行了
+```
+
+「清理工作执行了」这句话，无论 try 出不出错，都跑了。
+
+## 为什么需要 finally？
+
+想想平时写代码：打开文件、连数据库、申请资源……这些操作完事儿都得「关闭」「释放」。如果中间出错了直接跳走，资源就泄露了。`finally` 就是用来确保「**无论如何这段清理代码都得跑**」的。
+
+```python
+def read_first_line(path):
+    f = open(path, 'r')
+    try:
+        return f.readline()
+    finally:
+        f.close()
+        print(f'已关闭 {path}')
+```
+
+不过呢，开文件这种场景，现代 Python 推荐用 `with` 语句，它内部就用了 `finally` 的机制，写法更简洁。`with` 自带「无论如何都关文件」的能力，本质上跟 `finally` 是一回事。
+
+## 完整四件套的顺序
+
+```python
+try:
+    # 可能出错的代码
+    pass
+except SomeError:
+    # 出错时怎么办
+    pass
+except AnotherError:
+    # 多个 except
+    pass
+else:
+    # 没出错的话执行
+    pass
+finally:
+    # 不管出不出错，都要执行
+    pass
+```
+
+顺序是固定的：`try` → `except`（多个） → `else` → `finally`。`else` 和 `finally` 都是可选的，但写的话只能按这个顺序。

@@ -1,0 +1,16 @@
+{
+  "id": "04-type-hints",
+  "title": "写一个带类型注解的函数",
+  "prompt": "请定义一个函数 `greet`，**带上完整的类型注解**：\n\n- 参数 `name`，类型 `str`\n- 返回值类型 `str`\n- 函数体：返回 `f'Hello, {name}'`\n\n然后调用 `print(greet('World'))`。\n\n输出应该是：\n```\nHello, World\n```\n\n注意：参数加冒号、返回加箭头。",
+  "starterCode": "# 在这里定义带类型注解的 greet 函数\n# def greet(name: ...) -> ...:\n#     return ...\n\n# print(greet('World'))\n",
+  "solution": "def greet(name: str) -> str:\n    return f'Hello, {name}'\n\nprint(greet('World'))",
+  "grading": {
+    "stdoutEquals": "Hello, World\n",
+    "requiredAst": ["FunctionDef:greet"]
+  },
+  "hints": [
+    "参数注解写在参数后面：name: str",
+    "返回值注解写在 ) 后面：-> str",
+    "完整代码：\ndef greet(name: str) -> str:\n    return f'Hello, {name}'\n\nprint(greet('World'))"
+  ]
+}

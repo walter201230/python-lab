@@ -1,0 +1,16 @@
+{
+  "id": "01-hello",
+  "title": "第一个 async 函数",
+  "prompt": "请用 `async def` 定义一个协程函数 `hello`，函数体打印 `'hi'`。\n\n然后用 `asyncio.run(hello())` 启动它。\n\n输出应该是：\n```\nhi\n```",
+  "starterCode": "import asyncio\n\n# async def hello():\n#     print('hi')\n# asyncio.run(hello())\n",
+  "solution": "import asyncio\n\nasync def hello():\n    print('hi')\n\nasyncio.run(hello())",
+  "grading": {
+    "stdoutEquals": "hi\n",
+    "requiredAst": ["AsyncFunctionDef:hello", "Import:asyncio"]
+  },
+  "hints": [
+    "async def 跟 def 几乎一样，多个 async 关键字而已",
+    "asyncio.run(hello()) 注意 hello() 后面的括号——传协程对象进去",
+    "完整代码：\nimport asyncio\n\nasync def hello():\n    print('hi')\n\nasyncio.run(hello())"
+  ]
+}

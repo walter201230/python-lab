@@ -1,0 +1,16 @@
+{
+  "id": "02-default-factory",
+  "title": "可变默认值：default_factory",
+  "prompt": "请用 `@dataclass` 定义一个 `Team` 类：\n\n- 字段 `name: str`\n- 字段 `members: list`，默认值用 `field(default_factory=list)` 给一个空列表\n\n然后：\n\n```python\nt1 = Team('A 队')\nt2 = Team('B 队')\nt1.members.append('小明')\nprint(t1)\nprint(t2)\n```\n\n输出应该是：\n```\nTeam(name='A 队', members=['小明'])\nTeam(name='B 队', members=[])\n```\n\n（验证两个实例的 `members` 各自独立，没共享同一个列表。）",
+  "starterCode": "# from dataclasses import dataclass, field\n#\n# @dataclass\n# class Team:\n#     name: str\n#     members: list = field(default_factory=list)\n#\n# t1 = Team('A 队')\n# t2 = Team('B 队')\n# t1.members.append('小明')\n# print(t1)\n# print(t2)\n",
+  "solution": "from dataclasses import dataclass, field\n\n@dataclass\nclass Team:\n    name: str\n    members: list = field(default_factory=list)\n\nt1 = Team('A 队')\nt2 = Team('B 队')\nt1.members.append('小明')\nprint(t1)\nprint(t2)",
+  "grading": {
+    "stdoutEquals": "Team(name='A 队', members=['小明'])\nTeam(name='B 队', members=[])\n",
+    "requiredAst": ["ClassDef:Team"]
+  },
+  "hints": [
+    "注意要 from dataclasses import dataclass, field",
+    "field(default_factory=list) 而不是直接 = []",
+    "完整代码：\nfrom dataclasses import dataclass, field\n\n@dataclass\nclass Team:\n    name: str\n    members: list = field(default_factory=list)\n\nt1 = Team('A 队')\nt2 = Team('B 队')\nt1.members.append('小明')\nprint(t1)\nprint(t2)"
+  ]
+}

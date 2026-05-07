@@ -1,0 +1,16 @@
+{
+  "id": "02-sleep-order",
+  "title": "串行 await 的顺序",
+  "prompt": "请定义协程函数 `step(name)`：\n\n- 先 `print(f'{name} 开始')`\n- 然后 `await asyncio.sleep(0)`\n- 最后 `print(f'{name} 结束')`\n\n再定义 `main`：依次 `await step('A')`、`await step('B')`。\n\n用 `asyncio.run(main())` 启动。\n\n输出应该是：\n```\nA 开始\nA 结束\nB 开始\nB 结束\n```\n\n（说明：因为是 `await` 串行调用，B 一定排在 A 后面。）",
+  "starterCode": "import asyncio\n\n# async def step(name):\n#     print(f'{name} 开始')\n#     await asyncio.sleep(0)\n#     print(f'{name} 结束')\n\n# async def main():\n#     await step('A')\n#     await step('B')\n\n# asyncio.run(main())\n",
+  "solution": "import asyncio\n\nasync def step(name):\n    print(f'{name} 开始')\n    await asyncio.sleep(0)\n    print(f'{name} 结束')\n\nasync def main():\n    await step('A')\n    await step('B')\n\nasyncio.run(main())",
+  "grading": {
+    "stdoutEquals": "A 开始\nA 结束\nB 开始\nB 结束\n",
+    "requiredAst": ["AsyncFunctionDef:step", "AsyncFunctionDef:main"]
+  },
+  "hints": [
+    "在 step 里：print → await asyncio.sleep(0) → print",
+    "main 里串行写两次 await：await step('A') 然后 await step('B')",
+    "完整代码：\nimport asyncio\n\nasync def step(name):\n    print(f'{name} 开始')\n    await asyncio.sleep(0)\n    print(f'{name} 结束')\n\nasync def main():\n    await step('A')\n    await step('B')\n\nasyncio.run(main())"
+  ]
+}

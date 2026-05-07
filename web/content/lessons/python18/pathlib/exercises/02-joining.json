@@ -1,0 +1,16 @@
+{
+  "id": "02-joining",
+  "title": "用 / 操作符拼接路径",
+  "prompt": "请用 `/` 操作符把三段拼成一个完整路径：\n\n1. 从 `pathlib` 导入 `Path`\n2. 用 `Path('/home/user') / 'docs' / 'report.pdf'` 拼出路径，赋值给 `p`\n3. `print(str(p))`\n\n输出应该是：\n```\n/home/user/docs/report.pdf\n```\n\n告别 `os.path.join`！",
+  "starterCode": "# from pathlib import Path\n\n# p = Path('/home/user') / 'docs' / 'report.pdf'\n# print(str(p))\n",
+  "solution": "from pathlib import Path\n\np = Path('/home/user') / 'docs' / 'report.pdf'\nprint(str(p))",
+  "grading": {
+    "stdoutEquals": "/home/user/docs/report.pdf\n",
+    "requiredAst": ["ImportFrom"]
+  },
+  "hints": [
+    "Path 重载了 / 操作符，所以可以直接 Path('/home/user') / 'docs' / 'report.pdf'",
+    "str(p) 把 Path 对象转成字符串——也可以直接 print(p)，效果一样",
+    "完整代码：\nfrom pathlib import Path\np = Path('/home/user') / 'docs' / 'report.pdf'\nprint(str(p))"
+  ]
+}

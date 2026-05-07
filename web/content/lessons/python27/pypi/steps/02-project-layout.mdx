@@ -1,0 +1,193 @@
+# 项目结构与 pyproject.toml
+
+## 先把项目结构搭对
+
+各位写 Python 项目的时候，最常见的目录长这样：
+
+```
+my-tool/
+├── my_tool.py
+└── README.md
+```
+
+或者稍微讲究一点的：
+
+```
+my-tool/
+├── my_tool/
+│   ├── __init__.py
+│   └── main.py
+└── README.md
+```
+
+这种结构本地跑没问题，可一旦要打包发布，就会暴露一个隐藏的坑——**当前目录会被 Python 自动加进 `sys.path`**。结果跑测试的时候，导入的是「项目根目录的源码」而不是「装到环境里的包」，问题就被遮住了。
+
+社区现在推荐的写法叫 **src layout**，长这样：
+
+```
+my-tool/
+├── pyproject.toml
+├── README.md
+├── LICENSE
+├── src/
+│   └── my_tool/
+│       ├── __init__.py
+│       └── main.py
+└── tests/
+    └── test_main.py
+```
+
+注意中间多了一层 `src/` 目录。这个 `src/` 不是装饰，它的作用是——**强行让源码不在项目根目录**。这样你就必须把包装到环境里才能 import，避免了上面说的坑。
+
+「这样写麻烦吗？」一点都不麻烦。配合 uv 和 pyproject.toml，工具会自动识别 src 布局，啥都不用配。
+
+各位现在用 uv 起一个新项目，看看默认结构：
+
+```bash
+uv init --package my-tool
+cd my-tool
+ls -R
+```
+
+输出大概长这样：
+
+```
+.
+├── README.md
+├── pyproject.toml
+└── src
+    └── my_tool
+        └── __init__.py
+```
+
+`uv init --package` 这一行就帮各位把 src layout 的骨架搭好了。注意这里加了 `--package`——不加这个参数，`uv init` 默认搭的是「应用」结构（不打包），加上才是「库/工具」结构（要打包发布）。
+
+打开 `pyproject.toml` 看看 uv 给生成了什么：
+
+```toml
+[project]
+name = "my-tool"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+my-tool = "my_tool:main"
+```
+
+骨架已经齐了——`[project]` 段写元数据、`[build-system]` 段写打包后端、`[project.scripts]` 段写命令行入口。
+
+## pyproject.toml 必填字段拆解
+
+要发到 PyPI，`[project]` 段里有几个字段是绕不过的。
+
+### name：包的全网唯一名字
+
+`name` 就是发到 PyPI 之后，别人用 `pip install xxx` 时填的那个 `xxx`。**它在 PyPI 全网唯一**，跟域名一样，先到先得。各位起名前最好先到 https://pypi.org/project/xxx/ 看一下有没有重名。
+
+命名规则——只允许字母、数字、`-`、`_`、`.`，不区分大小写，不能以数字开头。社区习惯用小写加连字符，比如 `my-tool`、`todo-cli`、`http-prompt`。
+
+注意一个细节：**包名（name）和导入名（`import xxx` 的 xxx）不一定一样**。比如 `pip install scikit-learn`，但 `import sklearn`。`pip install Pillow`，但 `import PIL`。这是因为：
+
+- name 是 PyPI 上的项目名，可以带连字符
+- 导入名是 Python 模块名，必须是合法 Python 标识符，不能带连字符
+
+建议是——为了不让用户搞晕，**两个名字尽量保持一致**。比如包名叫 `my-tool`，导入名就叫 `my_tool`（连字符变下划线）。
+
+### version：版本号
+
+`version` 是这个发布版本的版本号，写成字符串，比如 `"0.1.0"`、`"1.2.3"`、`"2.0.0a1"`。
+
+社区强烈推荐用**语义化版本（SemVer）**，三段数字 `主.次.补丁`：
+
+- **主版本号**：不向后兼容的大改动
+- **次版本号**：向后兼容的新功能
+- **补丁号**：向后兼容的 bug 修复
+
+新项目从 0.1.0 起步，到了 1.0 之前都算「不稳定」，API 可以随便改。
+
+PyPI 还有一条铁规——**同一个版本号只能上传一次**。各位发了 0.1.0 之后想撤回重新发，对不起，办不到。必须改成 0.1.1 重新发。
+
+### description / readme：描述
+
+```toml
+description = "两点水的小工具，批量给图片加水印"
+readme = "README.md"
+```
+
+`description` 是一句话简介，会显示在 PyPI 页面顶部，搜索结果里也会带。
+
+`readme` 是项目的长描述，发到 PyPI 之后会显示在项目页面正文。
+
+### authors / requires-python / dependencies
+
+```toml
+authors = [
+    { name = "两点水", email = "liangdianshui@example.com" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+    "typer>=0.12",
+]
+```
+
+完整的最小可发布 `pyproject.toml`：
+
+```toml
+[project]
+name = "my-tool"
+version = "0.1.0"
+description = "两点水的小工具"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "两点水", email = "liangdianshui@example.com" },
+]
+dependencies = [
+    "httpx>=0.27",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+```
+
+## build-backend：谁来负责打包
+
+刚才的 `pyproject.toml` 末尾有这么一段：
+
+```toml
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+```
+
+要解释清楚，得先理清 Python 打包的角色分工。
+
+Python 打包过程里有两个角色——**前端**和**后端**：
+
+- **前端（frontend）** 是用户敲的命令，比如 pip、uv、build
+- **后端（backend）** 是真正干活的库，把源码变成 wheel 和 sdist
+
+PEP 517 这个标准把两者拆开了，前端只负责调用，后端可以自由替换。`[build-system]` 段就是告诉前端：「我用的是哪个后端」。
+
+社区目前主流的后端有三个——
+
+- **`hatchling`**：来自 Hatch 项目，配置简单、扩展性强，**新项目首选**
+- **`setuptools`**：上古时代留下来的老牌后端，几乎所有老项目都在用
+- **`poetry-core`**：Poetry 项目自带的后端，跟 Poetry 工具一起用
+
+为啥推荐 hatchling？
+
+1. **配置简单**。`uv init --package` 默认就是它，啥都不用改
+2. **现代化**。原生支持 src layout、PEP 621 元数据，没有历史包袱
+3. **生态有官方背书**。hatch 是 PyPA（Python Packaging Authority）旗下的项目
+
+各位 `pyproject.toml` 这一段保持默认就好。`requires` 列出「构建这个项目时需要装哪些包」。这里的依赖跟 `[project].dependencies` 不一样——后者是「跑这个项目要的包」，前者是「打包这个项目要的包」。

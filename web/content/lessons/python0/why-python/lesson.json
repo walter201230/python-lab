@@ -1,0 +1,12 @@
+{
+  "id": "why-python",
+  "title": "为什么学 Python",
+  "chapter": "python0",
+  "order": 1,
+  "estimatedMinutes": 5,
+  "blocks": [
+    { "kind": "step", "file": "01-popularity.mdx" },
+    { "kind": "step", "file": "02-salary.mdx" },
+    { "kind": "step", "file": "03-easy.mdx" }
+  ]
+}

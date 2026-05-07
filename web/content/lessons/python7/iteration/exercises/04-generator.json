@@ -1,0 +1,16 @@
+{
+  "id": "04-generator",
+  "title": "写一个生成器函数",
+  "prompt": "请定义一个 **生成器函数** `count_up(n)`，它依次 `yield` 出 `1, 2, ..., n`。\n\n然后用 `for` 循环遍历 `count_up(5)`，把每个值 `print` 出来（每个数占一行）。\n\n输出应该是：\n```\n1\n2\n3\n4\n5\n```",
+  "starterCode": "# def count_up(n):\n#     for i in range(1, n + 1):\n#         yield i\n#\n# for x in count_up(5):\n#     print(x)\n",
+  "solution": "def count_up(n):\n    for i in range(1, n + 1):\n        yield i\n\nfor x in count_up(5):\n    print(x)",
+  "grading": {
+    "stdoutEquals": "1\n2\n3\n4\n5\n",
+    "requiredAst": ["FunctionDef:count_up"]
+  },
+  "hints": [
+    "把普通函数里的 print(i) 改成 yield i，就成了生成器函数",
+    "用 range(1, n + 1) 才能包含 n 本身",
+    "完整代码：\ndef count_up(n):\n    for i in range(1, n + 1):\n        yield i\n\nfor x in count_up(5):\n    print(x)"
+  ]
+}

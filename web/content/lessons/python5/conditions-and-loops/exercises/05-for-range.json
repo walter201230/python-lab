@@ -1,0 +1,16 @@
+{
+  "id": "05-for-range",
+  "title": "for + range：求和",
+  "prompt": "用 `for` 循环加 `range` 算 **1 到 10 的和**（包含 10），赋给变量 `total`，然后 `print(total)`。\n\n输出应该是：\n```\n55\n```",
+  "starterCode": "total = 0\n# for n in range(...):\n#     total = total + n\n# print(total)\n",
+  "solution": "total = 0\nfor n in range(1, 11):\n    total = total + n\nprint(total)",
+  "grading": {
+    "varsEqual": { "total": 55 },
+    "stdoutEquals": "55\n"
+  },
+  "hints": [
+    "range(1, 11) 生成 1 到 10（左闭右开，要写 11 才包含 10）",
+    "在循环里累加：total = total + n",
+    "完整代码：\ntotal = 0\nfor n in range(1, 11):\n    total = total + n\nprint(total)"
+  ]
+}

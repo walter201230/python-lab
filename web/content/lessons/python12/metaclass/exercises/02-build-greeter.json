@@ -1,0 +1,16 @@
+{
+  "id": "02-build-greeter",
+  "title": "用 type() 三参数动态造类",
+  "prompt": "请**不要使用 `class` 关键字**，用 `type()` 三参数语法动态创建一个类 `Greeter`：\n\n- 父类：`(object,)`\n- 含一个方法 `greet(self)`，方法体打印 `'hi'`\n\n创建后实例化并调用 `g.greet()`，再 `print(type(Greeter))` 证明它是 `type` 的实例。\n\n输出应该是：\n```\nhi\n<class 'type'>\n```",
+  "starterCode": "# def greet(self):\n#     print('hi')\n# Greeter = type('Greeter', (object,), {'greet': greet})\n# g = Greeter()\n# g.greet()\n# print(type(Greeter))\n",
+  "solution": "def greet(self):\n    print('hi')\n\nGreeter = type('Greeter', (object,), {'greet': greet})\n\ng = Greeter()\ng.greet()\nprint(type(Greeter))",
+  "grading": {
+    "stdoutEquals": "hi\n<class 'type'>\n",
+    "requiredAst": ["Assign:Greeter", "FunctionDef:greet"]
+  },
+  "hints": [
+    "type() 三参数：type(类名字符串, 父类元组, 属性字典)",
+    "先 def 一个普通函数 greet(self)，再把它塞进字典 {'greet': greet}",
+    "完整代码：\ndef greet(self):\n    print('hi')\n\nGreeter = type('Greeter', (object,), {'greet': greet})\ng = Greeter()\ng.greet()\nprint(type(Greeter))"
+  ]
+}

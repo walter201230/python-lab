@@ -1,0 +1,15 @@
+{
+  "id": "04-warning-only",
+  "title": "只打 WARNING 及以上",
+  "prompt": "把 `level` 调成 `logging.WARNING`，然后依次调用：\n\n```python\nlogging.info('看不见的 info')\nlogging.warning('看得见的 warning')\nlogging.error('看得见的 error')\n```\n\n因为级别 = WARNING，**INFO 会被过滤掉**，只剩 WARNING / ERROR / CRITICAL。\n\n输出应该是：\n```\nWARNING:看得见的 warning\nERROR:看得见的 error\n```",
+  "starterCode": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.WARNING,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\n# TODO: 三行 logging 调用：info / warning / error\n",
+  "solution": "import logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.WARNING,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogging.info('看不见的 info')\nlogging.warning('看得见的 warning')\nlogging.error('看得见的 error')",
+  "grading": {
+    "stdoutEquals": "WARNING:看得见的 warning\nERROR:看得见的 error\n"
+  },
+  "hints": [
+    "level=logging.WARNING 让 INFO/DEBUG 都被过滤",
+    "三行调用顺序：info → warning → error",
+    "完整代码：3 行 logging.xxx 即可"
+  ]
+}

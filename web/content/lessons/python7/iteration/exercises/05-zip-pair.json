@@ -1,0 +1,16 @@
+{
+  "id": "05-zip-pair",
+  "title": "用 zip 配对两个 list",
+  "prompt": "已经给了你两个 list：\n\n```python\nnames = ['Alice', 'Bob', 'Cathy']\nages = [18, 19, 20]\n```\n\n请用 `zip()` 把它们配成对，再用 `for` 循环每一对都按 `name age` 的格式 print 出来（中间 **一个空格**）。\n\n输出应该是：\n```\nAlice 18\nBob 19\nCathy 20\n```",
+  "starterCode": "names = ['Alice', 'Bob', 'Cathy']\nages = [18, 19, 20]\n# for name, age in zip(names, ages):\n#     print(name, age)\n",
+  "solution": "names = ['Alice', 'Bob', 'Cathy']\nages = [18, 19, 20]\nfor name, age in zip(names, ages):\n    print(name, age)",
+  "grading": {
+    "stdoutEquals": "Alice 18\nBob 19\nCathy 20\n"
+  },
+  "hints": [
+    "zip(names, ages) 会同时从两个 list 各取一个元素，组成 (name, age)",
+    "在 for 里直接拆包：for name, age in zip(...)",
+    "print(name, age) 默认就用空格分隔",
+    "完整代码：\nfor name, age in zip(names, ages):\n    print(name, age)"
+  ]
+}

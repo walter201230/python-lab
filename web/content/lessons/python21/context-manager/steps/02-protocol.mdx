@@ -1,0 +1,55 @@
+# 一、上下文管理协议
+
+`with` 后面跟的不是「文件」也不是「连接」，而是一类东西，Python 给它起了个名字，叫**上下文管理器**。
+
+什么样的对象能算上下文管理器？只要满足两个方法：
+
+- `__enter__(self)`：进入 `with` 块时被调用，返回值赋给 `as` 后面的变量
+- `__exit__(self, exc_type, exc_val, tb)`：离开 `with` 块时被调用——**无论是正常离开还是异常离开**
+
+这就是「上下文管理协议」。它的全部规则就这两条，没有第三条。
+
+## 一个最简单的例子
+
+```python
+class Punch:
+    def __enter__(self):
+        print('进入打卡区')
+        return self
+
+    def __exit__(self, exc_type, exc_val, tb):
+        print('离开打卡区')
+
+
+with Punch() as p:
+    print('正在工位摸鱼')
+```
+
+输出：
+
+```
+进入打卡区
+正在工位摸鱼
+离开打卡区
+```
+
+`with Punch() as p` 这一行做了三件事：
+
+1. 创建一个 `Punch()` 实例
+2. 调用这个实例的 `__enter__()` 方法
+3. 把 `__enter__()` 的返回值赋给 `p`
+
+然后才执行 `with` 块里面的代码。等 `with` 块结束（不管是正常结束还是异常结束），就调用 `__exit__()`。
+
+这个流程本质上就是把：
+
+```python
+p_obj = Punch()
+p = p_obj.__enter__()
+try:
+    print('正在工位摸鱼')
+finally:
+    p_obj.__exit__(None, None, None)
+```
+
+这一坨样板代码，藏到了 `with` 这个语法糖背后。

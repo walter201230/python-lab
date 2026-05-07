@@ -1,0 +1,113 @@
+# 五、迭代器和生成器的综合例子
+
+迭代器和生成器很多用法是相通的，下面是两个常见的实战场景。
+
+## 1、反向迭代
+
+反向迭代也是常有的需求。比如最开始的例子里，我们顺序输出 list 的元素 1 到 5：
+
+```python
+list1 = [1, 2, 3, 4, 5]
+for num1 in list1:
+    print(num1, end=' ')
+```
+
+那如果想从 5 到 1 呢？很简单，Python 中有内置的函数 `reversed()`：
+
+```python
+list1 = [1, 2, 3, 4, 5]
+for num1 in reversed(list1):
+    print(num1, end=' ')
+```
+
+输出：
+
+```
+5 4 3 2 1 
+```
+
+> 注意一点：**反向迭代仅当对象的大小可以预先确定，或者对象实现了 `__reversed__()` 特殊方法时才能生效。** 如果两者都不符合，那你必须先把对象转换为一个列表才行。
+
+我们也可以在自定义类上实现 `__reversed__()` 方法：
+
+```python
+class Countdown:
+    def __init__(self, start):
+        self.start = start
+
+    def __iter__(self):
+        # 正向迭代器
+        n = self.start
+        while n > 0:
+            yield n
+            n -= 1
+
+    def __reversed__(self):
+        # 反向迭代器
+        n = 1
+        while n <= self.start:
+            yield n
+            n += 1
+```
+
+`Countdown(3)` 正向遍历就是 `3 2 1`，反向遍历就是 `1 2 3`。
+
+## 2、同时迭代多个序列：zip()
+
+你想 **同时迭代多个序列**，每次分别从一个序列中取一个元素，怎么办？用内置的 `zip()` 函数：
+
+```python
+names = ['liangdianshui', 'twowater', '两点水']
+ages = [18, 19, 20]
+for name, age in zip(names, ages):
+    print(name, age)
+```
+
+输出：
+
+```
+liangdianshui 18
+twowater 19
+两点水 20
+```
+
+`zip(a, b)` 会生成一个返回元组 `(x, y)` 的迭代器，其中 `x` 来自 `a`，`y` 来自 `b`。一旦其中某个序列到了结尾，迭代就结束。**因此迭代长度跟参数中最短序列的长度一致**。
+
+利用 `zip()`，我们还可以把一个 key 列表和一个 value 列表组合成 dict：
+
+```python
+names = ['liangdianshui', 'twowater', '两点水']
+ages = [18, 19, 20]
+dict1 = dict(zip(names, ages))
+print(dict1)
+```
+
+输出：
+
+```
+{'liangdianshui': 18, 'twowater': 19, '两点水': 20}
+```
+
+提一句：`zip()` 是可以接受 **多于两个** 的序列参数的，不仅限于两个。
+
+## 3、还有个常用工具：enumerate
+
+写 `for` 的时候，如果你 **既要值又要下标**，可以用 `enumerate()`：
+
+```python
+fruits = ['苹果', '香蕉', '橘子']
+for i, fruit in enumerate(fruits):
+    print(i, fruit)
+```
+
+输出：
+
+```
+0 苹果
+1 香蕉
+2 橘子
+```
+
+`enumerate(可迭代对象)` 返回一个 `(下标, 元素)` 的迭代器，省去你自己维护一个计数变量的麻烦。
+
+> 总结：`for / iter / next / yield / zip / enumerate / reversed` —— 这一套就是 Python 处理「一组数据」的核心武器。下面来做最后一道练习。

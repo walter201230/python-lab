@@ -1,0 +1,53 @@
+# 三、自定义日志格式
+
+`basicConfig` 能配的东西不止 `level`，还有 `format` 控制每条日志的样子：
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
+
+logging.info("两点水准备打卡")
+logging.warning("打卡机故障")
+```
+
+输出：
+
+```
+2026-04-28 09:00:00 - INFO - 两点水准备打卡
+2026-04-28 09:00:00 - WARNING - 打卡机故障
+```
+
+是不是比 `print` 看着舒服多了？时间戳、级别、消息全有了。
+
+## format 常用占位符
+
+| 占位符 | 含义 |
+|---|---|
+| `%(asctime)s` | 时间戳（用 `datefmt` 控制格式） |
+| `%(name)s` | logger 名字（默认 `root`，或 `getLogger(name)` 指定的） |
+| `%(levelname)s` | 级别名（DEBUG / INFO / ...） |
+| `%(message)s` | 实际打的内容 |
+| `%(module)s` | 调用所在的模块名 |
+| `%(funcName)s` | 调用所在的函数名 |
+| `%(lineno)d` | 调用所在的行号 |
+
+把它们组合起来，能拼出非常详细的日志：
+
+```python
+format='%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s'
+```
+
+## basicConfig 只调一次
+
+> ⚠️ `basicConfig` 只在「root logger 还没配过 handler」时才会生效，**第二次调用不起作用**。所以整个程序里只调一次，通常放在程序入口处。
+>
+> 如果想强制覆盖（比如调试时反复调），加 `force=True`：
+>
+> ```python
+> logging.basicConfig(level=logging.INFO, force=True)
+> ```

@@ -1,0 +1,16 @@
+{
+  "id": "02-custom-class",
+  "title": "自定义上下文管理器类",
+  "prompt": "请定义一个类 `Section`，实现上下文管理协议：\n\n- `__enter__` 打印 `'>>> 开始'`，并 `return self`\n- `__exit__` 打印 `'<<< 结束'`\n\n然后用 `with Section():` 包住一行 `print('做事中')`。\n\n输出应该是：\n```\n>>> 开始\n做事中\n<<< 结束\n```",
+  "starterCode": "# class Section:\n#     def __enter__(self):\n#         print('>>> 开始')\n#         return self\n#     def __exit__(self, exc_type, exc_val, tb):\n#         print('<<< 结束')\n# with Section():\n#     print('做事中')\n",
+  "solution": "class Section:\n    def __enter__(self):\n        print('>>> 开始')\n        return self\n\n    def __exit__(self, exc_type, exc_val, tb):\n        print('<<< 结束')\n\nwith Section():\n    print('做事中')",
+  "grading": {
+    "stdoutEquals": ">>> 开始\n做事中\n<<< 结束\n",
+    "requiredAst": ["ClassDef:Section"]
+  },
+  "hints": [
+    "__enter__ 和 __exit__ 都要在类里定义",
+    "__exit__ 必须接收 4 个参数：self, exc_type, exc_val, tb",
+    "完整代码见提示 1 / 2"
+  ]
+}

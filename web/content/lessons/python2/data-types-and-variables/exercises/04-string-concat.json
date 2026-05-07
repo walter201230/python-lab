@@ -1,0 +1,16 @@
+{
+  "id": "04-string-concat",
+  "title": "用 f-string 拼一句话",
+  "prompt": "已经给你定义了 `name = '水哥'` 和 `age = 28`。\n\n请用 **f-string** 拼成 `我叫水哥，今年 28 岁。`，赋值给变量 `intro`，再打印它。\n\n注意：\n- 必须用 f-string（不能用 `+` 手动拼）\n- 中文逗号 `，`、句号 `。`，全角\n- `今年` 和 `{age}` 之间有一个**半角空格**\n\n输出应该是：\n```\n我叫水哥，今年 28 岁。\n```",
+  "starterCode": "name = '水哥'\nage = 28\n# 用 f-string 拼成一句话，赋值给 intro 并打印\n",
+  "solution": "name = '水哥'\nage = 28\nintro = f'我叫{name}，今年 {age} 岁。'\nprint(intro)",
+  "grading": {
+    "varsEqual": { "intro": "我叫水哥，今年 28 岁。" },
+    "stdoutEquals": "我叫水哥，今年 28 岁。\n"
+  },
+  "hints": [
+    "f-string 的写法：在字符串前面加 f，比如 f'我叫{name}'",
+    "{} 里直接写变量名，会被替换成变量的值",
+    "完整代码：\nname = '水哥'\nage = 28\nintro = f'我叫{name}，今年 {age} 岁。'\nprint(intro)"
+  ]
+}

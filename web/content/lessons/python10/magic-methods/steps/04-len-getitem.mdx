@@ -1,0 +1,91 @@
+# 四、`__len__` 与 `__getitem__`：让对象「像容器」
+
+Python 的 `list`、`tuple`、`str`、`dict` 都是「容器」。它们都支持：
+
+- `len(x)` 取长度
+- `x[0]` 按 key 取元素
+- `for item in x` 迭代
+
+如果你自己写的类也想支持这些语法呢？——只要实现对应的魔法方法即可。
+
+## 1、`__len__`：让 `len()` 工作
+
+```python
+class Playlist:
+    def __init__(self, songs):
+        self.songs = songs
+
+    def __len__(self):
+        return len(self.songs)
+
+p = Playlist(['歌1', '歌2', '歌3'])
+print(len(p))   # 3
+```
+
+`__len__` 必须返回一个**非负整数**。如果不实现，`len(p)` 会抛 `TypeError: object of type 'Playlist' has no len()`。
+
+## 2、`__getitem__`：让 `obj[i]` 工作
+
+```python
+class Playlist:
+    def __init__(self, songs):
+        self.songs = songs
+
+    def __len__(self):
+        return len(self.songs)
+
+    def __getitem__(self, index):
+        return self.songs[index]
+
+p = Playlist(['歌1', '歌2', '歌3'])
+print(p[0])   # 歌1
+print(p[-1])  # 歌3
+```
+
+`__getitem__(self, key)` 中的 `key` 可以是：
+
+- 整数（普通索引）
+- 切片对象 `slice(1, 3)`（来自 `p[1:3]` 这种写法）
+- 任意 hashable 值（如果你想模仿 dict）
+
+## 3、白送的 `for` 迭代
+
+只要你实现了 `__getitem__`，**不用再写 `__iter__`**，`for` 循环也能用了：
+
+```python
+class Playlist:
+    def __init__(self, songs):
+        self.songs = songs
+
+    def __getitem__(self, i):
+        return self.songs[i]
+
+p = Playlist(['歌1', '歌2', '歌3'])
+for s in p:
+    print(s)
+# 歌1
+# 歌2
+# 歌3
+```
+
+Python 会从 `p[0]`、`p[1]`、`p[2]`... 一直叫，直到抛 `IndexError` 才停。
+
+## 4、可写容器：`__setitem__`
+
+```python
+class Playlist:
+    def __init__(self, songs):
+        self.songs = songs
+
+    def __getitem__(self, i):
+        return self.songs[i]
+
+    def __setitem__(self, i, value):
+        self.songs[i] = value
+
+p = Playlist(['a', 'b', 'c'])
+p[0] = 'A'        # 触发 __setitem__
+print(p.songs)    # ['A', 'b', 'c']
+```
+
+> 总结：实现 `__len__` + `__getitem__` 就有「**只读容器**」；再加 `__setitem__` / `__delitem__` 就成「**可变容器**」。

@@ -1,0 +1,80 @@
+# 四、文件系统操作（简介）
+
+到目前为止，我们做的都是**纯路径解析**——只是在玩字符串，不真的去访问文件系统。
+
+`pathlib` 的真正威力，是把「真访问文件系统」的能力也整合到了 `Path` 对象上。这里只做一个**简介**，让你知道有哪些方法——具体的真实操作请在本地环境跑。
+
+## 1、判断文件 / 目录是否存在
+
+```python
+from pathlib import Path
+
+p = Path('/tmp')
+print(p.exists())     # 路径是否存在
+print(p.is_dir())     # 是不是目录
+print(p.is_file())    # 是不是文件
+```
+
+老写法：`os.path.exists(...)`、`os.path.isdir(...)`、`os.path.isfile(...)`——一对照，谁清爽不用我说了吧？
+
+## 2、读写文件
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/demo.txt')
+p.write_text('hello pathlib', encoding='utf-8')   # 一行写完
+content = p.read_text(encoding='utf-8')           # 一行读完
+print(content)
+```
+
+老写法是要 `with open(...) as f: f.write(...)` 加缩进的，新写法**一行解决**。
+
+## 3、遍历目录
+
+```python
+from pathlib import Path
+
+# 当前目录下一层
+for child in Path('/tmp').iterdir():
+    print(child)
+
+# 当前目录的 .py 文件
+for py in Path('/tmp').glob('*.py'):
+    print(py)
+
+# 递归找所有 .py 文件
+for py in Path('/tmp').rglob('*.py'):
+    print(py)
+```
+
+| 方法 | 含义 |
+|---|---|
+| `.iterdir()` | 列当前目录下一层（不递归） |
+| `.glob(pattern)` | 当前目录通配匹配 |
+| `.rglob(pattern)` | **递归**通配匹配——从子目录里一直找下去 |
+
+## 4、创建 / 删除
+
+```python
+from pathlib import Path
+
+# 创建目录（含父目录）
+Path('/tmp/a/b/c').mkdir(parents=True, exist_ok=True)
+
+# 创建空文件
+Path('/tmp/note.txt').touch()
+
+# 删除文件
+Path('/tmp/note.txt').unlink(missing_ok=True)
+```
+
+`parents=True` 等于 shell 里的 `mkdir -p`（自动建中间目录），`exist_ok=True` 让目录已存在时**不报错**。这俩参数几乎闭着眼睛就该写上。
+
+## 5、为什么本章不让你练这些？
+
+注意——浏览器里的 Python（Pyodide）**没有真实的文件系统**。`read_text` / `write_text` / `mkdir` 这些方法虽然能跑，但只是写到一个虚拟的内存文件系统，关掉页面就没了。
+
+所以本章的练习专注于「**路径字符串解析**」——这部分在哪儿都能跑，一通百通。
+
+等你回到本地终端，`pathlib` 的全套真本事才会真正发光。

@@ -1,0 +1,13 @@
+{
+  "id": "threading",
+  "title": "线程与进程",
+  "chapter": "python13",
+  "order": 1,
+  "estimatedMinutes": 15,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-thread-vs-process.mdx" },
+    { "kind": "step", "file": "03-multithreading.mdx" },
+    { "kind": "step", "file": "04-multiprocessing.mdx" }
+  ]
+}

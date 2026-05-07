@@ -1,0 +1,34 @@
+# 3、while 循环
+
+`while` 循环就是「**条件为真时一直跑**」：
+
+```python
+while 条件:
+    循环体
+```
+
+经典例子——计算 1 到 100 所有整数的和：
+
+```python
+count = 1
+total = 0
+
+while count <= 100:
+    total = total + count
+    count = count + 1
+
+print(total)
+```
+
+输出：
+
+```
+5050
+```
+
+## for 和 while 怎么选？
+
+- **for**：迭代「已知集合」的情况——遍历 list/dict/range，按部就班
+- **while**：「条件还没达成就一直做」的情况——比如等用户输入、读完文件、算到某个值
+
+简单的「跑 N 次」用 for + range；条件型的循环用 while。

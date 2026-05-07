@@ -1,0 +1,16 @@
+{
+  "id": "03-len",
+  "title": "用 __len__ 让 len() 工作",
+  "prompt": "请定义类 `Playlist`：\n\n- `__init__` 接收 `songs`（一个列表），保存到 `self.songs`\n- `__len__` 返回 `self.songs` 的长度\n\n然后实例化 `p = Playlist(['歌1', '歌2', '歌3'])`，调用 `print(len(p))`。\n\n输出应该是：\n```\n3\n```",
+  "starterCode": "# class Playlist:\n#     def __init__(self, songs):\n#         self.songs = songs\n#     def __len__(self):\n#         return len(self.songs)\n# p = Playlist(['歌1', '歌2', '歌3'])\n# print(len(p))\n",
+  "solution": "class Playlist:\n    def __init__(self, songs):\n        self.songs = songs\n\n    def __len__(self):\n        return len(self.songs)\n\np = Playlist(['歌1', '歌2', '歌3'])\nprint(len(p))",
+  "grading": {
+    "stdoutEquals": "3\n",
+    "requiredAst": ["ClassDef:Playlist", "FunctionDef:__len__"]
+  },
+  "hints": [
+    "__len__ 必须返回一个非负整数",
+    "直接返回内部列表的长度：return len(self.songs)",
+    "完整代码：\nclass Playlist:\n    def __init__(self, songs):\n        self.songs = songs\n    def __len__(self):\n        return len(self.songs)\np = Playlist(['歌1', '歌2', '歌3'])\nprint(len(p))"
+  ]
+}

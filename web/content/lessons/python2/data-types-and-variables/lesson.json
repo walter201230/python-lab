@@ -1,0 +1,27 @@
+{
+  "id": "data-types-and-variables",
+  "title": "基本数据类型与变量",
+  "chapter": "python2",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-print.mdx" },
+    { "kind": "exercise", "file": "01-hello-world.json" },
+    { "kind": "step", "file": "03a-string.mdx" },
+    { "kind": "exercise", "file": "09-string-basics.json" },
+    { "kind": "step", "file": "03b-numbers.mdx" },
+    { "kind": "exercise", "file": "03-arithmetic.json" },
+    { "kind": "step", "file": "03c-bool-none.mdx" },
+    { "kind": "exercise", "file": "10-bool-logic.json" },
+    { "kind": "step", "file": "03d-fstring.mdx" },
+    { "kind": "exercise", "file": "04-string-concat.json" },
+    { "kind": "step", "file": "04-string-coding.mdx" },
+    { "kind": "exercise", "file": "07-ascii-code.json" },
+    { "kind": "step", "file": "05-type-conversion.mdx" },
+    { "kind": "exercise", "file": "08-type-conversion.json" },
+    { "kind": "step", "file": "06-variable.mdx" },
+    { "kind": "exercise", "file": "02-variable-assign.json" },
+    { "kind": "exercise", "file": "05-combined.json" }
+  ]
+}

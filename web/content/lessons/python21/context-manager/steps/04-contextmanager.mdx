@@ -1,0 +1,80 @@
+# 三、@contextmanager：用生成器写上下文管理器
+
+写一个上下文管理器，只为了管几行代码，居然要写一个完整的类 + 两个 dunder 方法，是不是有点重？
+
+Python 标准库 `contextlib` 提供了一个装饰器 `@contextmanager`，可以把一个**生成器函数**变成上下文管理器：
+
+- `yield` 之前的代码 = `__enter__`
+- `yield` 出来的值 = `__enter__` 的返回值
+- `yield` 之后的代码 = `__exit__`
+
+把上一节的 `PunchLog` 用 `@contextmanager` 重写：
+
+```python
+from contextlib import contextmanager
+
+
+@contextmanager
+def punch_log(name):
+    records = []
+    records.append(f'{name} 进入工位')
+    try:
+        yield records
+    finally:
+        records.append(f'{name} 离开工位')
+
+
+with punch_log('两点水') as records:
+    print('继续划水……')
+
+for line in records:
+    print(line)
+```
+
+输出：
+
+```
+继续划水……
+两点水 进入工位
+两点水 离开工位
+```
+
+是不是清爽多了？**类变成了一个函数，两个 dunder 方法变成了一个 `yield`**。
+
+## 重点：清理代码必须包在 finally 里
+
+注意上面那个 `try/finally`。为什么需要它？
+
+因为 `with` 块里面可能抛异常，异常会从 `yield` 那一行重新「钻」回生成器函数里。如果不写 `try/finally`，异常会绕过后面的清理代码，**资源就泄露了**。
+
+> 这是用 `@contextmanager` 写上下文管理器最重要的一条铁律：**清理代码要包在 `finally` 里**。
+
+## 用 try/except 吞掉异常
+
+如果想吞掉某种特定异常：
+
+```python
+from contextlib import contextmanager
+
+
+@contextmanager
+def ignore_zero_division():
+    try:
+        yield
+    except ZeroDivisionError as e:
+        print(f'吞掉了：{e}')
+
+
+with ignore_zero_division():
+    x = 1 / 0
+    print('这一行不会执行')
+
+print('但是这一行会')
+```
+
+输出：
+
+```
+吞掉了：division by zero
+但是这一行会
+```

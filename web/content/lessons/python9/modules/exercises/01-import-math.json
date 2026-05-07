@@ -1,0 +1,17 @@
+{
+  "id": "01-import-math",
+  "title": "用 math 模块算圆周长",
+  "prompt": "请用 `import` 引入 `math` 模块，然后利用 `math.pi`：\n\n1. 计算半径 `r = 5` 时的圆周长，公式 `2 * math.pi * r`\n2. 把结果保留 **4 位小数**（用内置函数 `round(..., 4)`）赋给变量 `c`\n3. `print(c)`\n\n输出应该是：\n```\n31.4159\n```",
+  "starterCode": "# import math\n# r = 5\n# c = round(2 * math.pi * r, 4)\n# print(c)\n",
+  "solution": "import math\n\nr = 5\nc = round(2 * math.pi * r, 4)\nprint(c)",
+  "grading": {
+    "stdoutEquals": "31.4159\n",
+    "varsEqual": { "c": 31.4159 },
+    "requiredAst": ["Import"]
+  },
+  "hints": [
+    "用 import math 把 math 模块导进来",
+    "math.pi 就是圆周率 π",
+    "完整代码：\nimport math\n\nr = 5\nc = round(2 * math.pi * r, 4)\nprint(c)"
+  ]
+}

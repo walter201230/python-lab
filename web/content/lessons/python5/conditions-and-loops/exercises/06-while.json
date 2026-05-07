@@ -1,0 +1,15 @@
+{
+  "id": "06-while",
+  "title": "while：倒计时",
+  "prompt": "用 `while` 循环从 5 倒数到 1（含 1），每个数 `print` 一行。\n\n输出应该是：\n```\n5\n4\n3\n2\n1\n```",
+  "starterCode": "n = 5\n# while n >= 1:\n#     print(n)\n#     n = n - 1\n",
+  "solution": "n = 5\nwhile n >= 1:\n    print(n)\n    n = n - 1",
+  "grading": {
+    "stdoutEquals": "5\n4\n3\n2\n1\n"
+  },
+  "hints": [
+    "条件：while n >= 1",
+    "循环体里要 n = n - 1，否则会死循环",
+    "完整代码：\nn = 5\nwhile n >= 1:\n    print(n)\n    n = n - 1"
+  ]
+}

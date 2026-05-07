@@ -1,0 +1,230 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #020617;          /* slate-950 */
+  --foreground: #f1f5f9;          /* slate-100 */
+  --tech-green-from: #34d399;     /* emerald-400 */
+  --tech-green-via: #2dd4bf;      /* teal-400 */
+  --tech-green-to: #22d3ee;       /* cyan-400 */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 科技网格背景（subtle，不抢主体内容） */
+.bg-tech-grid {
+  background-image:
+    linear-gradient(rgba(52, 211, 153, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 211, 153, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+}
+
+/* 科技渐变绿：emerald → teal → cyan（深色版更亮） */
+.gradient-tech-green {
+  background: linear-gradient(
+    135deg,
+    var(--tech-green-from) 0%,
+    var(--tech-green-via) 50%,
+    var(--tech-green-to) 100%
+  );
+}
+
+.gradient-tech-green-text {
+  background: linear-gradient(
+    135deg,
+    var(--tech-green-from) 0%,
+    var(--tech-green-via) 50%,
+    var(--tech-green-to) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 流光闪烁渐变（参考 news.stormzhang.ai 的 logo 效果）：
+ * 五段水平渐变 emerald → teal → highlight → teal → emerald，
+ * background-size 拉到 300% 让色带充分铺展，再以 background-position 平移
+ * 实现"光带从右往左周期扫过文字"的高级感 shimmer。
+ */
+.gradient-text-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--tech-green-from) 0%,
+    var(--tech-green-via) 25%,
+    #ecfeff 50%,
+    var(--tech-green-via) 75%,
+    var(--tech-green-from) 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shimmer 4s linear infinite;
+}
+@keyframes gradient-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text-shimmer { animation: none; }
+}
+
+/* 主题色渐变文字 + 高光横扫动画
+ * 底层：保留 gradient-tech-green-text 的 135deg 三色渐变（emerald → teal → cyan 同时可见）
+ * 叠层：::after 用 mask-image 定义一束白色高光，从左滑到右，给静态渐变加"金属反光"质感
+ */
+.gradient-text-flow {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--tech-green-from) 0%,
+    var(--tech-green-via) 50%,
+    var(--tech-green-to) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: filter 0.2s;
+}
+.gradient-text-flow::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.85) 50%,
+    transparent 70%
+  );
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shine 5s ease-in-out infinite;
+  pointer-events: none;
+}
+.gradient-text-flow:hover {
+  filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.55));
+}
+.gradient-text-flow:hover::after {
+  animation-duration: 1.6s;
+}
+@keyframes gradient-shine {
+  0% { background-position: -120% 0; }
+  60%, 100% { background-position: 220% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text-flow::after { animation: none; }
+}
+
+/* 边框发光效果（hover 时用） */
+.glow-emerald {
+  box-shadow: 0 0 24px rgba(52, 211, 153, 0.18);
+}
+
+/* 深色 prose 内嵌 code 微调 */
+.prose-invert code:not(pre code) {
+  background: rgba(45, 212, 191, 0.12);
+  color: #5eead4;
+  padding: 0.125rem 0.4rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  border: 1px solid rgba(45, 212, 191, 0.18);
+}
+
+.prose-invert code:not(pre code)::before,
+.prose-invert code:not(pre code)::after {
+  content: none;
+}
+
+.prose-invert pre {
+  background: #020617;
+  border: 1px solid rgba(52, 211, 153, 0.15);
+}
+
+/* 链接色（深色背景上） */
+.prose-invert a {
+  color: #5eead4;
+}
+
+.prose-invert a:hover {
+  color: #99f6e4;
+}
+
+/* ============================================================
+ * 通用 utility
+ * ============================================================ */
+
+/* 焦点环：emerald-300 双圈，深色背景 offset 到 slate-950 */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px #020617,
+    0 0 0 4px #6ee7b7;
+  border-radius: inherit;
+}
+
+/* ============================================================
+ * Lesson 动画（之前散落在组件 inline <style> 里）
+ * ============================================================ */
+
+/* Confetti 粒子下落 */
+.confetti-piece {
+  position: absolute;
+  border-radius: 2px;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.25, 0.85, 0.55, 1);
+  animation-fill-mode: forwards;
+  opacity: 0.95;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.4; }
+}
+
+/* 题号方块通过时弹跳进入 */
+@keyframes sticky-dot-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  55% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.sticky-dot-pop {
+  animation: sticky-dot-pop 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 判分通过 ✓ 弹入 */
+@keyframes grading-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.grading-pop {
+  animation: grading-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-dot-pop,
+  .grading-pop,
+  .confetti-piece {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,60 @@
+# 4、修改 dict（字典）
+
+向字典添加新内容、修改值，都是**用 key 直接赋值**：
+
+```python
+dict1 = {'liangdianshui': '111111', 'twowater': '222222', '两点水': '333333'}
+print(dict1)
+
+# 新增一个键值对
+dict1['jack'] = '444444'
+print(dict1)
+
+# 修改键值对（key 已存在时会覆盖）
+dict1['liangdianshui'] = '555555'
+print(dict1)
+```
+
+输出的结果：
+
+```
+{'liangdianshui': '111111', 'twowater': '222222', '两点水': '333333'}
+{'liangdianshui': '111111', 'twowater': '222222', '两点水': '333333', 'jack': '444444'}
+{'liangdianshui': '555555', 'twowater': '222222', '两点水': '333333', 'jack': '444444'}
+```
+
+# 5、删除 dict（字典）
+
+通过 `del` 可以删除某个 key 对应的元素，`clear()` 可以清空整个字典：
+
+```python
+dict1 = {'liangdianshui': '111111', 'twowater': '222222', '两点水': '333333'}
+
+# 通过 key 值，删除对应的元素
+del dict1['twowater']
+print(dict1)
+
+# 删除字典中的所有元素
+dict1.clear()
+print(dict1)
+```
+
+输出的结果：
+
+```
+{'liangdianshui': '111111', '两点水': '333333'}
+{}
+```
+
+# 6、常用函数和方法
+
+| 方法/函数 | 描述 |
+|---------|--------|
+| `len(d)` | 元素个数 |
+| `d.keys()` | 所有 key |
+| `d.values()` | 所有 value |
+| `d.items()` | 所有 (key, value) 对 |
+| `d.get(key)` | 安全取值，找不到返回 None |
+| `d.get(key, default)` | 找不到返回 default |
+| `d.pop(key)` | 删除并返回 key 对应的值 |
+| `d.clear()` | 清空 |

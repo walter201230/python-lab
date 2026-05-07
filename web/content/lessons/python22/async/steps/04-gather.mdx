@@ -1,0 +1,74 @@
+# 三、`asyncio.gather`：一次等多个
+
+上一节我们看到 `await` 串行写下来是排队执行的——和同步代码没区别，并不会更快。
+
+要真正享受到「同时等多件事」的并发效果，得明确告诉事件循环「这几件事可以一起开始」。`asyncio.gather` 就是干这个的。
+
+## 用法：`await asyncio.gather(coro1, coro2, ...)`
+
+```python
+import asyncio
+
+async def task(name):
+    await asyncio.sleep(0.01)
+    return f'{name} 完成'
+
+async def main():
+    r1, r2, r3 = await asyncio.gather(
+        task('A'),
+        task('B'),
+        task('C'),
+    )
+    print(r1)
+    print(r2)
+    print(r3)
+
+asyncio.run(main())
+```
+
+输出：
+
+```
+A 完成
+B 完成
+C 完成
+```
+
+`asyncio.gather` 接收任意多个协程，把它们一起扔给事件循环跑，然后**按你传进去的顺序**把结果打包返回。
+
+## 为什么这就「并发」了
+
+- 三个 `task('X')` 几乎同时开始
+- 各自跑到 `await asyncio.sleep(0.01)` 时让出 CPU
+- 事件循环在「等」的这段时间里调度其他协程
+- 等三个都好了，`gather` 把结果按顺序收回来
+
+如果是真实网络请求，三个请求 200 毫秒——串行 600 毫秒，`gather` 大约 200 毫秒。
+
+## 几个要点
+
+| 要点                           | 说明                                                 |
+|--------------------------------|------------------------------------------------------|
+| 结果顺序                       | 和**传入顺序一致**，不是「谁先跑完谁先返回」          |
+| 任意一个抛异常                 | 默认情况下整个 `gather` 都会抛                        |
+| 同一个协程对象不能被多次 await | 想跑同一函数多次就写多个调用 `[task() for _ in range(N)]` |
+
+## 串行 vs 并发，差在哪一行？
+
+对照看一下，「等」的方式不一样，效率天差地别：
+
+```python
+# 串行：1 个 sleep 等完再开下一个
+async def serial():
+    await task('A')
+    await task('B')
+    await task('C')
+
+# 并发：3 个 sleep 一起等
+async def concurrent():
+    await asyncio.gather(task('A'), task('B'), task('C'))
+```
+
+`gather` 是 `asyncio` 里出现频率最高的函数之一。看到「同时跑多个」的需求，第一反应就该是它。
+
+> Python 3.11+ 还有个升级版 `asyncio.TaskGroup`——更安全、出错时会自动取消其他任务。日常入门用 `gather` 就够。

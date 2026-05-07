@@ -1,0 +1,23 @@
+# macOS / iCloud 同步噪音
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+Icon
+
+# iCloud 元数据
+.com.apple.timemachine.donotpresent
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志
+*.log

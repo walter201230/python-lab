@@ -1,0 +1,71 @@
+# 一、第一个 Path
+
+`pathlib` 的核心是一个类：`Path`。所有操作都从它开始。
+
+## 1、从字符串创建 Path
+
+```python
+from pathlib import Path
+
+p = Path('data/foo.txt')
+print(p)
+print(type(p))
+```
+
+输出（在 macOS / Linux 上）：
+
+```
+data/foo.txt
+<class 'pathlib.PosixPath'>
+```
+
+是不是奇怪——明明 `Path('...')`，怎么类型变成了 `PosixPath`？
+
+这是因为 `Path` 是个聪明家伙，会**根据当前操作系统自动选择子类**：
+
+- macOS / Linux → `PosixPath`
+- Windows → `WindowsPath`
+
+平时根本不用关心这个区别——直接 `Path('...')` 就完事了。
+
+## 2、绝对路径
+
+绝对路径（以 `/` 开头）也照样行：
+
+```python
+from pathlib import Path
+
+p = Path('/tmp/data/foo.txt')
+print(p)
+```
+
+输出：
+
+```
+/tmp/data/foo.txt
+```
+
+## 3、两个常用「快捷入口」
+
+```python
+from pathlib import Path
+
+print(Path.home())   # 当前用户的家目录
+print(Path.cwd())    # 当前工作目录
+```
+
+可能的输出：
+
+```
+/Users/walter
+/Users/walter/projects/demo
+```
+
+对比老写法：
+
+| 老 API | 新 API |
+|---|---|
+| `os.path.expanduser('~')` | `Path.home()` |
+| `os.getcwd()` | `Path.cwd()` |
+
+> 在 Pyodide / 浏览器环境里，`Path.home()` 和 `Path.cwd()` 也能跑——只是结果是虚拟的。

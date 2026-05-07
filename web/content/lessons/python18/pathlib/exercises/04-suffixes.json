@@ -1,0 +1,16 @@
+{
+  "id": "04-suffixes",
+  "title": "多后缀文件：.suffixes",
+  "prompt": "对于 `foo.tar.gz` 这种「多后缀」的文件名：\n\n- `.suffix` 只给**最后一个**后缀（`.gz`）\n- `.suffixes` 给一个**列表**，包含所有后缀\n\n请：\n\n1. 从 `pathlib` 导入 `Path`\n2. 创建 `p = Path('test.tar.gz')`\n3. `print(p.suffixes)`\n\n输出应该是：\n```\n['.tar', '.gz']\n```",
+  "starterCode": "# from pathlib import Path\n\n# p = Path('test.tar.gz')\n# print(p.suffixes)\n",
+  "solution": "from pathlib import Path\n\np = Path('test.tar.gz')\nprint(p.suffixes)",
+  "grading": {
+    "stdoutEquals": "['.tar', '.gz']\n",
+    "requiredAst": ["ImportFrom"]
+  },
+  "hints": [
+    ".suffix（单数）只给最后一个；.suffixes（复数）给所有",
+    "顺序是从前到后——['.tar', '.gz']",
+    "完整代码：\nfrom pathlib import Path\np = Path('test.tar.gz')\nprint(p.suffixes)"
+  ]
+}

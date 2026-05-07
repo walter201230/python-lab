@@ -1,0 +1,259 @@
+# 第一个测试
+
+各位先来感受一下 pytest 有多简单。建一个新目录：
+
+```bash
+mkdir test-demo
+cd test-demo
+uv init
+uv add --dev pytest
+```
+
+写一个最普通的 Python 文件 `mymath.py`：
+
+```python
+def add(a, b):
+    return a + b
+
+
+def divide(a, b):
+    if b == 0:
+        raise ValueError("除数不能为 0")
+    return a / b
+```
+
+然后写一个测试文件 `test_mymath.py`：
+
+```python
+from mymath import add, divide
+
+
+def test_add():
+    assert add(2, 3) == 5
+
+
+def test_add_negative():
+    assert add(-1, 1) == 0
+
+
+def test_divide():
+    assert divide(10, 2) == 5
+```
+
+注意三个细节——文件名以 `test_` 开头、函数名以 `test_` 开头、断言用 Python 内置的 `assert` 关键字。就这么简单。
+
+跑一下：
+
+```bash
+uv run pytest
+```
+
+输出大概长这样：
+
+```
+============================= test session starts ==============================
+platform darwin -- Python 3.13.1, pytest-8.3.4, pluggy-1.5.0
+rootdir: /Users/walter/test-demo
+collected 3 items
+
+test_mymath.py ...                                                       [100%]
+
+============================== 3 passed in 0.01s ===============================
+```
+
+三个绿点 `...` 代表三个测试全部通过。0.01 秒跑完。
+
+各位再故意把 `add` 函数改坏，比如改成 `return a + b + 1`，再跑一次：
+
+```
+test_mymath.py FF.                                                       [100%]
+
+=================================== FAILURES ===================================
+___________________________________ test_add ___________________________________
+
+    def test_add():
+>       assert add(2, 3) == 5
+E       assert 6 == 5
+E        +  where 6 = add(2, 3)
+
+test_mymath.py:4: AssertionError
+```
+
+pytest 直接告诉你：第几行的断言炸了、左边是 6、右边是 5、6 是怎么来的（`add(2, 3)` 算出来的）。一目了然。
+
+## assert 重写——pytest 最神奇的地方
+
+按理说 `assert` 这个东西很「弱」——它失败的时候只能抛 AssertionError，啥提示都没有。Python 内置的 assert 出错时是这样的：
+
+```python
+>>> x = 6
+>>> assert x == 5
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AssertionError
+```
+
+只告诉你「断言失败了」，至于左边右边各是啥，不知道。
+
+那 pytest 怎么搞出来这么多信息的？
+
+答案是「assert 重写」（assertion rewriting）。pytest 在加载测试文件之前，会先把代码里的 `assert` 语句**重写**一遍——把简单的 `assert a == b` 改写成「先把 a 和 b 算出来存好，断言失败时再把它们打印出来」。这套机制不需要各位写任何额外代码，开箱即用。
+
+复杂一点的断言也照样有详细信息：
+
+```python
+def test_list_equal():
+    a = [1, 2, 3, 4, 5]
+    b = [1, 2, 3, 4, 6]
+    assert a == b
+```
+
+跑一下，pytest 会输出：
+
+```
+>       assert a == b
+E       assert [1, 2, 3, 4, 5] == [1, 2, 3, 4, 6]
+E         At index 4 diff: 5 != 6
+```
+
+它甚至会告诉你「在第 4 个位置，5 跟 6 不一样」。字典、字符串、集合都有类似的「智能 diff」。
+
+所以 pytest 圈推荐的写法只有一句话——**所有断言都用 `assert`，一律不用 `assertXXX`**。
+
+几种常见的断言：
+
+```python
+# 相等
+assert x == 5
+assert name == "两点水"
+
+# 不等
+assert x != 0
+
+# 包含
+assert "Python" in "I love Python"
+assert 3 in [1, 2, 3]
+
+# 真假
+assert is_valid is True
+assert result is None
+
+# 数值大小
+assert age >= 18
+assert 0 < score < 100
+
+# 类型
+assert isinstance(x, int)
+```
+
+要点就是「写普通 Python 表达式」。能用 `==` 就用 `==`，能用 `in` 就用 `in`，不用记任何专属断言函数。
+
+## 测试发现——pytest 怎么找到你的测试
+
+各位刚才有没有注意到一件事？我们写 `pytest` 命令时**没指定要跑哪个文件**，但它自动找到了 `test_mymath.py`。
+
+pytest 有一套默认的「测试发现」（test discovery）规则。它会从当前目录开始，递归扫描所有目录，找符合下面这些规则的东西：
+
+1. **测试文件**：`test_*.py` 或 `*_test.py`
+2. **测试类**：以 `Test` 开头的类（且没有 `__init__` 方法）
+3. **测试函数**：以 `test_` 开头的函数或方法
+
+约定俗成的目录结构是这样：
+
+```
+my-project/
+├── pyproject.toml
+├── src/
+│   └── mypackage/
+│       ├── __init__.py
+│       ├── core.py
+│       └── utils.py
+└── tests/
+    ├── test_core.py
+    └── test_utils.py
+```
+
+源码放在 `src/` 下，测试放在 `tests/` 下，**测试文件名跟被测文件一一对应**。`core.py` 对应 `test_core.py`。
+
+那 `pytest` 命令怎么用？常用几种姿势：
+
+```bash
+# 跑所有测试
+pytest
+
+# 只跑某个文件
+pytest tests/test_core.py
+
+# 只跑某个测试函数
+pytest tests/test_core.py::test_add
+
+# 只跑某个类的某个方法
+pytest tests/test_core.py::TestUser::test_create
+
+# 按关键字过滤（函数名包含某个词）
+pytest -k "add"
+pytest -k "add or divide"
+pytest -k "not slow"
+
+# 显示更详细的输出
+pytest -v
+
+# 第一个失败就停
+pytest -x
+
+# 显示 print 输出（默认 pytest 会捕获）
+pytest -s
+```
+
+`-v` 会把每个测试的名字列出来：
+
+```
+test_mymath.py::test_add PASSED
+test_mymath.py::test_add_negative PASSED
+test_mymath.py::test_divide PASSED
+```
+
+`-x` 在 debug 时特别有用——一堆测试全挂了，与其全跑完再看，不如第一个挂就停下来分析。
+
+`-s` 让 print 直接输出到终端，方便临时打日志看变量值。
+
+## 异常断言——测「会不会抛错」
+
+写代码时，咱们经常希望某个函数在错误输入下「**应该**」抛异常。比如除以 0、空字符串、负数年龄。
+
+那怎么测「这个函数应该抛 ValueError」呢？光写 `try/except` 不行——测试函数没出错也算通过，可逻辑上没抛异常恰恰是 bug。
+
+pytest 提供了 `pytest.raises` 上下文管理器：
+
+```python
+import pytest
+
+
+def test_divide_by_zero():
+    with pytest.raises(ValueError):
+        divide(10, 0)
+```
+
+`with pytest.raises(ValueError):` 块里面的代码**必须抛 ValueError**，不抛或抛别的异常都算测试失败。
+
+如果各位还想顺便检查异常的内容（比如错误信息）：
+
+```python
+def test_divide_by_zero_message():
+    with pytest.raises(ValueError, match="除数不能为 0"):
+        divide(10, 0)
+```
+
+`match` 参数是一个正则表达式，匹配异常的字符串表示。
+
+或者拿到异常对象本身做更精细的断言：
+
+```python
+def test_divide_by_zero_detail():
+    with pytest.raises(ValueError) as exc_info:
+        divide(10, 0)
+    assert "除数" in str(exc_info.value)
+    assert exc_info.type is ValueError
+```
+
+各位写测试时，「正常路径」+「异常路径」都要覆盖。一个函数只测正常输入是不够的——边界条件、错误输入、空值这些「能否优雅地抛异常」也很重要。

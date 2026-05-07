@@ -1,0 +1,24 @@
+{
+  "id": "dict-and-set",
+  "title": "Dict 与 Set",
+  "chapter": "python4",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-dict-create.mdx" },
+    { "kind": "exercise", "file": "01-dict-create.json" },
+    { "kind": "step", "file": "03-dict-access.mdx" },
+    { "kind": "exercise", "file": "02-dict-access.json" },
+    { "kind": "step", "file": "04-dict-modify.mdx" },
+    { "kind": "exercise", "file": "03-dict-modify.json" },
+    { "kind": "step", "file": "05-dict-merge.mdx" },
+    { "kind": "exercise", "file": "04-dict-merge.json" },
+    { "kind": "step", "file": "06-set-basics.mdx" },
+    { "kind": "exercise", "file": "05-set-dedup.json" },
+    { "kind": "step", "file": "07-set-modify.mdx" },
+    { "kind": "exercise", "file": "06-set-add.json" },
+    { "kind": "step", "file": "08-set-ops.mdx" },
+    { "kind": "exercise", "file": "07-set-ops.json" }
+  ]
+}

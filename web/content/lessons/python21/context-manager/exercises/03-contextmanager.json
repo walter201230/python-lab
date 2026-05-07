@@ -1,0 +1,16 @@
+{
+  "id": "03-contextmanager",
+  "title": "用 @contextmanager 写一个 banner",
+  "prompt": "请用 `@contextmanager` 写一个**生成器函数版**的上下文管理器 `banner(title)`：\n\n- 进入时（yield 前）：打印 `f'==== {title} ===='`\n- yield（无值）\n- 退出时（yield 后）：打印 `'================'`\n\n然后用 `with banner('开始任务'):` 包住一行 `print('做事中')`。\n\n输出应该是：\n```\n==== 开始任务 ====\n做事中\n================\n```",
+  "starterCode": "from contextlib import contextmanager\n\n# @contextmanager\n# def banner(title):\n#     print(f'==== {title} ====')\n#     try:\n#         yield\n#     finally:\n#         print('================')\n\n# with banner('开始任务'):\n#     print('做事中')\n",
+  "solution": "from contextlib import contextmanager\n\n@contextmanager\ndef banner(title):\n    print(f'==== {title} ====')\n    try:\n        yield\n    finally:\n        print('================')\n\nwith banner('开始任务'):\n    print('做事中')",
+  "grading": {
+    "stdoutEquals": "==== 开始任务 ====\n做事中\n================\n",
+    "requiredAst": ["FunctionDef:banner"]
+  },
+  "hints": [
+    "@contextmanager 只装饰生成器函数，要用 yield",
+    "yield 之前是进入时跑的，yield 之后是退出时跑的",
+    "记得用 try/finally 包住 yield，保证清理一定执行"
+  ]
+}

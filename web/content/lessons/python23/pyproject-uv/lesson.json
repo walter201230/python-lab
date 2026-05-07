@@ -1,0 +1,15 @@
+{
+  "id": "pyproject-uv",
+  "title": "pyproject.toml + uv",
+  "chapter": "python23",
+  "order": 1,
+  "estimatedMinutes": 20,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-pyproject.mdx" },
+    { "kind": "step", "file": "03-uv-install.mdx" },
+    { "kind": "step", "file": "04-uv-workflow.mdx" },
+    { "kind": "step", "file": "05-uv-sync.mdx" },
+    { "kind": "step", "file": "06-comparison.mdx" }
+  ]
+}

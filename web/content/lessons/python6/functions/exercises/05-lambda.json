@@ -1,0 +1,15 @@
+{
+  "id": "05-lambda",
+  "title": "lambda：用匿名函数排序",
+  "prompt": "已经给你定义了：\n```python\nusers = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 28},\n]\n```\n\n请用 `sorted` 加 **lambda** 把 `users` 按 `age` 升序排序，赋给 `sorted_users`，然后用 `for` 循环依次 `print` 每个人的 `name` 和 `age`（用空格分隔）。\n\n输出应该是：\n```\nBob 25\nCarol 28\nAlice 30\n```",
+  "starterCode": "users = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 28},\n]\n# sorted_users = sorted(users, key=lambda u: u['age'])\n# for u in sorted_users:\n#     print(u['name'], u['age'])\n",
+  "solution": "users = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 28},\n]\nsorted_users = sorted(users, key=lambda u: u['age'])\nfor u in sorted_users:\n    print(u['name'], u['age'])",
+  "grading": {
+    "stdoutEquals": "Bob 25\nCarol 28\nAlice 30\n"
+  },
+  "hints": [
+    "sorted 的 key 参数接收一个函数：每个元素拿来生成「排序依据」",
+    "lambda u: u['age'] 等价于 def f(u): return u['age']",
+    "完整代码：\nsorted_users = sorted(users, key=lambda u: u['age'])\nfor u in sorted_users:\n    print(u['name'], u['age'])"
+  ]
+}

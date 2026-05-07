@@ -1,0 +1,120 @@
+# 四、类型注解（Type Hints）
+
+回到最开始那段「让人懵」的代码：
+
+```python
+def calc(x, y, op):
+    ...
+```
+
+加上类型注解之后：
+
+```python
+def calc(x: int, y: int, op: str) -> int:
+    ...
+```
+
+光看签名你就懂了：「两个 int、一个 str，返回 int」。
+
+## 1、基本语法
+
+记住这个口诀：「**参数加冒号，返回加箭头**」。
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+
+def greet(name: str) -> str:
+    return f'你好，{name}'
+
+
+def log(message: str) -> None:    # 没有返回值就写 None
+    print(message)
+```
+
+调用时：
+
+```python
+print(add(3, 5))
+print(greet('张三'))
+log('打卡成功')
+```
+
+输出：
+
+```
+8
+你好，张三
+打卡成功
+```
+
+## 2、Python 不强制检查类型
+
+注意一个**重要的事实**：Python 解释器**不会**根据注解去校验类型。
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+print(add('hello', 'world'))   # 居然能跑！输出 'helloworld'
+```
+
+注解只是「**写给人看的契约**」+「**写给工具看的提示**」。要真的校验类型，需要用 `mypy`、`pyright` 这类静态检查工具。
+
+那加注解还有意义吗？有：
+
+- IDE 能给你**精准的代码补全**
+- 同事读代码时**省下大把猜测**
+- 静态检查器能在**代码运行前**揪出类型不匹配
+
+## 3、常用基础类型
+
+| 类型 | 含义 |
+|---|---|
+| `int` | 整数 |
+| `float` | 浮点数 |
+| `str` | 字符串 |
+| `bool` | 布尔值 |
+| `list` | 列表 |
+| `dict` | 字典 |
+| `tuple` | 元组 |
+| `None` | 空值（用作返回类型） |
+
+## 4、容器装的什么也能写出来
+
+光写 `list` 不够——「列表里装的啥」还是不知道。Python 3.9+ 可以这么写：
+
+```python
+def total(nums: list[int]) -> int:
+    return sum(nums)
+
+
+def name_to_age(data: dict[str, int]) -> int:
+    return len(data)
+```
+
+- `list[int]` —— 装 int 的列表
+- `dict[str, int]` —— 键是 str、值是 int 的字典
+
+## 5、可能返回 None 怎么办？
+
+用 `X | None`（Python 3.10+）：
+
+```python
+def find_user(uid: int) -> str | None:
+    db = {1: '张三', 2: '李四'}
+    return db.get(uid)    # 找不到时 .get() 返回 None
+```
+
+读起来就是「返回 str 或者 None」，调用方一看就知道**要判空**。
+
+## 6、什么场景该写注解
+
+**优先级从高到低**：
+
+1. **公共函数 / 类的方法**——必加，这是接口契约
+2. **复杂的业务函数**——必加，帮后期维护
+3. **简单的一次性脚本**——随意
+
+`for i in range(10)` 这种 `i` 显然是 `int` 的，硬塞 `i: int` 反而显得啰嗦。注解的价值是「消除歧义」，没歧义的地方加了反而碍眼。

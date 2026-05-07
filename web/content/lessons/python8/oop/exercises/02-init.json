@@ -1,0 +1,16 @@
+{
+  "id": "02-init",
+  "title": "用 __init__ 给对象传参",
+  "prompt": "请定义类 `Person`：\n\n- `__init__` 接收 `name` 和 `age`，分别保存到 `self.name` 和 `self.age`\n- 方法 `greet`：打印 `f'我叫 {self.name}，今年 {self.age} 岁'`\n\n然后实例化 `Person('张三', 18)` 赋给 `p`，调用 `p.greet()`。\n\n输出应该是：\n```\n我叫 张三，今年 18 岁\n```",
+  "starterCode": "# class Person:\n#     def __init__(self, name, age):\n#         self.name = name\n#         self.age = age\n#     def greet(self):\n#         print(f'我叫 {self.name}，今年 {self.age} 岁')\n# p = Person('张三', 18)\n# p.greet()\n",
+  "solution": "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\n    def greet(self):\n        print(f'我叫 {self.name}，今年 {self.age} 岁')\n\np = Person('张三', 18)\np.greet()",
+  "grading": {
+    "stdoutEquals": "我叫 张三，今年 18 岁\n",
+    "requiredAst": ["ClassDef:Person"]
+  },
+  "hints": [
+    "__init__ 前后各两个下划线",
+    "在 __init__ 里用 self.xxx = ... 设置实例属性",
+    "完整代码见提示 1 / 2"
+  ]
+}

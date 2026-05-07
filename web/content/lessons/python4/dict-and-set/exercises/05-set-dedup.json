@@ -1,0 +1,16 @@
+{
+  "id": "05-set-dedup",
+  "title": "用 set 去重",
+  "prompt": "已经给你定义了：\n```python\nnums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]\n```\n\n请：\n\n1. 把 `nums` 转成 `set`，去重\n2. 再用 `sorted()` 把 set 排序成 list，赋给 `unique`（这样输出顺序稳定）\n3. `print(unique)`\n\n输出应该是：\n```\n[1, 2, 3, 4, 5, 6, 9]\n```",
+  "starterCode": "nums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]\n# unique = sorted(set(nums))\n# print(unique)\n",
+  "solution": "nums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]\nunique = sorted(set(nums))\nprint(unique)",
+  "grading": {
+    "varsEqual": { "unique": [1, 2, 3, 4, 5, 6, 9] },
+    "stdoutEquals": "[1, 2, 3, 4, 5, 6, 9]\n"
+  },
+  "hints": [
+    "set(nums) 自动去重——重复值只保留一个",
+    "sorted(set) 把 set 转成有序的 list",
+    "完整代码：\nunique = sorted(set(nums))\nprint(unique)"
+  ]
+}

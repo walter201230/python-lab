@@ -1,0 +1,292 @@
+# fixture——测试界的依赖注入
+
+各位写测试写多了，会发现一个问题：**很多测试都需要一些「准备工作」**。
+
+比如：
+
+- 测试数据库相关功能时，每个测试都要先建一个临时数据库连接
+- 测试 API 时，每个测试都要先启动一个 HTTP 客户端
+- 测试文件操作时，每个测试都要先准备一个临时目录
+
+如果按「最朴素」的写法：
+
+```python
+def test_user_create():
+    db = create_test_db()
+    db.connect()
+    try:
+        user = User(name="walter")
+        db.save(user)
+        assert db.get_user("walter").name == "walter"
+    finally:
+        db.close()
+
+
+def test_user_delete():
+    db = create_test_db()
+    db.connect()
+    try:
+        user = User(name="walter")
+        db.save(user)
+        db.delete_user("walter")
+        assert db.get_user("walter") is None
+    finally:
+        db.close()
+```
+
+每个测试都要重复「建库 → 连接 → finally 关闭」这一坨。很丑。
+
+pytest 的解决办法叫 fixture。它把「准备工作」抽成一个带 `@pytest.fixture` 装饰器的函数：
+
+```python
+import pytest
+
+
+@pytest.fixture
+def db():
+    """提供一个干净的测试数据库连接。"""
+    conn = create_test_db()
+    conn.connect()
+    yield conn         # 把 conn 交给测试函数
+    conn.close()       # 测试结束后再清理
+
+
+def test_user_create(db):
+    user = User(name="walter")
+    db.save(user)
+    assert db.get_user("walter").name == "walter"
+
+
+def test_user_delete(db):
+    user = User(name="walter")
+    db.save(user)
+    db.delete_user("walter")
+    assert db.get_user("walter") is None
+```
+
+各位看出门道了吗？
+
+1. 写一个 `db` fixture，里面 `yield` 出去一个连接对象
+2. 测试函数把 `db` **写成参数**，pytest 自动把 fixture 算出来的值传进来
+3. 测试结束后，`yield` 后面的清理代码自动跑
+
+是不是有点像 Spring/Django 里的「依赖注入」？各位要啥东西，写个参数名 pytest 就帮你准备好。**测试函数只关心「我要测什么」，不关心「怎么准备数据」**——关注点完全分离。
+
+## fixture 的几种写法
+
+**只准备、不清理**：直接 `return`，省掉 `yield`。
+
+```python
+@pytest.fixture
+def sample_user():
+    return User(name="walter", age=28)
+
+
+def test_greet(sample_user):
+    assert greet(sample_user) == "Hello, walter!"
+```
+
+**fixture 之间可以互相依赖**。比如 `db` 依赖 `config`：
+
+```python
+@pytest.fixture
+def config():
+    return {"host": "localhost", "port": 5432}
+
+
+@pytest.fixture
+def db(config):                         # 注意这里也写参数
+    conn = connect(config["host"], config["port"])
+    yield conn
+    conn.close()
+
+
+def test_query(db):
+    assert db.ping() is True
+```
+
+pytest 会自己把整个依赖链解算出来，先跑 `config`，再用 `config` 的结果调 `db`，最后把 `db` 喂给测试。
+
+## fixture scope——什么时候建、什么时候销毁
+
+各位再看一个实际问题——
+
+「我有一个 fixture 是建数据库连接，建一次要 1 秒。我有 100 个测试都用它。每个测试都重新建一次的话，光建连接就要 100 秒。能不能只建一次，所有测试共用？」
+
+pytest 的答案是 fixture 的 `scope` 参数。它有四档：
+
+- `function`（默认）：每个测试函数跑前建、跑后销毁
+- `class`：每个测试类跑前建、跑完销毁
+- `module`：每个测试文件（模块）跑前建、跑完销毁
+- `session`：整个 pytest 启动到结束只建一次
+
+举个例子，把数据库连接设成 `session` 级别：
+
+```python
+@pytest.fixture(scope="session")
+def db():
+    conn = create_test_db()
+    conn.connect()
+    yield conn
+    conn.close()
+```
+
+这样不管你跑多少测试，conn 只建一次、关一次。
+
+那啥时候用啥 scope？给各位一个经验法则——
+
+- **要保证测试之间彼此独立**（每个测试都从干净状态开始）：用 `function`
+- **建一次代价很高**（连数据库、启容器、加载大模型）：用 `module` 或 `session`，但要注意每个测试结束后**手动清理状态**
+
+举个混合用法：
+
+```python
+@pytest.fixture(scope="session")
+def db_connection():
+    """整个 session 共用一个连接，建一次就够。"""
+    conn = connect_to_db()
+    yield conn
+    conn.close()
+
+
+@pytest.fixture(scope="function")
+def db(db_connection):
+    """每个测试用一个干净的事务，跑完回滚。"""
+    txn = db_connection.begin_transaction()
+    yield txn
+    txn.rollback()
+
+
+def test_create_user(db):
+    db.execute("INSERT INTO users ...")
+    # 测试结束后事务自动回滚，下一个测试看到的还是干净的库
+```
+
+「连接共享、事务隔离」是数据库测试里特别常见的模式。session 级别的连接保证速度，function 级别的事务保证隔离。
+
+## 内置 fixture——pytest 自带的几个救命神器
+
+各位先别急着自己写 fixture，pytest 自己已经备好了几十个常用的。说几个最最常用的。
+
+### tmp_path——临时目录
+
+写测试经常要操作文件——读啥、写啥、删啥。
+
+pytest 的 `tmp_path` fixture 直接给你一个临时目录，跑完测试自动清理。
+
+```python
+def test_write_and_read(tmp_path):
+    file = tmp_path / "hello.txt"
+    file.write_text("两点水", encoding="utf-8")
+
+    assert file.exists()
+    assert file.read_text(encoding="utf-8") == "两点水"
+```
+
+`tmp_path` 是一个 `pathlib.Path` 对象，直接 `/` 拼路径。
+
+每个测试拿到的 `tmp_path` 都是不同的目录，互不干扰。pytest 默认会保留最近 3 次跑测试的临时目录在 `/tmp/pytest-of-<user>/` 下，如果一个测试挂了，各位可以去那里翻翻看里面的文件长啥样，方便 debug。
+
+### monkeypatch——临时改环境
+
+测试时经常要「修改一些全局状态」——改环境变量、替换某个函数、改某个对象的属性。改完测试结束之后还得改回去，不然影响下一个测试。
+
+`monkeypatch` fixture 就是干这个的。它能临时改东西，测试结束自动还原。
+
+```python
+def test_with_env(monkeypatch):
+    monkeypatch.setenv("API_KEY", "test-key-123")
+    assert get_api_key() == "test-key-123"
+    # 测试结束后 API_KEY 自动还原
+
+
+def test_replace_function(monkeypatch):
+    def fake_get_time():
+        return 1700000000
+    monkeypatch.setattr("mymodule.time.time", fake_get_time)
+    # 测试结束后 time.time 自动还原
+
+
+def test_chdir(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    # 当前目录临时切到 tmp_path，测试结束自动切回去
+```
+
+常用方法：
+
+- `monkeypatch.setenv(name, value)`：设环境变量
+- `monkeypatch.delenv(name)`：删环境变量
+- `monkeypatch.setattr(target, value)`：替换某个对象的属性
+- `monkeypatch.delattr(target)`：删某个属性
+- `monkeypatch.chdir(path)`：切当前目录
+
+各位测试有外部依赖的代码时，`monkeypatch` 是首选——不用真去连数据库、不用真发 HTTP 请求，直接 fake 掉一个返回值就行。
+
+### capsys——抓 stdout/stderr
+
+测试一段会 print 的代码，怎么验证它打印对了？`capsys` 就是干这个的。
+
+```python
+def greet(name):
+    print(f"Hello, {name}!")
+
+
+def test_greet(capsys):
+    greet("walter")
+    captured = capsys.readouterr()
+    assert captured.out == "Hello, walter!\n"
+    assert captured.err == ""
+```
+
+`capsys.readouterr()` 返回一个对象，`.out` 是 stdout、`.err` 是 stderr。
+
+类似的 fixture 还有：
+
+- `capfd`：抓文件描述符级别的输出（包括 C 扩展、子进程的输出）
+- `caplog`：抓 `logging` 模块的输出
+
+## conftest.py——共享 fixture
+
+各位写测试越写越多，会发现一个问题——**好几个测试文件都要用同一个 fixture**。
+
+不用每个文件都写一遍。pytest 有一个特殊的文件叫 `conftest.py`，**放在 `conftest.py` 里的 fixture 自动可被同目录及子目录下的所有测试使用**——不需要 import。
+
+```
+tests/
+├── conftest.py            # 共享 fixture 在这里
+├── test_user.py
+├── test_order.py
+└── api/
+    ├── conftest.py        # 子目录还能再加一份
+    └── test_endpoints.py
+```
+
+`tests/conftest.py`：
+
+```python
+import pytest
+
+
+@pytest.fixture
+def db():
+    conn = create_test_db()
+    yield conn
+    conn.close()
+
+
+@pytest.fixture
+def sample_user(db):
+    user = User(name="walter", age=28)
+    db.save(user)
+    return user
+```
+
+`tests/test_user.py`：
+
+```python
+def test_get_user(db, sample_user):
+    # 直接用，不用 import
+    assert db.get_user(sample_user.id).name == "walter"
+```
+
+pytest 会从测试文件所在目录开始往上查找所有 `conftest.py`，把里面的 fixture 都收集起来。所以**外层的 fixture 内层能用，反过来不行**。

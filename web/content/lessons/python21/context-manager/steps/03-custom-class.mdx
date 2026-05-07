@@ -1,0 +1,69 @@
+# 二、自己写一个上下文管理器
+
+光是 `print` 几行字太单薄了，我们让上下文管理器做点正经事——比如**记录进入和离开的事件**：
+
+```python
+class PunchLog:
+    def __init__(self, name):
+        self.name = name
+        self.records = []
+
+    def __enter__(self):
+        self.records.append(f'{self.name} 进入工位')
+        return self
+
+    def __exit__(self, exc_type, exc_val, tb):
+        self.records.append(f'{self.name} 离开工位')
+
+
+log = PunchLog('两点水')
+with log:
+    print('正在划水……')
+
+for line in log.records:
+    print(line)
+```
+
+输出：
+
+```
+正在划水……
+两点水 进入工位
+两点水 离开工位
+```
+
+> ⚠️ **常见坑**：如果改成 `with log as l:`，那 `l` 会变成 `None`，因为 `__enter__` 没写 `return self`，默认返回 `None`。「我的 `as x` 怎么是 `None`？」八成是 `__enter__` 忘了 `return`。
+
+## __exit__ 的三个参数：异常处理
+
+如果 `with` 块里抛了异常，`__exit__` 会拿到三个参数：
+
+- `exc_type`：异常类型
+- `exc_val`：异常实例
+- `tb`：traceback 对象
+
+```python
+class CatchAll:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, tb):
+        if exc_type is not None:
+            print(f'捕获到异常：{exc_type.__name__}: {exc_val}')
+        return True   # 返回 True 表示「这个异常我吞掉了」
+
+
+with CatchAll():
+    raise ValueError('故意的')
+
+print('with 之后的代码继续执行')
+```
+
+输出：
+
+```
+捕获到异常：ValueError: 故意的
+with 之后的代码继续执行
+```
+
+`__exit__` 返回 `True` 表示**吞掉异常**——异常不会再向外传播。返回 `False`（或 `None`）表示**让异常继续往上抛**。

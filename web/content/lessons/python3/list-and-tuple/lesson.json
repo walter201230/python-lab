@@ -1,0 +1,24 @@
+{
+  "id": "list-and-tuple",
+  "title": "List 与 Tuple",
+  "chapter": "python3",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-list-create.mdx" },
+    { "kind": "exercise", "file": "01-create-list.json" },
+    { "kind": "step", "file": "03-list-access.mdx" },
+    { "kind": "exercise", "file": "02-list-access.json" },
+    { "kind": "step", "file": "04-list-update.mdx" },
+    { "kind": "exercise", "file": "03-list-update.json" },
+    { "kind": "step", "file": "05-list-ops.mdx" },
+    { "kind": "exercise", "file": "04-list-ops.json" },
+    { "kind": "step", "file": "06-tuple-create.mdx" },
+    { "kind": "exercise", "file": "05-tuple-create.json" },
+    { "kind": "step", "file": "07-tuple-access.mdx" },
+    { "kind": "exercise", "file": "06-tuple-access.json" },
+    { "kind": "step", "file": "08-tuple-ops.mdx" },
+    { "kind": "exercise", "file": "07-tuple-ops.json" }
+  ]
+}

@@ -1,0 +1,235 @@
+# 配置：pyproject.toml
+
+ruff 的配置全部塞进 `pyproject.toml`，没有别的文件。配置长这样：
+
+```toml
+[tool.ruff]
+# 行宽，跟 black 默认一致
+line-length = 88
+
+# 目标 Python 版本，影响某些规则的判断
+target-version = "py312"
+
+# 排除哪些目录
+exclude = [
+    ".git",
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__",
+    "migrations",
+]
+
+[tool.ruff.lint]
+# 启用哪些规则集
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+# 忽略哪些具体规则
+ignore = ["E501"]
+
+[tool.ruff.format]
+# 引号风格：双引号优先（black 风格）
+quote-style = "double"
+# 缩进风格：空格
+indent-style = "space"
+```
+
+## line-length
+
+行宽。默认 88，跟 black 一致。喜欢 100 也行：
+
+```toml
+line-length = 100
+```
+
+## target-version
+
+目标 Python 版本。这个值影响一些规则的判断。比如 `target-version = "py312"`，ruff 知道 `dict[str, int]` 这种语法你能用，会建议把老代码里的 `Dict[str, int]` 改过来。
+
+合法值：`py38`、`py39`、`py310`、`py311`、`py312`、`py313`、`py314`。
+
+## exclude
+
+不扫描哪些目录。`.git`、`.venv`、`build`、`dist` 这些 ruff 默认就会排除，但是 `migrations`（Django 项目自动生成的迁移文件）这种，需要自己加。
+
+## select
+
+最重要的字段——**启用哪些规则集**。
+
+新项目第一次配，推荐这一套：
+
+```toml
+select = ["E", "F", "I", "UP", "B", "SIM"]
+```
+
+`E + F` 是基本款（PEP 8 + pyflakes），`I` 管 import 排序，`UP` 把老语法升级到新版本，`B` 抓常见 bug，`SIM` 给一些简化建议。这六组覆盖了 80% 的需求，又不会噪声太大。
+
+如果项目对代码质量要求高，再加上 `N`（命名规范）、`C4`（推导式）、`RET`（return）、`ARG`（未用参数）。
+
+如果还要加 docstring 检查（`D`），各位要做好心理准备——pydocstyle 的规则很严格，老项目一开就是几百条告警。建议从 `select = ["D"]` + `ignore = ["D100", "D101", "D102", ...]` 一条条试，别一上来就全开。
+
+## ignore
+
+忽略某些具体规则。比如 `E501`（行太长），有些项目觉得 88 字符不够用，就加进 ignore：
+
+```toml
+ignore = ["E501"]
+```
+
+或者忽略整个组：
+
+```toml
+ignore = ["D"]
+```
+
+## per-file-ignores
+
+按文件忽略规则。`__init__.py` 经常有未使用的 import（其实是用来重导出的），不想被告警，可以这样：
+
+```toml
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101", "ANN"]
+```
+
+`tests/*` 里允许用 `assert`（S101），不要求每个测试函数都写类型注解（ANN）。
+
+## isort 子配置
+
+`I` 规则集（isort 替代）有自己的子配置，放 `[tool.ruff.lint.isort]`：
+
+```toml
+[tool.ruff.lint.isort]
+# 把这些当成「第一方」包，跟其他第三方分开排
+known-first-party = ["my_project"]
+
+# import 块的分组顺序
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+```
+
+`known-first-party` 这个配置很常用——告诉 ruff「`my_project` 是我自己的包」，ruff 就会把它的 import 放到独立的一组，不跟第三方包混在一起。
+
+## 完整配置示例
+
+放一份生产可用的 `pyproject.toml` 配置，各位可以直接抄回去改：
+
+```toml
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__",
+    "migrations",
+    "*.ipynb",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "N",   # pep8-naming
+    "RET", # flake8-return
+]
+ignore = [
+    "E501",  # 行太长，交给 formatter 处理
+    "B008",  # 函数默认参数里调用函数，FastAPI 的 Depends 用法
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["my_project"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+```
+
+抄这份过去，改一下 `target-version` 和 `known-first-party`，基本就能用。
+
+## noqa 注释：让 ruff 闭嘴
+
+有些时候你确实想让 ruff 闭嘴。比如某行代码里 `eval()` 用得有充分理由，但 S307 会告警。这时候可以加 `# noqa` 注释：
+
+```python
+result = eval(user_input)  # noqa: S307
+```
+
+`# noqa: S307` 表示「这行代码忽略 S307 这条规则」。多条规则用逗号隔开：
+
+```python
+result = eval(user_input)  # noqa: S307, S102
+```
+
+裸的 `# noqa`（不指定规则号）也行，但是不推荐——会把这行所有规则都忽略，相当于关大灯。指定规则号最精准。
+
+各位写 `# noqa` 之前最好先想想：是这个规则不合理，还是代码本身就该改？大多数时候是后者。
+
+## ruff 自家规则：RUF 系列
+
+ruff 除了搬运别家规则，也自己原创了一些规则，前缀是 `RUF`。
+
+### RUF001：模糊字符
+
+代码里出现「看着是英文字母但其实是希腊字母、全角字符」这种字符，会触发 RUF001。比如：
+
+```python
+result = data["nаme"]  # 这里的 а 是西里尔字母 а，不是英文 a
+```
+
+肉眼几乎看不出来，但是程序跑起来会找不到键报 KeyError。ruff 能识别出这种字符并告警。
+
+### RUF005：用解包代替 list 拼接
+
+```python
+new_list = [1, 2, 3] + list(other)
+```
+
+ruff 建议改成：
+
+```python
+new_list = [1, 2, 3, *other]
+```
+
+解包语法更快、更短，还能直接拼任何可迭代对象。
+
+### RUF013：隐式 Optional 类型
+
+```python
+def greet(name: str = None):
+    print(f"Hello, {name}")
+```
+
+这个写法很常见，但其实有问题——`name` 默认是 None，但类型注解写的是 `str`，前后不一致。ruff 会建议改成：
+
+```python
+def greet(name: str | None = None):
+    print(f"Hello, {name}")
+```
+
+### RUF100：未使用的 noqa
+
+```python
+x = 1  # noqa: F401
+```
+
+如果这一行其实没有任何 lint 告警，那个 `# noqa` 就是垃圾。ruff 会专门把这种「过期 noqa」标出来，提醒各位删掉。

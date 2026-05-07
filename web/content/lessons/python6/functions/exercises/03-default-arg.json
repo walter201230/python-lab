@@ -1,0 +1,16 @@
+{
+  "id": "03-default-arg",
+  "title": "默认参数",
+  "prompt": "请定义函数 `greet(name, greeting='Hello')`：第一个参数 `name` 必传，第二个参数 `greeting` 默认为 `'Hello'`。函数体打印 `f'{greeting}, {name}!'`。\n\n然后：\n1. 调用 `greet('Alice')`（用默认 greeting）\n2. 调用 `greet('Bob', '早上好')`（覆盖默认值）\n\n输出应该是：\n```\nHello, Alice!\n早上好, Bob!\n```",
+  "starterCode": "# def greet(name, greeting='Hello'):\n#     print(f'{greeting}, {name}!')\n# greet('Alice')\n# greet('Bob', '早上好')\n",
+  "solution": "def greet(name, greeting='Hello'):\n    print(f'{greeting}, {name}!')\n\ngreet('Alice')\ngreet('Bob', '早上好')",
+  "grading": {
+    "stdoutEquals": "Hello, Alice!\n早上好, Bob!\n",
+    "requiredAst": ["FunctionDef:greet"]
+  },
+  "hints": [
+    "默认参数写法：def greet(name, greeting='Hello'):",
+    "调用时不传第二个参数会用默认值",
+    "完整代码：\ndef greet(name, greeting='Hello'):\n    print(f'{greeting}, {name}!')\n\ngreet('Alice')\ngreet('Bob', '早上好')"
+  ]
+}

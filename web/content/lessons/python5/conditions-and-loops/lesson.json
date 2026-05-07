@@ -1,0 +1,23 @@
+{
+  "id": "conditions-and-loops",
+  "title": "条件与循环",
+  "chapter": "python5",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-if-basic.mdx" },
+    { "kind": "exercise", "file": "01-if-basic.json" },
+    { "kind": "step", "file": "03-if-elif.mdx" },
+    { "kind": "exercise", "file": "02-if-elif.json" },
+    { "kind": "exercise", "file": "03-if-and-or.json" },
+    { "kind": "step", "file": "04-match-case.mdx" },
+    { "kind": "exercise", "file": "04-match-case.json" },
+    { "kind": "step", "file": "05-for-range.mdx" },
+    { "kind": "exercise", "file": "05-for-range.json" },
+    { "kind": "step", "file": "06-while.mdx" },
+    { "kind": "exercise", "file": "06-while.json" },
+    { "kind": "step", "file": "07-break-continue.mdx" },
+    { "kind": "exercise", "file": "07-break-continue.json" }
+  ]
+}

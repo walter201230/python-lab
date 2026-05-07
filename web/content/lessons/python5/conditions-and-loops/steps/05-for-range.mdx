@@ -1,0 +1,78 @@
+# 二、循环语句
+
+## 1、for 循环
+
+`for` 循环的基本语法：
+
+```python
+for 变量 in 可迭代对象:
+    循环体
+```
+
+可迭代对象就是「可以一个一个拿出来」的东西——字符串、list、tuple、dict、set 都可以。
+
+例子：
+
+```python
+for letter in 'Hello':
+    print(letter)
+```
+
+输出：
+
+```
+H
+e
+l
+l
+o
+```
+
+遍历 dict 默认拿到的是 key：
+
+```python
+d = {'一点水': '小学生', '两点水': '初中生'}
+
+for k in d:
+    print(k)
+```
+
+输出：
+
+```
+一点水
+两点水
+```
+
+## 2、range() 函数：生成一段整数序列
+
+```python
+for i in range(3):
+    print(i)
+```
+
+输出：
+
+```
+0
+1
+2
+```
+
+`range(x)` 生成 **0 到 x-1** 的整数序列（左闭右开）。
+
+`range(a, b)` 生成 **a 到 b-1**：
+
+```python
+for i in range(2, 5):
+    print(i)
+# 2 3 4
+```
+
+`range(a, b, step)` 加上步长：
+
+```python
+for i in range(0, 10, 2):
+    print(i)
+# 0 2 4 6 8
+```

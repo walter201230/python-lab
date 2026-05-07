@@ -1,0 +1,15 @@
+{
+  "id": "07-ascii-code",
+  "title": "看见 ASCII 码",
+  "prompt": "上面提到大写字母 `A` 的 ASCII 码是 **65**，小写字母 `z` 的 ASCII 码是 **122**。\n\nPython 里用 `ord('A')` 就能拿到一个字符的 ASCII 码。\n\n请用一行 `print` 同时打印 `A` 和 `z` 的 ASCII 码，中间用空格隔开。\n\n输出应该是：\n```\n65 122\n```",
+  "starterCode": "# 用 print 同时打印 ord('A') 和 ord('z')\n",
+  "solution": "print(ord('A'), ord('z'))",
+  "grading": {
+    "stdoutEquals": "65 122\n"
+  },
+  "hints": [
+    "ord('A') 返回 65，ord('z') 返回 122",
+    "print 接受多个参数，用逗号分开，会自动用空格连接：print(a, b)",
+    "完整代码：print(ord('A'), ord('z'))"
+  ]
+}

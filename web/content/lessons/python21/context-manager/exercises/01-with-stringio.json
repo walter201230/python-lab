@@ -1,0 +1,16 @@
+{
+  "id": "01-with-stringio",
+  "title": "用 with 操作 StringIO",
+  "prompt": "`io.StringIO` 是一个「内存里的文件」，也实现了上下文管理器协议。\n\n请用 `with` 配合 `io.StringIO()`：\n\n1. 在 `with` 块里 `write` 字符串 `'Hello'`\n2. 在 `with` 块里再 `write` 字符串 `' World'`\n3. 把 `getvalue()` 的结果（`Hello World`）赋给变量 `text`\n4. `print(text)`\n\n输出应该是：\n```\nHello World\n```",
+  "starterCode": "import io\n# with io.StringIO() as buf:\n#     buf.write(...)\n#     buf.write(...)\n#     text = buf.getvalue()\n# print(text)\n",
+  "solution": "import io\nwith io.StringIO() as buf:\n    buf.write('Hello')\n    buf.write(' World')\n    text = buf.getvalue()\nprint(text)",
+  "grading": {
+    "varsEqual": { "text": "Hello World" },
+    "stdoutEquals": "Hello World\n"
+  },
+  "hints": [
+    "io.StringIO 也支持 with 语法",
+    "在 with 块**里面**赋值 text，with 退出后 buf 已关，但 text 还在",
+    "完整代码：\nimport io\nwith io.StringIO() as buf:\n    buf.write('Hello')\n    buf.write(' World')\n    text = buf.getvalue()\nprint(text)"
+  ]
+}

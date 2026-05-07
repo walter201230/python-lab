@@ -1,0 +1,49 @@
+# 一、第一个 logger
+
+最简单的写法只有两行：
+
+```python
+import logging
+
+logging.info("两点水开始打卡了")
+```
+
+跑一下——**啥都没输出**。
+
+这是新手第一次用 `logging` 几乎都会踩的坑。原因是：`logging` **默认级别是 WARNING**，比它低的 `INFO` 和 `DEBUG` 直接被丢掉了。
+
+把上面那行换成 `logging.warning(...)` 再跑：
+
+```python
+import logging
+logging.warning("两点水忘了打卡")
+```
+
+终于看到输出：
+
+```
+WARNING:root:两点水忘了打卡
+```
+
+注意这一行的格式：**级别 + logger 名字 + 内容**，三段式。`root` 是默认 logger 的名字。
+
+## basicConfig：最简的一行配置
+
+要让 `INFO` 也打出来，先调一行 `basicConfig`：
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info("两点水开始打卡了")
+```
+
+输出：
+
+```
+INFO:root:两点水开始打卡了
+```
+
+`basicConfig(level=logging.INFO)` 把 root logger 的级别调成 `INFO`——`INFO` 及以上都会被打出来。
+
+> ⚠️ 「为什么默认是 WARNING？」官方解释：`logging` 是给「库的作者」准备的，库要是默认就打一堆 INFO 会污染最终用户的输出。所以默认只打「值得用户注意」的 WARNING 及以上。

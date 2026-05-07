@@ -1,0 +1,74 @@
+# 三、函数的参数
+
+Python 函数对参数的支持非常灵活。这里讲三种最常用的：**默认参数**、**关键字参数**、**不定长参数**。
+
+## 1、默认参数
+
+调用时可以不传，就用默认值。
+
+```python
+def greet(name, greeting='你好'):
+    print(f'{greeting}, {name}!')
+
+greet('两点水')              # 用默认值
+greet('两点水', '早上好')    # 覆盖默认值
+```
+
+输出：
+
+```
+你好, 两点水!
+早上好, 两点水!
+```
+
+> ⚠️ **默认值必须是不可变对象**（数字 / 字符串 / None / tuple）。**别用 list 或 dict 做默认值**——会引发非常诡异的 bug。需要默认空 list 时用 `None` 替代：
+>
+> ```python
+> def f(items=None):
+>     if items is None:
+>         items = []
+>     ...
+> ```
+
+## 2、关键字参数
+
+调用时按 `参数名=值` 的形式传，**顺序就不重要了**。
+
+```python
+def info(name, age, city):
+    print(f'{name}, {age} 岁, 来自 {city}')
+
+# 按位置传：要严格按顺序
+info('两点水', 18, '广州')
+
+# 按名字传：顺序无所谓
+info(age=18, city='广州', name='两点水')
+```
+
+两次输出一样。关键字参数让长参数列表的函数更易读。
+
+## 3、不定长参数：*args 和 **kwargs
+
+如果调用方传的参数个数不确定，用 `*args`（接收成 tuple）或 `**kwargs`（接收成 dict）。
+
+```python
+def sum_all(*nums):
+    total = 0
+    for n in nums:
+        total = total + n
+    return total
+
+print(sum_all(1, 2, 3))
+print(sum_all(1, 2, 3, 4, 5, 6))
+```
+
+输出：
+
+```
+6
+21
+```
+
+`*nums` 把所有传入的参数收成一个 tuple，函数里就能用 for 遍历。
+
+`**kwargs` 类似但收成 dict（少用，先跳过，后面真用到再深入）。

@@ -1,0 +1,16 @@
+{
+  "id": "03-list-update",
+  "title": "修改 + 追加",
+  "prompt": "已经给你定义了 `colors = ['red', 'green', 'blue']`。\n\n请：\n\n1. 把索引 1 处的元素（`green`）改成大写 `GREEN`\n2. 用 `append` 在末尾追加 `'yellow'`\n3. `print(colors)`\n\n输出应该是：\n```\n['red', 'GREEN', 'blue', 'yellow']\n```",
+  "starterCode": "colors = ['red', 'green', 'blue']\n# 1. colors[1] = 'GREEN'\n# 2. colors.append('yellow')\n# 3. print(colors)\n",
+  "solution": "colors = ['red', 'green', 'blue']\ncolors[1] = 'GREEN'\ncolors.append('yellow')\nprint(colors)",
+  "grading": {
+    "varsEqual": { "colors": ["red", "GREEN", "blue", "yellow"] },
+    "stdoutEquals": "['red', 'GREEN', 'blue', 'yellow']\n"
+  },
+  "hints": [
+    "改某个位置：colors[1] = 'GREEN'",
+    "末尾追加：colors.append('yellow')",
+    "完整代码：\ncolors[1] = 'GREEN'\ncolors.append('yellow')\nprint(colors)"
+  ]
+}

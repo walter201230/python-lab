@@ -1,0 +1,65 @@
+# 方向一：数据 / AI / 机器学习
+
+## 为什么选这个方向
+
+翻一翻 2026 年的招聘网站，搜「Python 工程师」三个字，跳出来的岗位大半带着「数据」、「算法」、「AI」、「LLM」、「大模型」、「机器学习」这些词。这不是巧合——**Python 是 AI 时代事实上的母语**。
+
+为啥？讲三层原因——
+
+第一层是**生态**。从 2010 年代初的 `numpy`/`pandas`，到 2015 年的 `scikit-learn`，到 2017 年的 `tensorflow`/`pytorch`，到 2022 年之后 `transformers`/`langchain`/`openai`/`anthropic` 各种 SDK，二十年下来，AI 圈所有重要的库**第一个版本都是 Python 写的**。其他语言不是不能用，是用了之后发现「跟主流社区接不上」——别人发论文用 PyTorch，你用 Julia 或者 Rust 重写一遍，论文复现都没人跟你聊。
+
+第二层是**节奏**。AI 圈是一个**「论文今天发，明天就有人开源代码」**的圈子。这种节奏下，能一行 `pip install` 装上的 Python 库，比要编译半小时的 C++/Rust 库快一万倍。语言性能不是不重要，而是**先跑通、再优化**这个顺序在 AI 圈被压得特别极端，Python 正好是「先跑通」这一步的最优解。
+
+第三层是**钱**。2026 年的 AI 工程师薪资在所有 Python 方向里**最高**——一线城市资深岗位 50k-80k 不算稀奇，应届生只要能讲清楚一两个 LLM 项目，起薪 30k 也很常见。这里不是劝你「为钱学 AI」，而是说——AI 方向的市场需求、薪资上限、想象空间都摆在那儿，往这个方向走的回报曲线很陡。
+
+所以——如果你对「让机器自己学」、「让模型替我写代码」、「让程序看图说话」这些话题感兴趣，AI 这条路推荐认真看一眼。
+
+## 必备库清单
+
+数据/AI 方向的库分四个层次，从下往上——
+
+| 层次 | 代表库 | 干啥用的 |
+| --- | --- | --- |
+| 数据基础 | `numpy`、`pandas`、`matplotlib`、`jupyter` | 数组、表格、画图、交互式笔记本，俗称「数据四件套」 |
+| 数据增强 | `polars`、`seaborn`、`plotly` | `pandas` 的 Rust 升级版、统计图美化、交互图 |
+| 传统 ML | `scikit-learn`、`xgboost`、`lightgbm` | 分类、回归、聚类、决策树、梯度提升 |
+| 深度学习 | `pytorch`、`transformers`、`huggingface_hub` | 神经网络框架、预训练模型一行加载 |
+| LLM 应用 | `anthropic`、`openai`、`langchain`、`llama-index` | 调商业 LLM、做 RAG、做 Agent |
+
+看完这张表估计有点懵——「学这么多？」别慌，这张表是**地图**，不是**清单**。地图给你看「这个方向有啥风景」，真正学的时候按下面的路径来——
+
+1. **基础四件套先打通**：`numpy` 算数组、`pandas` 处理表格、`matplotlib` 画图、`jupyter` 当画板。这四个库吃透，70% 的数据分析任务都能干。
+2. **`scikit-learn` 是传统 ML 的入口**：决策树、随机森林、SVM、KMeans 这些经典算法都在里面，API 极其统一——`fit` 训练、`predict` 预测，三行代码跑一个模型。
+3. **`transformers` 是深度学习的捷径**：HuggingFace 把所有主流预训练模型（BERT、GPT-2、Llama、Qwen）打包成统一接口，一行 `pipeline('sentiment-analysis')` 就能跑情感分析。你不用从 PyTorch 开始啃，直接用预训练模型干活，遇到瓶颈再往下钻。
+4. **LLM SDK 是 2026 年的新基建**：`anthropic` 调 Claude、`openai` 调 GPT，加上 `langchain` 做编排、`llama-index` 做 RAG，这套组合是当前**「LLM 应用工程师」**这个新岗位的标配。
+
+「`polars` 凭啥能挑战 `pandas`？」这个问题再多说一句——`polars` 是 Rust 写的 DataFrame 库，速度比 `pandas` 快 5-10 倍，API 更现代（强类型、惰性求值、不容易写错）。2024 年之后越来越多新项目首选 `polars`。但是 `pandas` 生态太成熟、教程太多，**入门还是建议从 `pandas` 开始**，等你写多了 `pandas` 觉得「这语法真烦」的时候，自然就会去看 `polars`。
+
+## 三个起点项目
+
+### 项目 1：用 `pandas` 分析一份公开数据集
+
+- **做什么**：从 Kaggle 下载一份 CSV（推荐 [Titanic](https://www.kaggle.com/competitions/titanic) 或者 [TMDB Movies](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata)），在 `jupyter` 里读进来，做 5 个分析：缺失值统计、分布直方图、相关性热力图、分组聚合、画一张能讲故事的图
+- **难度**：★☆☆☆☆
+- **代码量**：100-200 行
+- **学到啥**：`pandas` 的 `read_csv`/`groupby`/`merge`/`pivot_table` 全套基础操作；`matplotlib` 和 `seaborn` 画图；用 `jupyter` 写「能给别人看」的分析报告
+
+这个项目强烈建议**第一个就做**。它不光教 `pandas`，还培养一个 AI 工程师必备的习惯——**面对一份陌生数据，第一反应是去看分布、看缺失、看异常值**，而不是闷头写模型。
+
+### 项目 2：用 `transformers` 跑一个本地分类模型
+
+- **做什么**：用 HuggingFace 的 `pipeline('sentiment-analysis')` 做一个「电影评论好坏判断器」。先用预训练模型直接跑，再下载 IMDB 评论数据集做微调（fine-tune），把准确率从 85% 提到 92%
+- **难度**：★★★☆☆
+- **代码量**：200-400 行
+- **学到啥**：`transformers` 的 `pipeline` 用法、HuggingFace Hub 怎么找模型、`Trainer` API 微调流程、GPU 和 CPU 切换、模型保存和加载
+
+「我没显卡咋办？」用 [Google Colab](https://colab.research.google.com)。免费给 T4 GPU，跑这种小模型够用。或者用 Apple Silicon 的 MPS 后端，M 系列芯片本地训练也能跑。
+
+### 项目 3：调 Claude API 写一个「PDF 总结」工具
+
+- **做什么**：写一个命令行工具，输入一个 PDF 路径，输出一份 200 字的中文总结。流程是——`pypdf` 抽文字 → 切成 2000 字一段 → 每段调 `anthropic` SDK 让 Claude 总结 → 最后再让 Claude 把所有片段总结**汇总成一份**
+- **难度**：★★☆☆☆
+- **代码量**：100-200 行
+- **学到啥**：`anthropic` SDK 用法、API key 管理（`.env` + `python-dotenv`）、长文本切分策略、`prompt engineering` 入门、流式输出
+
+这个项目跟 2026 年的工作场景**贴得最近**。在公司里写一个这种工具，立马能解决「每周看 5 篇行业报告」的痛点。

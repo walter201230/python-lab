@@ -1,0 +1,153 @@
+# 二、一次捕获多种异常
+
+刚才的例子只捕了 `ZeroDivisionError`，但实际写代码时，一段代码往往可能抛好几种异常。比如：
+
+```python
+def parse_age(s):
+    try:
+        age = int(s)
+        return 100 / age
+    except ZeroDivisionError:
+        return '年龄不能是 0'
+    except ValueError:
+        return '输入的不是数字'
+
+
+print(parse_age('25'))
+print(parse_age('0'))
+print(parse_age('abc'))
+```
+
+输出：
+
+```
+4.0
+年龄不能是 0
+输入的不是数字
+```
+
+两个 `except` 分支，分别处理不同的异常类型。Python 会按顺序匹配，第一个匹配上的分支被执行，后面的跳过。
+
+## 多个异常用同一段代码处理
+
+那如果两种异常想用同一段代码处理呢？写两次太啰嗦。有简便写法：
+
+```python
+def parse_age(s):
+    try:
+        age = int(s)
+        return 100 / age
+    except (ZeroDivisionError, ValueError):
+        return '输入有问题'
+
+
+print(parse_age('25'))
+print(parse_age('0'))
+print(parse_age('abc'))
+```
+
+输出：
+
+```
+4.0
+输入有问题
+输入有问题
+```
+
+把多个异常类型用一对小括号括起来，逗号分隔，就能一锅端。注意这个**括号**，不写括号语法就不对了。
+
+## 拿到异常对象——`as e`
+
+光知道「出错了」还不够，有时候你需要知道「具体错在哪儿」。Python 允许你用 `as` 把异常对象抓出来：
+
+```python
+def parse_age(s):
+    try:
+        age = int(s)
+        return 100 / age
+    except (ZeroDivisionError, ValueError) as e:
+        return f'出错啦：{type(e).__name__} - {e}'
+
+
+print(parse_age('0'))
+print(parse_age('abc'))
+```
+
+输出：
+
+```
+出错啦：ZeroDivisionError - division by zero
+出错啦：ValueError - invalid literal for int() with base 10: 'abc'
+```
+
+`e` 就是异常对象本身。`type(e).__name__` 是它的类名，`str(e)` 是它的错误信息。在做日志、做调试的时候，这种写法比简单打印「出错啦」要有用得多。
+
+## 万能兜底——`except Exception`
+
+有时候不知道代码里到底会抛什么异常，又不想写一长串 `except`。这时候可以用一个「父类」来兜底：
+
+```python
+try:
+    risky_operation()
+except Exception as e:
+    print(f'未知错误：{e}')
+```
+
+`Exception` 是绝大多数异常的「祖宗」，写它就等于「能接住几乎所有异常」。
+
+但是！这里有个**坑**：很多新手喜欢写 `except:` 后面什么类型都不写，或者写 `except BaseException:`。这两种写法都太狠了——它们会把 `KeyboardInterrupt`（你按 Ctrl+C 想中断程序）和 `SystemExit`（程序主动 `sys.exit()`）也接住，导致你的程序按 Ctrl+C 都停不下来。
+
+记住：**兜底用 `Exception`，不要用 `BaseException`，更不要写裸 `except:`**。
+
+## 异常的家族——继承层级
+
+Python 异常有一棵继承树：
+
+```
+BaseException
+ ├── SystemExit
+ ├── KeyboardInterrupt
+ ├── GeneratorExit
+ └── Exception
+      ├── ArithmeticError
+      │    ├── ZeroDivisionError
+      │    └── OverflowError
+      ├── LookupError
+      │    ├── IndexError
+      │    └── KeyError
+      ├── ValueError
+      ├── TypeError
+      ├── AttributeError
+      ├── NameError
+      ├── OSError
+      │    └── FileNotFoundError
+      └── ...
+```
+
+读懂这棵树有几个要点：
+
+- 最顶层是 `BaseException`，所有异常都继承自它
+- `SystemExit` / `KeyboardInterrupt` / `GeneratorExit` 跟「程序流程控制」相关，不应该被普通的 `try/except` 接住
+- 业务相关的异常都在 `Exception` 下面
+
+理解了这个层级，可以玩一个小技巧：**捕获父类等于捕获所有子类**。
+
+```python
+try:
+    nums = [1, 2, 3]
+    print(nums[10])
+except LookupError as e:
+    print(f'查找错误：{e}')
+```
+
+输出：
+
+```
+查找错误：list index out of range
+```
+
+`IndexError` 是 `LookupError` 的子类，所以用父类去接子类，完全没问题。
+
+那么如果 `except` 写了多个，顺序应该「父在前」还是「子在前」？
+
+原则是：**子在前，父在后**。具体的异常先写，宽泛的兜底放最后。否则父类一上来就把所有子类一锅端，后面那些 `except` 形同虚设。

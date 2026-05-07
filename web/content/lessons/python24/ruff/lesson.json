@@ -1,0 +1,14 @@
+{
+  "id": "ruff",
+  "title": "ruff：一站式代码检查",
+  "chapter": "python24",
+  "order": 1,
+  "estimatedMinutes": 18,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-what-is-ruff.mdx" },
+    { "kind": "step", "file": "03-install-and-run.mdx" },
+    { "kind": "step", "file": "04-config.mdx" },
+    { "kind": "step", "file": "05-integration.mdx" }
+  ]
+}

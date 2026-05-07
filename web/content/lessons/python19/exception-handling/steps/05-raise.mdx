@@ -1,0 +1,99 @@
+# 四、主动抛异常——raise
+
+到目前为止都是在「接」异常，那能不能「抛」一个？当然能。`raise` 关键字就是干这个的。
+
+```python
+def set_age(age):
+    if age < 0:
+        raise ValueError(f'年龄不能是负数，你传了 {age}')
+    if age > 200:
+        raise ValueError(f'年龄不能超过 200，你传了 {age}')
+    return age
+
+
+try:
+    set_age(-5)
+except ValueError as e:
+    print(f'参数有问题：{e}')
+```
+
+输出：
+
+```
+参数有问题：年龄不能是负数，你传了 -5
+```
+
+`raise XxxError('msg')` 的意思是「我现在就抛一个 `XxxError`，里面带这条消息」。平时写函数的时候，遇到「调用方传的参数不合理」「业务规则不满足」这种情况，就应该主动 `raise`，让调用方知道「你这数据我不收」，而不是闷头返回一个奇怪的值。
+
+## 为啥不直接 return None？
+
+想想看：
+
+```python
+def set_age(age):
+    if age < 0:
+        return None      # 不好的写法
+    return age
+```
+
+调用方拿到 `None`，根本不知道是「这次没数据」还是「我传错了」。但是 `raise ValueError('年龄不能是负数')`，调用方一看就明白：「啊，我传的参数不合规」。
+
+异常是 Python 里**传递错误信息的标准方式**，比 `return None`、`return -1`、`return False` 表达力强得多。
+
+## 异常链——`raise ... from e`
+
+再来看一个稍微高级的场景。假设有这么一个函数：
+
+```python
+def load_config(path):
+    with open(path, 'r') as f:
+        return f.read()
+```
+
+如果 `path` 不存在，会抛 `FileNotFoundError`。但是站在「使用配置」这一层来看，「文件不存在」这个错误太底层了。我希望对外抛一个更业务化的错误，比如 `ConfigError('配置加载失败')`，但又不想丢掉「底层到底是啥错」这个信息。怎么办？
+
+「异常链」给出了答案：
+
+```python
+class ConfigError(Exception):
+    pass
+
+
+def load_config(path):
+    try:
+        with open(path, 'r') as f:
+            return f.read()
+    except FileNotFoundError as e:
+        raise ConfigError(f'配置加载失败：{path}') from e
+
+
+try:
+    load_config('not_exist.json')
+except ConfigError as e:
+    print(f'业务错误：{e}')
+```
+
+输出：
+
+```
+业务错误：配置加载失败：not_exist.json
+```
+
+注意 `raise ConfigError(...) from e` 这个写法。`from e` 就是把「原始异常」挂在新异常的 `__cause__` 上。如果不被外层接住，traceback 会同时打印两层错误：
+
+```
+Traceback (most recent call last):
+  File "...", line X, in load_config
+    with open(path, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'not_exist.json'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  ...
+ConfigError: 配置加载失败：not_exist.json
+```
+
+「The above exception was the direct cause of the following exception」——这句话就是异常链的标志。看到这种 traceback 要知道：**底下那个错才是根因，上面那个错是它包装出来的**。
+
+显式 `from e` 表达的是「我**故意**把底层异常包装成业务异常」；不写 `from e` 表达的是「我处理上一个异常的时候不小心又出错了」。语义不同，建议**显式包装的时候一定加 `from e`**。

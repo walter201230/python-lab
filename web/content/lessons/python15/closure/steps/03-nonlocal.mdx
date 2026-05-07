@@ -1,0 +1,75 @@
+# 二、nonlocal 关键字
+
+上一节代码里有一行 `nonlocal time`，它是干嘛的？
+
+## 1、为什么需要 nonlocal
+
+回顾一下作用域规则：
+
+- 函数里给一个名字赋值 → 这个名字就是**局部变量**
+- 想引用全局变量并修改它 → 用 `global`
+- 想引用**外层函数（不是全局！）的变量并修改它** → 用 `nonlocal`
+
+闭包的场景就是「内层函数想改外层函数的变量」，刚好对应 `nonlocal`。
+
+## 2、对比：不写 nonlocal 会怎样？
+
+```python
+def make_counter():
+    count = 0
+    def counter():
+        count = count + 1   # 没写 nonlocal —— 报 UnboundLocalError
+        return count
+    return counter
+```
+
+直接调 `make_counter()()` 会报错，原因和第一节里全局变量那个例子一样。
+
+加上 `nonlocal`：
+
+```python
+def make_counter():
+    count = 0
+    def counter():
+        nonlocal count
+        count = count + 1
+        return count
+    return counter
+
+c = make_counter()
+print(c())
+print(c())
+print(c())
+```
+
+输出：
+
+```
+1
+2
+3
+```
+
+每次调用 `c()`，闭包里的 `count` 都会增加并被记住——一个独立的计数器就这么做出来了。
+
+## 3、只读不需要 nonlocal
+
+如果只是**读取**外层变量、不修改它，是**不用** `nonlocal` 的：
+
+```python
+def make_greeter(name):
+    def greet():
+        print(f"你好，{name}")    # 只读，不需要 nonlocal
+    return greet
+
+g = make_greeter("两点水")
+g()
+```
+
+输出：
+
+```
+你好，两点水
+```
+
+> 一句话总结：**要在内层函数里给外层变量重新赋值，就要 `nonlocal`；只读不用。**

@@ -1,0 +1,16 @@
+{
+  "id": "01-str",
+  "title": "用 __str__ 让 print 输出友好",
+  "prompt": "请定义类 `Book`：\n\n- `__init__` 接收 `title`，保存到 `self.title`\n- `__str__` 返回字符串 `f'《{self.title}》'`\n\n然后实例化 `Book('Python 入门')` 赋给 `b`，并 `print(b)`。\n\n输出应该是：\n```\n《Python 入门》\n```",
+  "starterCode": "# class Book:\n#     def __init__(self, title):\n#         self.title = title\n#     def __str__(self):\n#         return f'《{self.title}》'\n# b = Book('Python 入门')\n# print(b)\n",
+  "solution": "class Book:\n    def __init__(self, title):\n        self.title = title\n\n    def __str__(self):\n        return f'《{self.title}》'\n\nb = Book('Python 入门')\nprint(b)",
+  "grading": {
+    "stdoutEquals": "《Python 入门》\n",
+    "requiredAst": ["ClassDef:Book", "FunctionDef:__str__"]
+  },
+  "hints": [
+    "__str__ 必须返回一个字符串，不能用 print",
+    "f'《{self.title}》' 用 f-string 把书名套进《》",
+    "完整代码：\nclass Book:\n    def __init__(self, title):\n        self.title = title\n    def __str__(self):\n        return f'《{self.title}》'\nb = Book('Python 入门')\nprint(b)"
+  ]
+}

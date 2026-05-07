@@ -1,0 +1,60 @@
+# 第十九节：异常处理
+
+写代码这件事，最让新手崩溃的瞬间是哪种？想象一下：你刚学完语法，兴冲冲写了几十行代码，按下回车，结果终端弹出一坨红字：
+
+```
+Traceback (most recent call last):
+  File "main.py", line 5, in <module>
+    print(10 / 0)
+ZeroDivisionError: division by zero
+```
+
+一脸懵。这玩意儿是啥？我哪里写错了？为啥程序就崩了？
+
+其实啊，这就是 Python 的「异常机制」在工作。程序遇到了它处理不了的情况，比如除以零、读不存在的文件、把字符串当数字加，于是它就「抛」一个异常出来，整个程序停下来，告诉你：「我不干了，你来收拾」。
+
+可是真实世界里的程序怎么可能因为一个小问题就停摆？银行 ATM 你输错密码三次它会提示，不会直接死机；网页加载图片失败会显示一个占位图，不会整页白屏；微信收消息网络不通它会重试，不会闪退。这些场景背后，全都是「异常处理」在做事。
+
+## 程序为什么会「炸」
+
+我们先从最简单的例子开始：
+
+```python
+print(10 / 0)
+```
+
+输出：
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero
+```
+
+这就叫「异常」。Python 在执行 `10 / 0` 的时候发现：除数是零，这事儿数学上没法干，于是它创建了一个 `ZeroDivisionError` 对象，把这个对象「抛」出来。如果没人接，这个异常就会一路冒泡到最外层，最后由 Python 解释器接住，打印 traceback，然后退出程序。
+
+再看几个：
+
+```python
+nums = [1, 2, 3]
+print(nums[10])
+# IndexError: list index out of range
+
+d = {'name': '小明'}
+print(d['age'])
+# KeyError: 'age'
+```
+
+每一种「错误」都有它自己的名字。这些名字就是异常的「类型」，是 Python 内置的一组类。它们不是给你看着玩的，是供你用来「精确捕捉」的——不同类型用不同的处理方式。
+
+## 这一节要学什么
+
+Python 早就给我们准备好了一整套工具：
+
+- `try` / `except`：基本捕获结构
+- 多种异常处理：一段代码可能抛多种错
+- `else` / `finally`：完整四件套
+- `raise`：主动抛出异常
+- 自定义异常类：让错误也变成代码结构的一部分
+
+学完这一节，再也不怕红字 traceback。

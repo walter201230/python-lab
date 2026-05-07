@@ -1,0 +1,70 @@
+# 五、几个常用的标准库
+
+下面这几个是日常开发里 **超高频** 出现的标准库模块，先认识一下，下面几道练习也会用到。
+
+## 1、math —— 数学函数
+
+```python
+import math
+
+print(math.pi)          # 圆周率 3.141592653589793
+print(math.e)           # 自然常数 e
+print(math.sqrt(16))    # 平方根 → 4.0
+print(math.floor(3.7))  # 向下取整 → 3
+print(math.ceil(3.2))   # 向上取整 → 4
+```
+
+## 2、random —— 随机数
+
+```python
+import random
+
+random.seed(42)              # 固定随机种子，结果可复现
+print(random.randint(1, 10)) # 1-10 之间的随机整数（含两端）
+print(random.choice(['A', 'B', 'C']))  # 随机选一个
+```
+
+> 在练习里我们会用 `random.seed(...)` 固定结果——这样判分时输出就稳定了。
+
+## 3、datetime —— 日期与时间
+
+```python
+from datetime import date, datetime
+
+d = date(2026, 1, 1)
+print(d.year, d.month, d.day)  # 2026 1 1
+
+now = datetime(2026, 1, 1, 12, 30, 0)
+print(now)                     # 2026-01-01 12:30:00
+```
+
+## 4、json —— JSON 序列化
+
+把 Python 字典 / 列表 转成 JSON 字符串：
+
+```python
+import json
+
+data = {'name': 'Alice', 'age': 18}
+print(json.dumps(data))
+```
+
+输出：
+
+```
+{"name": "Alice", "age": 18}
+```
+
+反过来——把 JSON 字符串解析回 Python 对象：
+
+```python
+import json
+
+s = '{"name": "Alice", "age": 18}'
+obj = json.loads(s)
+print(obj['name'])   # Alice
+```
+
+---
+
+下面来动手练几道。每道题都需要你 **使用 import 语句** 引入对应的标准库。

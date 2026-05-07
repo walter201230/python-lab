@@ -1,0 +1,71 @@
+# 二、Enum 基本用法
+
+## 1、定义一个 Enum
+
+最常见的写法是 **继承 `Enum` 类**：
+
+```python
+from enum import Enum
+
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+```
+
+`Color` 本身是一个 **类**，`Color.RED` / `Color.GREEN` / `Color.BLUE` 是它的三个 **成员**。
+
+## 2、访问成员
+
+```python
+print(Color.RED)         # Color.RED        ← 默认 repr
+print(Color.RED.name)    # 'RED'            ← 成员名
+print(Color.RED.value)   # 1                ← 对应的值
+```
+
+记住两个属性：
+
+- `.name` —— 成员的 **名字**（字符串）
+- `.value` —— 成员的 **值**（任意类型）
+
+## 3、遍历所有成员
+
+`Enum` 是可迭代的：
+
+```python
+for c in Color:
+    print(c.name, c.value)
+```
+
+输出：
+
+```
+RED 1
+GREEN 2
+BLUE 3
+```
+
+也可以用 `__members__` 拿到一个 **有序映射**（包含别名）：
+
+```python
+for name, member in Color.__members__.items():
+    print(name, '->', member, '->', member.value)
+```
+
+## 4、另一种创建方式（函数式）
+
+不写 class，直接用 `Enum(...)` 函数：
+
+```python
+from enum import Enum
+
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+print(Month.Jan)        # Month.Jan
+print(Month.Jan.value)  # 1，从 1 开始自动分配
+```
+
+第一个参数是类名，第二个参数是成员名的可迭代对象。这种写法适合「成员只是一组名字、不在乎具体的值」的场景。
+
+> 推荐 **优先用 class 写法**——明确、可读、IDE 提示更友好。函数式写法只在需要动态生成 Enum 时才用。

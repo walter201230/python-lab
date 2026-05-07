@@ -1,0 +1,15 @@
+{
+  "id": "01-hello-python",
+  "title": "向 Python 打个招呼",
+  "prompt": "用一行代码，让程序打印出：\n\n```\n你好，Python！\n```\n\n注意：是 **中文逗号** 和 **中文感叹号**，照着抄就好。",
+  "starterCode": "# 用 print() 打印一句话\n",
+  "solution": "print('你好，Python！')",
+  "grading": {
+    "stdoutEquals": "你好，Python！\n"
+  },
+  "hints": [
+    "调用 print() 函数，把要显示的文字用单引号或双引号包起来",
+    "标点要用中文的「，」和「！」，不要打成英文逗号",
+    "完整代码：\nprint('你好，Python！')"
+  ]
+}

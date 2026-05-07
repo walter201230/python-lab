@@ -1,0 +1,77 @@
+# 三、闭包的实用场景
+
+## 1、工厂函数
+
+闭包可以**根据参数生成定制化的函数**——典型用法是「加法器工厂」：
+
+```python
+def make_adder(n):
+    def adder(x):
+        return x + n
+    return adder
+
+add5 = make_adder(5)
+add10 = make_adder(10)
+
+print(add5(3))     # 8
+print(add10(3))    # 13
+```
+
+`make_adder(5)` 和 `make_adder(10)` 返回了**两个不同**的函数，但它们各自带着自己的 `n`，互不干扰。这就是闭包的「绑定」效果。
+
+## 2、计数器、累加器
+
+刚才学的 `make_counter` 就是这一类——把状态藏在闭包里，外面看不见、也改不了。
+
+```python
+def make_counter():
+    count = 0
+    def counter():
+        nonlocal count
+        count = count + 1
+        return count
+    return counter
+
+c1 = make_counter()
+c2 = make_counter()
+print(c1())   # 1
+print(c1())   # 2
+print(c2())   # 1，c1 和 c2 互不影响
+```
+
+每个 `make_counter()` 调用都创建一个独立的闭包，各自维护自己的 `count`。
+
+## 3、验证一个函数是不是闭包
+
+所有函数都有一个 `__closure__` 属性。**普通函数**它是 `None`；**闭包**它是一个由 cell 组成的元组，cell 的 `cell_contents` 就是闭包绑定的变量。
+
+```python
+def make_counter():
+    count = 0
+    def counter():
+        nonlocal count
+        count = count + 1
+        return count
+    return counter
+
+c = make_counter()
+print(c.__closure__ is not None)       # True
+c()
+c()
+print(c.__closure__[0].cell_contents)  # 2
+```
+
+输出：
+
+```
+True
+2
+```
+
+## 4、闭包 vs 类
+
+> 闭包的过程其实好比**类（父函数）生成实例（闭包）**。父函数只在调用时执行，执行完毕后其环境就会释放——但闭包还在，因为内层函数把它「带走」了。
+>
+> 对那些需要**重用、但又不足以定义为类**的小功能，用闭包比写类更轻量、更灵活。
+
+下一章我们学**装饰器**——它就是闭包最经典的应用。

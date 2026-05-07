@@ -1,0 +1,14 @@
+{
+  "id": "intro-and-hello-world",
+  "title": "Python 安装与第一个程序",
+  "chapter": "python1",
+  "order": 1,
+  "estimatedMinutes": 15,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-introduction.mdx" },
+    { "kind": "step", "file": "03-installation-skip.mdx" },
+    { "kind": "step", "file": "04-first-program.mdx" },
+    { "kind": "exercise", "file": "01-hello-python.json" }
+  ]
+}

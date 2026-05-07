@@ -1,0 +1,16 @@
+{
+  "id": "01-basic-point",
+  "title": "用 @dataclass 定义 Point",
+  "prompt": "请用 `@dataclass` 装饰器定义一个 `Point` 类：\n\n- 两个字段：`x: int`、`y: int`\n- 然后实例化 `Point(1, 2)` 赋给变量 `p`，并 `print(p)`\n\n输出应该是：\n```\nPoint(x=1, y=2)\n```\n\n（这正是 `dataclass` 自动生成的 `__repr__` 输出。）",
+  "starterCode": "# from dataclasses import dataclass\n#\n# @dataclass\n# class Point:\n#     x: int\n#     y: int\n#\n# p = Point(1, 2)\n# print(p)\n",
+  "solution": "from dataclasses import dataclass\n\n@dataclass\nclass Point:\n    x: int\n    y: int\n\np = Point(1, 2)\nprint(p)",
+  "grading": {
+    "stdoutEquals": "Point(x=1, y=2)\n",
+    "requiredAst": ["ClassDef:Point"]
+  },
+  "hints": [
+    "记得 from dataclasses import dataclass",
+    "字段必须带类型注解：x: int、y: int",
+    "完整代码：\nfrom dataclasses import dataclass\n\n@dataclass\nclass Point:\n    x: int\n    y: int\n\np = Point(1, 2)\nprint(p)"
+  ]
+}

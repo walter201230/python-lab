@@ -1,0 +1,83 @@
+# 二、早返回（Early Return）
+
+来看下面这段「校验登录」的代码：
+
+```python
+def login(user, password):
+    if user is not None:
+        if user.is_active:
+            if user.check_password(password):
+                if not user.is_locked:
+                    return '登录成功'
+                else:
+                    return '账户已锁定'
+            else:
+                return '密码错误'
+        else:
+            return '账户未激活'
+    else:
+        return '用户不存在'
+```
+
+四层嵌套——读到第三层 `if` 时，你已经记不清第一层的条件是什么了。
+
+## 早返回：把异常情况先送走
+
+「**先处理边界情况，主流程才能放在最外层**」——这就是早返回的核心思想。
+
+```python
+def login(user, password):
+    if user is None:
+        return '用户不存在'
+    if not user.is_active:
+        return '账户未激活'
+    if not user.check_password(password):
+        return '密码错误'
+    if user.is_locked:
+        return '账户已锁定'
+    return '登录成功'
+```
+
+变化看出来了吗？
+
+- 没有 `else`
+- 没有嵌套
+- 每个失败条件**只占一行**
+- 最后一行是「成功路径」——一眼就能找到
+
+## 通用模式
+
+凡是看到这种结构：
+
+```python
+if 条件成立:
+    # 主流程一大段
+    ...
+else:
+    return 错误
+```
+
+都可以改写成：
+
+```python
+if not 条件成立:
+    return 错误
+# 主流程一大段（无缩进）
+...
+```
+
+主流程从 1 层缩进退回到 0 层。多个条件叠加时效果尤为明显。
+
+## 什么时候不用早返回
+
+不是所有 `if` 都该早返回。如果两个分支**地位平等**——比如「奇数返回 X、偶数返回 Y」——那就老老实实写 `if/else`，没必要硬塞进早返回。
+
+```python
+def parity(n):
+    if n % 2 == 0:
+        return '偶数'
+    else:
+        return '奇数'
+```
+
+这样反而清楚。早返回是为了**摊平错误处理**，不是为了消灭所有 `else`。

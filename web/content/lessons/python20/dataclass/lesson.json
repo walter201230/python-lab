@@ -1,0 +1,18 @@
+{
+  "id": "dataclass",
+  "title": "dataclass",
+  "chapter": "python20",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-basic.mdx" },
+    { "kind": "exercise", "file": "01-basic-point.json" },
+    { "kind": "step", "file": "03-defaults.mdx" },
+    { "kind": "exercise", "file": "02-default-factory.json" },
+    { "kind": "step", "file": "04-frozen.mdx" },
+    { "kind": "exercise", "file": "03-frozen-hash.json" },
+    { "kind": "step", "file": "05-comparison.mdx" },
+    { "kind": "exercise", "file": "04-eq.json" }
+  ]
+}

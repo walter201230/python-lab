@@ -1,0 +1,18 @@
+{
+  "id": "oop",
+  "title": "面向对象",
+  "chapter": "python8",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-class-define.mdx" },
+    { "kind": "exercise", "file": "01-class-basic.json" },
+    { "kind": "step", "file": "03-init.mdx" },
+    { "kind": "exercise", "file": "02-init.json" },
+    { "kind": "step", "file": "04-inheritance.mdx" },
+    { "kind": "exercise", "file": "03-inheritance.json" },
+    { "kind": "step", "file": "05-polymorphism.mdx" },
+    { "kind": "exercise", "file": "04-polymorphism.json" }
+  ]
+}

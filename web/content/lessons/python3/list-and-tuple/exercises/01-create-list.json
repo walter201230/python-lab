@@ -1,0 +1,15 @@
+{
+  "id": "01-create-list",
+  "title": "创建第一个 List",
+  "prompt": "创建一个变量 `numbers`，把整数 `1, 2, 3, 4, 5` 装到一个 List 里赋给它。\n\n然后用 `print` 打印 `numbers`。\n\n输出应该是：\n```\n[1, 2, 3, 4, 5]\n```",
+  "starterCode": "# 用中括号 [] 创建一个 List，元素之间用逗号分隔\n",
+  "solution": "numbers = [1, 2, 3, 4, 5]\nprint(numbers)",
+  "grading": {
+    "varsEqual": { "numbers": [1, 2, 3, 4, 5] },
+    "stdoutEquals": "[1, 2, 3, 4, 5]\n"
+  },
+  "hints": [
+    "List 的写法是 [元素1, 元素2, ...]",
+    "完整代码：\nnumbers = [1, 2, 3, 4, 5]\nprint(numbers)"
+  ]
+}

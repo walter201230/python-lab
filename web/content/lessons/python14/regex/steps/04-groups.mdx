@@ -1,0 +1,81 @@
+# 四、分组 `(...)`：从匹配里提取片段
+
+到目前为止，我们只能**判断匹配 / 不匹配**，或者拿到完整的匹配字符串。
+
+但实际场景里，我们常常想要**「把匹配的某一部分单独抽出来」**，比如：
+
+> 从 `alice@example.com` 中分别拿到 `alice` 和 `example.com`
+
+这就要用 **分组（group）**——在正则里用一对括号 `(...)` 把想抽取的部分包起来。
+
+## 1、基本用法
+
+```python
+import re
+
+m = re.match(r'(\w+)@(\w+\.\w+)', 'alice@example.com')
+print(m.group(0))   # alice@example.com   ← 完整匹配
+print(m.group(1))   # alice               ← 第 1 个分组
+print(m.group(2))   # example.com         ← 第 2 个分组
+print(m.groups())   # ('alice', 'example.com')
+```
+
+要点：
+
+- 分组**从 1 开始编号**——左括号出现的顺序就是编号顺序
+- `group(0)` 是整个匹配（**不算分组**）
+- `groups()` 一次性把所有分组返回成元组
+
+## 2、`re.findall` 与分组的化学反应
+
+如果正则**有分组**，`re.findall` 返回的就**不再是完整匹配**——而是**分组的内容**：
+
+```python
+import re
+
+a = '<img src="https://a.com/1.jpg"><img src="https://b.com/2.png">'
+
+# 没分组：返回完整匹配
+print(re.findall(r'<img src="\S+">', a))
+# ['<img src="https://a.com/1.jpg">', '<img src="https://b.com/2.png">']
+
+# 有 1 个分组：返回该分组内容的列表
+print(re.findall(r'<img src="(\S+)">', a))
+# ['https://a.com/1.jpg', 'https://b.com/2.png']
+
+# 多个分组：返回元组的列表
+print(re.findall(r'<(\w+) src="(\S+)">', a))
+# [('img', 'https://a.com/1.jpg'), ('img', 'https://b.com/2.png')]
+```
+
+> 这是个**常见坑**：当你给一个原本好用的 findall 加括号后，结果突然「变了形状」——这正是分组生效的标志。
+
+## 3、命名分组（高级用法）
+
+在分组里用 `(?P<name>...)` 给它起名，之后用 `group('name')` 取：
+
+```python
+import re
+
+m = re.match(r'(?P<user>\w+)@(?P<host>\S+)', 'alice@example.com')
+print(m.group('user'))   # alice
+print(m.group('host'))   # example.com
+```
+
+适合**正则比较长、分组比较多**的场合，让代码更易读。
+
+## 4、不捕获分组 `(?:...)`
+
+有时候你只想用括号**做语法分组**（比如配合 `|` 选择），但**不需要它捕获**——加 `?:`：
+
+```python
+import re
+
+# 普通分组：会被 findall 抓出来
+print(re.findall(r'(cat|dog)s?', 'cats and dogs'))
+# ['cat', 'dog']
+
+# 不捕获分组：不进 group
+print(re.findall(r'(?:cat|dog)s?', 'cats and dogs'))
+# ['cats', 'dogs']
+```

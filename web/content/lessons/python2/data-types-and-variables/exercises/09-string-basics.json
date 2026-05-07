@@ -1,0 +1,16 @@
+{
+  "id": "09-string-basics",
+  "title": "字符串：含双引号的字符串怎么写",
+  "prompt": "请定义变量 `quote`，存这段字符串：\n\n```\n他说：\"Python 真好玩！\"\n```\n\n注意里面有一对**英文双引号** `\"`。\n\n小提示：因为字符串里有双引号，外层就不能再用双引号了——可以用单引号 `'...'`，或者三引号 `'''...'''`。\n\n然后用 `print(quote)` 打印它。",
+  "starterCode": "# 字符串里有双引号，外层用单引号或三引号\n",
+  "solution": "quote = '他说：\"Python 真好玩！\"'\nprint(quote)",
+  "grading": {
+    "varsEqual": { "quote": "他说：\"Python 真好玩！\"" },
+    "stdoutEquals": "他说：\"Python 真好玩！\"\n"
+  },
+  "hints": [
+    "外层用单引号 '...'，里面就可以直接放双引号",
+    "也可以用三引号 '''...'''",
+    "完整代码：\nquote = '他说：\"Python 真好玩！\"'\nprint(quote)"
+  ]
+}

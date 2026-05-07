@@ -1,0 +1,278 @@
+# 构建与发布
+
+## 本地构建：uv build
+
+各位写完代码之后，怎么把项目打成可发布的格式？一条命令——
+
+```bash
+uv build
+```
+
+跑一下，输出大概是：
+
+```
+Building source distribution...
+Building wheel from source distribution...
+Successfully built dist/my_tool-0.1.0.tar.gz
+Successfully built dist/my_tool-0.1.0-py3-none-any.whl
+```
+
+打开 `dist/` 目录看看：
+
+```
+dist/
+├── my_tool-0.1.0-py3-none-any.whl
+└── my_tool-0.1.0.tar.gz
+```
+
+两个文件分别是啥？
+
+- **`.whl` 文件（wheel）**：预编译好的二进制包。用户 `pip install` 时会优先选这个，因为不用编译，秒装
+- **`.tar.gz` 文件（sdist，source distribution）**：源码包。包含整个项目源码，给那些环境特殊、需要从源码编译的用户用
+
+文件名里有个规则——`包名-版本-Python 版本-ABI-平台`：
+
+- `py3`：兼容所有 Python 3
+- `none`：不依赖特定的 ABI
+- `any`：跨平台
+
+要是你的包包含 C 扩展，wheel 名字就会变成 `my_tool-0.1.0-cp311-cp311-linux_x86_64.whl`，限定 CPython 3.11、Linux x86_64 上能用。每个平台都要单独打一个 wheel。
+
+纯 Python 项目就一个 `py3-none-any.whl`，全平台通吃，最省事。
+
+「uv 没装怎么办？」用官方的 build 工具也行：
+
+```bash
+pip install build
+python -m build
+```
+
+效果一模一样。
+
+构建成功之后，**一定要先在本地装一下试试**：
+
+```bash
+uv pip install dist/my_tool-0.1.0-py3-none-any.whl
+```
+
+装完之后跑跑你的工具，确认能用。这一步是发版本前的最后一道防线，发到 PyPI 之前如果发现问题，还能改；发上去就晚了。
+
+## 注册 TestPyPI 账号
+
+包打好了，下一步——发上去。先发 TestPyPI 演练，再发正式 PyPI。
+
+TestPyPI 注册流程——
+
+1. 打开 https://test.pypi.org/account/register/
+2. 用邮箱注册账号，验证邮箱
+3. 登录之后，进 `Account settings`
+4. 开启 **两步验证（2FA）**，TestPyPI 现在强制要求 2FA。可以用 Authy、Google Authenticator、1Password 这类 TOTP App
+5. 进 `API tokens` 页面，创建一个 token，scope 选 `Entire account`（第一次发包没办法限定到具体项目，因为项目还不存在）
+6. 把生成的 token 复制下来，**只能看一次，关掉页面就没了**
+
+TestPyPI 的 token 长这样：
+
+```
+pypi-AgEIcHlwaS5vcmcCJ...（一长串 base64）
+```
+
+把这个 token 保存在密码管理器里。
+
+正式 PyPI 的注册流程一样——https://pypi.org/account/register/ ，开 2FA，建 token，存好。注意 PyPI 跟 TestPyPI 是两个独立网站，账号、token 都是分开的。
+
+## 上传到 TestPyPI 演练
+
+TestPyPI 的发布命令——
+
+```bash
+uv publish --publish-url https://test.pypi.org/legacy/ \
+    --token pypi-AgEIcHlwaS5vcmcCJ...
+```
+
+或者用环境变量更安全：
+
+```bash
+export UV_PUBLISH_TOKEN=pypi-AgEIcHlwaS5vcmcCJ...
+uv publish --publish-url https://test.pypi.org/legacy/
+```
+
+跑成功之后，输出大概是：
+
+```
+Uploading my_tool-0.1.0-py3-none-any.whl
+Uploading my_tool-0.1.0.tar.gz
+Published https://test.pypi.org/project/my-tool/0.1.0/
+```
+
+打开链接看看，自己的小工具已经躺在 TestPyPI 上了，标题、描述、版本号、README、依赖列表全都有。
+
+下一步——**用 TestPyPI 装一下，确认能用**：
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ \
+    --extra-index-url https://pypi.org/simple/ \
+    my-tool
+```
+
+注意这里两个 index-url 参数——
+
+- `--index-url https://test.pypi.org/simple/`：从 TestPyPI 找你刚发的包
+- `--extra-index-url https://pypi.org/simple/`：从正式 PyPI 找依赖（因为你的依赖比如 httpx 是发在正式 PyPI 上的）
+
+不加第二个参数，TestPyPI 上的依赖会装不全。这是新手最常踩的坑，记一下。
+
+## 正式上传到 PyPI
+
+TestPyPI 演练成功之后，正式发 PyPI 就一条命令——
+
+```bash
+export UV_PUBLISH_TOKEN=pypi-正式的-token-...
+uv publish
+```
+
+`uv publish` 默认就是发到 https://upload.pypi.org/legacy/ ，也就是正式 PyPI。
+
+发完之后，打开 https://pypi.org/project/my-tool/ ，自己的项目就在 PyPI 上了。任何人现在都能：
+
+```bash
+pip install my-tool
+```
+
+把你的工具装到自己的环境里。
+
+「我发包之后想下架怎么办？」PyPI 提供了一个「yank」机制——版本号会保留，但默认不再被新装机会找到。注意只是「藏起来」不是「删除」，已经装上的用户还能继续用。完全删除一个版本是不允许的，避免破坏依赖链。
+
+## 版本号管理：手动 vs 自动
+
+发完 0.1.0，过了一段时间想发 0.1.1。怎么改版本号？
+
+**手动法**——打开 `pyproject.toml`，把 `version = "0.1.0"` 改成 `version = "0.1.1"`，然后重新 `uv build` + `uv publish`。简单直接。
+
+但是手动法有个问题——`pyproject.toml` 和 git tag 容易对不上。
+
+**自动法**——用 hatch-vcs，从 git tag 自动算版本号。改一下 `pyproject.toml`：
+
+```toml
+[project]
+name = "my-tool"
+dynamic = ["version"]
+description = "两点水的小工具"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+```
+
+注意三处变化——
+
+1. `version = "0.1.0"` 改成 `dynamic = ["version"]`
+2. `[build-system].requires` 加上 `hatch-vcs`
+3. 新增 `[tool.hatch.version]` 段，告诉 hatch-vcs「从 git 读」
+
+之后流程变成——
+
+```bash
+git tag v0.1.1
+git push --tags
+uv build
+uv publish
+```
+
+`uv build` 时，hatch-vcs 会读 git 最新的 tag `v0.1.1`，自动得出版本号 0.1.1。
+
+要是你打 tag 之后又改了代码，hatch-vcs 还会自动加上一个 dev 后缀，版本号变成 `0.1.2.dev3+gabc1234`，明显告诉你「这是个开发中的版本」。
+
+## README 和 LICENSE：基本礼仪
+
+各位发到 PyPI 的项目，**必须有 README.md 和 LICENSE 文件**，这是基本的行业礼仪。
+
+### README.md
+
+`README.md` 在 PyPI 项目页面会被渲染成正文。建议至少包含——简介、安装命令、最小用法示例。
+
+### LICENSE
+
+License 是法律文件，告诉用户「我允许你怎么用我的代码」。各位写开源项目，不写 License 等于「保留所有权利」，反而是最严的——别人不能拿来用，因为没拿到许可。
+
+常用的 License 三选一——
+
+- **MIT**：最宽松，「你随便用，别告我，写一句版权声明就行」
+- **Apache 2.0**：跟 MIT 类似，加了一条「专利授权」条款，对企业更友好
+- **GPL v3**：传染性 License，「你用了我的代码，你的代码也得开源」
+
+社区惯例——工具/库类项目用 MIT 或 Apache 2.0。
+
+`pyproject.toml` 里也声明一下：
+
+```toml
+[project]
+license = "MIT"
+```
+
+## CI 自动发包：打 tag 就发版
+
+每次发包都手动 `uv build` + `uv publish`，跑两三次就嫌烦。最理想的状态是——**打个 git tag，CI 自动构建并发到 PyPI**。
+
+GitHub Actions 加一段 workflow 就能做到。在项目里建一个文件 `.github/workflows/release.yml`：
+
+```yaml
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v3
+
+      - run: uv build
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+```
+
+这段配置干了什么——
+
+1. **触发条件**：push 一个以 `v` 开头的 tag（比如 `v0.1.1`）就跑
+2. **`permissions: id-token: write`**：给 workflow 申请 OpenID Connect 权限
+3. **构建**：用 `uv build` 打包
+4. **发布**：用 `pypa/gh-action-pypi-publish` 上传到 PyPI
+
+最神奇的是——**这套流程不需要写 PyPI token**。靠的是「**可信发布（Trusted Publishers）**」机制。
+
+可信发布的原理是——PyPI 直接信任 GitHub Actions 的 OIDC 身份。你在 PyPI 项目设置里关联「这个 GitHub 仓库的这个 workflow 文件」之后，CI 跑起来 PyPI 就认识，不用 token 就能上传。
+
+配置步骤——
+
+1. 登录 PyPI，进项目页面 → `Settings` → `Publishing`
+2. 添加一个「Trusted Publisher」，填 Owner、Repository name、Workflow name、Environment
+3. 推一个 tag 试试
+
+打 tag 的命令——
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+GitHub Actions 跑起来，几分钟之后包就在 PyPI 上了。
+
+「比起 token 有啥好处？」
+
+1. **不用管 token 过期**
+2. **不用怕 token 泄露**
+3. **配置在 PyPI 一边**，权限管理更清晰
+
+强烈推荐 2026 年的新项目一上来就用可信发布，比 token 干净太多。

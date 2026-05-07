@@ -1,0 +1,275 @@
+# 多线程编程
+
+线程并不是始终保持一个状态的，其状态大概如下：
+
+- **New**：创建
+- **Runnable**：就绪，等待调度
+- **Running**：运行
+- **Blocked**：阻塞，可能在 Wait、Locked、Sleeping
+- **Dead**：消亡
+
+线程也有不同的类型，大致可分为：
+
+- 主线程
+- 子线程
+- 守护线程（后台线程）
+- 前台线程
+
+## 1、线程的创建
+
+Python 提供两个模块进行多线程的操作，分别是 `thread` 和 `threading`。
+
+前者是比较低级的模块，用于更底层的操作，一般应用级别的开发不常用。
+
+我们使用 `threading` 来举个例子：
+
+```python
+import time
+import threading
+
+
+class MyThread(threading.Thread):
+    def run(self):
+        for i in range(5):
+            print(f'thread {self.name}, @number: {i}')
+            time.sleep(1)
+
+
+def main():
+    print("Start main threading")
+
+    # 创建三个线程
+    threads = [MyThread() for i in range(3)]
+    # 启动三个线程
+    for t in threads:
+        t.start()
+
+    print("End Main threading")
+
+
+if __name__ == '__main__':
+    main()
+```
+
+运行结果（不同环境输出可能不一样）：
+
+```txt
+Start main threading
+thread Thread-1, @number: 0
+thread Thread-2, @number: 0
+thread Thread-3, @number: 0
+End Main threading
+thread Thread-2, @number: 1
+thread Thread-1, @number: 1
+thread Thread-3, @number: 1
+...
+```
+
+## 2、线程合并（join 方法）
+
+上面的示例打印结果显示，主线程结束后子线程还在运行。如果需要主线程等待子线程运行完后再退出，要怎么办呢？
+
+这时候就需要用到 `join` 方法了。在上面的例子里新增一段代码：
+
+```python
+import time
+import threading
+
+
+class MyThread(threading.Thread):
+    def run(self):
+        for i in range(5):
+            print(f'thread {self.name}, @number: {i}')
+            time.sleep(1)
+
+
+def main():
+    print("Start main threading")
+
+    threads = [MyThread() for i in range(3)]
+    for t in threads:
+        t.start()
+
+    # 依次让新创建的线程执行 join
+    for t in threads:
+        t.join()
+
+    print("End Main threading")
+
+
+if __name__ == '__main__':
+    main()
+```
+
+打印结果中，主线程是在等待子线程运行结束后才结束的。
+
+## 3、线程同步与互斥锁
+
+使用线程加载获取数据时，通常会造成数据不同步的情况。这时候我们可以给资源进行加锁，访问资源的线程需要获得锁才能访问。
+
+`threading` 模块提供了一个 Lock 功能：
+
+```python
+lock = threading.Lock()
+```
+
+在线程中获取锁：
+
+```python
+lock.acquire()
+```
+
+使用完成后，需要释放锁：
+
+```python
+lock.release()
+```
+
+为了支持在同一线程中多次请求同一资源，Python 还提供了**可重入锁（RLock）**。RLock 内部维护着一个 Lock 和一个 counter 变量，counter 记录了 acquire 的次数，使得资源可以被多次 acquire。直到一个线程所有的 acquire 都被 release，其他线程才能获得资源。
+
+```python
+r_lock = threading.RLock()
+```
+
+## 4、Condition 条件变量
+
+使用锁可以达到线程同步，但是在更复杂的环境，需要针对锁进行一些条件判断。Python 提供了 Condition 对象。
+
+**使用 Condition 对象可以在某些事件触发或者达到特定的条件后才处理数据。Condition 除了具有 Lock 对象的 acquire 方法和 release 方法外，还提供了 wait 和 notify 方法。**
+
+线程首先 acquire 一个条件变量锁。如果条件不足，则该线程 wait；如果满足就执行线程，甚至可以 notify 其他线程。其他处于 wait 状态的线程接到通知后会重新判断条件。
+
+![Condition 条件变量交互流程](/lessons-images/python13/condition.png)
+
+该模式常用于生产者消费者模式，下面是在线购物买家和卖家的示例：
+
+```python
+import threading
+import time
+
+
+class Consumer(threading.Thread):
+    def __init__(self, cond, name):
+        super(Consumer, self).__init__()
+        self.cond = cond
+        self.name = name
+
+    def run(self):
+        # 确保先运行 Producer 中的方法
+        time.sleep(1)
+        self.cond.acquire()
+        print(self.name + ': 我这两件商品一起买，可以便宜点吗')
+        self.cond.notify()
+        self.cond.wait()
+        print(self.name + ': 我已经提交订单了，你修改下价格')
+        self.cond.notify()
+        self.cond.wait()
+        print(self.name + ': 收到，我支付成功了')
+        self.cond.notify()
+        self.cond.release()
+        print(self.name + ': 等待收货')
+
+
+class Producer(threading.Thread):
+    def __init__(self, cond, name):
+        super(Producer, self).__init__()
+        self.cond = cond
+        self.name = name
+
+    def run(self):
+        self.cond.acquire()
+        # 释放对锁的占用，同时线程挂起在这里，直到被 notify 并重新占有锁
+        self.cond.wait()
+        print(self.name + ': 可以的，你提交订单吧')
+        self.cond.notify()
+        self.cond.wait()
+        print(self.name + ': 好了，已经修改了')
+        self.cond.notify()
+        self.cond.wait()
+        print(self.name + ': 嗯，收款成功，马上给你发货')
+        self.cond.release()
+        print(self.name + ': 发货商品')
+
+
+cond = threading.Condition()
+consumer = Consumer(cond, '买家（两点水）')
+producer = Producer(cond, '卖家（三点水）')
+consumer.start()
+producer.start()
+```
+
+## 5、线程间通信
+
+如果程序中有多个线程，这些线程避免不了需要相互通信。从一个线程向另一个线程发送数据最安全的方式是使用 `queue` 库中的队列。创建一个被多个线程共享的 `Queue` 对象，这些线程通过使用 `put()` 和 `get()` 操作来向队列中添加或者删除元素。
+
+```python
+from queue import Queue
+from threading import Thread
+
+isRead = True
+
+
+def write(q):
+    # 写数据进程
+    for value in ['两点水', '三点水', '四点水']:
+        print(f'写进 Queue 的值为：{value}')
+        q.put(value)
+
+
+def read(q):
+    # 读取数据进程
+    while isRead:
+        value = q.get(True)
+        print(f'从 Queue 读取的值为：{value}')
+
+
+if __name__ == '__main__':
+    q = Queue()
+    t1 = Thread(target=write, args=(q,))
+    t2 = Thread(target=read, args=(q,))
+    t1.start()
+    t2.start()
+```
+
+Python 还提供了 `Event` 对象用于线程间通信，它是由线程设置的信号标志。如果信号标志为真，则其他线程等待直到信号清除。
+
+`Event` 对象的常用方法：
+
+- `set()`：把内部信号标志设为真
+- `clear()`：把内部信号标志清除（设为假）
+- `isSet()`：查询当前信号标志状态
+- `wait()`：当信号为真时立刻返回；为假时阻塞，直到信号变真
+
+```python
+import threading
+
+
+class mThread(threading.Thread):
+    def __init__(self, threadname):
+        threading.Thread.__init__(self, name=threadname)
+
+    def run(self):
+        global event
+        if event.isSet():
+            event.clear()
+            event.wait()
+            print(self.getName())
+        else:
+            print(self.getName())
+            event.set()
+
+
+event = threading.Event()
+event.set()
+t1 = []
+for i in range(10):
+    t = mThread(str(i))
+    t1.append(t)
+
+for i in t1:
+    i.start()
+```
+
+## 6、后台线程
+
+默认情况下，主线程退出之后，即使子线程没有 join，主线程结束后子线程也依然会继续执行。如果希望主线程退出后，其子线程也退出而不再执行，则需要把子线程设置为后台线程。Python 提供了 `setDaemon` 方法（或者直接给线程的 `daemon` 属性赋 `True`）。

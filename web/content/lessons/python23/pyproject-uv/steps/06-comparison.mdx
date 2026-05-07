@@ -1,0 +1,190 @@
+# uv vs pip vs poetry vs pipenv
+
+各位经常听人说哪个工具好哪个工具坏。来个不带感情色彩的对比：
+
+| 工具      | 速度   | 锁定文件     | 项目管理 | Python 管理 | 2026 推荐度    |
+|-----------|--------|--------------|----------|-------------|----------------|
+| `pip`     | 慢     | 没有（要配 pip-tools） | 没有     | 没有        | 老项目维护用   |
+| `pipenv`  | 极慢   | `Pipfile.lock`         | 有       | 没有        | 不推荐         |
+| `poetry`  | 中等   | `poetry.lock`          | 有       | 没有        | 还能用         |
+| `uv`      | 极快   | `uv.lock`              | 有       | 有          | **首选**       |
+
+如果是 2026 年开新项目，无脑选 uv；如果是老项目还在用 pip + requirements.txt，建议尽快迁过来；老项目用了 poetry 也别慌，能跑就让它跑，等下次大重构再说。
+
+## 从 requirements.txt 迁移过来
+
+各位手上有老项目，已经在用 `requirements.txt`，怎么迁过来？
+
+### 场景一：从 requirements.txt 直接 lock
+
+如果各位的 `requirements.txt` 已经是「输入约束」（写了 `httpx>=0.27` 这种范围）：
+
+```bash
+uv pip compile requirements.in > requirements.txt
+```
+
+习惯上，`requirements.in` 是「输入」（带版本范围），`requirements.txt` 是「输出」（钉死的精确版本）。这是 pip-tools 的约定，`uv pip compile` 完全兼容。
+
+### 场景二：把 requirements.txt 转成 pyproject.toml
+
+这是更彻底的迁移。假设各位现有的 `requirements.txt`：
+
+```
+httpx>=0.27
+click>=8.0
+sqlalchemy>=2.0
+```
+
+第一步：在项目根目录跑：
+
+```bash
+uv init --no-package
+```
+
+`--no-package` 告诉 uv 这只是个应用，不打算发布到 PyPI。
+
+第二步：把 `requirements.txt` 里的依赖一行一行 `uv add`：
+
+```bash
+uv add httpx click sqlalchemy
+```
+
+或者批量：
+
+```bash
+uv add -r requirements.txt
+```
+
+第三步：删掉老的 `requirements.txt`，需要兼容的话从 `pyproject.toml` 导出：
+
+```bash
+uv export --no-dev > requirements.txt
+```
+
+## 几个常见坑和小技巧
+
+### 坑一：把 .venv 提交到 git
+
+新手很容易忘记加 `.venv/` 到 `.gitignore`。这事 `uv init` 已经帮你处理了，但如果是手动迁移的老项目，记得检查一下 `.gitignore`。
+
+### 坑二：忘了 uv.lock
+
+`uv.lock` 必须进 git。
+
+### 坑三：在虚拟环境里全局装包
+
+各位有时候会习惯性 `pip install something`，结果装到了系统 Python 里。在 uv 项目里：
+
+- 加项目依赖用 `uv add`
+- 想全局装一个 CLI 工具用 `uv tool install`
+- 想临时跑一次用 `uvx`
+
+不要在 uv 项目里直接 `pip install`。
+
+### 技巧一：缓存全局共享
+
+uv 有个全局缓存，所有项目共享下载过的包：
+
+```bash
+uv cache dir
+```
+
+新项目第一次 `uv sync`，如果包在缓存里，秒装完，不用重新下载。这是 uv「快」的另一个原因。
+
+清理缓存：
+
+```bash
+uv cache clean
+```
+
+平时不需要清，磁盘紧张了再清。
+
+### 技巧二：把 pyproject.toml 当配置中心
+
+`pyproject.toml` 不光放项目元数据，还能放工具配置。完整一点的例子：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+```
+
+ruff、pytest、mypy 三个工具的配置全在一起，新人接手项目打开一个文件什么都看见了。
+
+## 单文件脚本也能用 uv
+
+各位有时候写个一次性脚本，可能就 50 行 Python，但要用 httpx。难道为这 50 行新建一个项目？
+
+uv 支持「内联依赖」语法（PEP 723）。在脚本头部写一段元数据：
+
+```python
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "httpx",
+# ]
+# ///
+
+import httpx
+
+response = httpx.get("https://httpbin.org/get")
+print(response.status_code)
+```
+
+跑：
+
+```bash
+uv run script.py
+```
+
+uv 会读取脚本头部的元数据，自动建一个临时环境装上 httpx，跑完即丢。**单个 .py 文件就是个完整项目**，发给同事一份就能跑。
+
+## 小结
+
+这一章信息量大，最后给各位提炼成几条：
+
+**第一，`pyproject.toml` 取代了一切。** `setup.py`、`setup.cfg`、`requirements.txt`、`requirements-dev.txt`、`pytest.ini`、`.flake8`、`tox.ini` 一堆零碎文件，2026 年都可以收进 `pyproject.toml` 一个文件。
+
+**第二，`uv` 是 2026 年的首选包管理器。** Astral 出品，Rust 写的，10-100x 速度，单二进制，统一管理 Python 版本、虚拟环境、依赖。
+
+**第三，记住这五条核心命令。**
+
+```bash
+uv init my-project       # 创建项目
+uv add httpx             # 加生产依赖
+uv add --dev pytest      # 加开发依赖
+uv sync                  # 同步环境（同事拉下来用）
+uv run python main.py    # 跑命令
+```
+
+**第四，`uv.lock` 必须进 git。** 这是「环境字节级一致」的保证。
+
+**第五，老项目用 `uv pip compile` 生成 `requirements.txt`，新项目用 `uv add` + `uv sync`。**
+
+「我电脑能跑你电脑跑不了」这句话，2026 年起，可以扔进历史的垃圾桶了。

@@ -1,0 +1,20 @@
+{
+  "id": "exception-handling",
+  "title": "异常处理",
+  "chapter": "python19",
+  "order": 1,
+  "estimatedMinutes": 40,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-try-except.mdx" },
+    { "kind": "exercise", "file": "01-safe-divide.json" },
+    { "kind": "step", "file": "03-multiple-except.mdx" },
+    { "kind": "exercise", "file": "02-parse-int.json" },
+    { "kind": "step", "file": "04-else-finally.mdx" },
+    { "kind": "exercise", "file": "03-finally.json" },
+    { "kind": "step", "file": "05-raise.mdx" },
+    { "kind": "exercise", "file": "04-raise-age.json" },
+    { "kind": "step", "file": "06-custom-exception.mdx" },
+    { "kind": "exercise", "file": "05-custom-exception.json" }
+  ]
+}

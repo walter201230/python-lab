@@ -1,0 +1,16 @@
+{
+  "id": "04-add",
+  "title": "用 __add__ 让对象支持 +",
+  "prompt": "请定义二维向量类 `Vec2`：\n\n- `__init__` 接收 `x` 和 `y`，分别保存到 `self.x` / `self.y`\n- `__add__(self, other)` 返回一个新的 `Vec2(self.x + other.x, self.y + other.y)`\n- `__repr__` 返回字符串 `f'Vec2({self.x}, {self.y})'`\n\n然后执行：\n\n```python\nv1 = Vec2(1, 2)\nv2 = Vec2(3, 4)\nv3 = v1 + v2\nprint(v3)\n```\n\n输出应该是：\n```\nVec2(4, 6)\n```",
+  "starterCode": "# class Vec2:\n#     def __init__(self, x, y):\n#         self.x = x\n#         self.y = y\n#     def __add__(self, other):\n#         return Vec2(self.x + other.x, self.y + other.y)\n#     def __repr__(self):\n#         return f'Vec2({self.x}, {self.y})'\n# v1 = Vec2(1, 2)\n# v2 = Vec2(3, 4)\n# v3 = v1 + v2\n# print(v3)\n",
+  "solution": "class Vec2:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __add__(self, other):\n        return Vec2(self.x + other.x, self.y + other.y)\n\n    def __repr__(self):\n        return f'Vec2({self.x}, {self.y})'\n\nv1 = Vec2(1, 2)\nv2 = Vec2(3, 4)\nv3 = v1 + v2\nprint(v3)",
+  "grading": {
+    "stdoutEquals": "Vec2(4, 6)\n",
+    "requiredAst": ["ClassDef:Vec2", "FunctionDef:__add__"]
+  },
+  "hints": [
+    "__add__ 通常返回一个新对象，不要修改 self",
+    "把 x、y 分别相加，包成新的 Vec2 返回",
+    "完整代码：\nclass Vec2:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    def __add__(self, other):\n        return Vec2(self.x + other.x, self.y + other.y)\n    def __repr__(self):\n        return f'Vec2({self.x}, {self.y})'\nv1 = Vec2(1, 2)\nv2 = Vec2(3, 4)\nv3 = v1 + v2\nprint(v3)"
+  ]
+}

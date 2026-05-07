@@ -1,0 +1,64 @@
+# 元类：类也是对象
+
+先送一句 Tim Peters（Python 界的资深玩家）说过的话：
+
+> 元类是深度的魔法，99% 的用户应该根本不必为此操心。如果你想搞清楚究竟是否需要用到元类，那么你就不需要它。
+
+听起来好像在劝退。但既然元类是 Python 类型系统的根，了解一下它可以让你**真正看懂 `class` 关键字背后发生了什么**。
+
+## 类是什么？
+
+在大多数语言里，类是「描述如何生成对象的代码段」。Python 也是这样——但 Python 多了一层：
+
+> 在 Python 中，**类本身也是一个对象**。
+
+这听起来有点绕。下面这段最普通的代码：
+
+```python
+class ObjectCreator:
+    pass
+
+obj = ObjectCreator()
+print(obj)
+print(ObjectCreator)
+```
+
+输出（地址会不同）：
+
+```
+<__main__.ObjectCreator object at 0x...>
+<class '__main__.ObjectCreator'>
+```
+
+注意第二行——**`ObjectCreator` 这个类，本身也能被打印**。也就是说它是个对象。既然是对象，我们就能：
+
+```python
+class ObjectCreator:
+    pass
+
+# 把类当参数传给函数
+def echo(x):
+    print(x)
+
+echo(ObjectCreator)
+
+# 把类赋值给变量
+Alias = ObjectCreator
+print(Alias)
+```
+
+输出：
+
+```
+<class '__main__.ObjectCreator'>
+<class '__main__.ObjectCreator'>
+```
+
+类可以传参、可以赋值、可以打印——和函数一样，是「一等公民」。
+
+## 这一节我们要回答的问题
+
+- 一个类的「类」是什么？
+- 怎么在运行时**动态**创建一个类？
+- 什么是**元类（metaclass）**，怎么自定义一个？
+- 实际工作里我什么时候会用到？（剧透：大概率用不到，但搞懂它能看懂 ORM、Pydantic 这类框架的魔法）

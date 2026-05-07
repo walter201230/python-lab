@@ -1,0 +1,16 @@
+{
+  "id": "01-define-color",
+  "title": "定义一个 Color 枚举类",
+  "prompt": "请用 `from···import` 从 `enum` 模块导入 `Enum`，然后：\n\n1. 定义一个继承 `Enum` 的类 `Color`，包含三个成员：\n   - `RED = 1`\n   - `GREEN = 2`\n   - `BLUE = 3`\n2. `print(Color.RED)`\n\n输出应该是：\n```\nColor.RED\n```\n\n> 提示：直接 `print` 一个 Enum 成员，默认会打出 `类名.成员名` 这种格式。",
+  "starterCode": "# from enum import Enum\n#\n# class Color(Enum):\n#     RED = 1\n#     GREEN = 2\n#     BLUE = 3\n#\n# print(Color.RED)\n",
+  "solution": "from enum import Enum\n\nclass Color(Enum):\n    RED = 1\n    GREEN = 2\n    BLUE = 3\n\nprint(Color.RED)",
+  "grading": {
+    "stdoutEquals": "Color.RED\n",
+    "requiredAst": ["ImportFrom", "ClassDef:Color"]
+  },
+  "hints": [
+    "from enum import Enum",
+    "class Color(Enum): 然后在类体里写 RED = 1 等成员",
+    "完整代码：\nfrom enum import Enum\n\nclass Color(Enum):\n    RED = 1\n    GREEN = 2\n    BLUE = 3\n\nprint(Color.RED)"
+  ]
+}

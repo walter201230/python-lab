@@ -1,0 +1,16 @@
+{
+  "id": "01-findall-digits",
+  "title": "用 re.findall 抓出全部数字",
+  "prompt": "字符串 `'abc123def456ghi789'` 里夹杂着一些**连续的数字段**。\n\n请用 `re.findall` 把所有连续数字段抓出来，赋给变量 `nums`，然后 `print(nums)`。\n\n输出应该是：\n```\n['123', '456', '789']\n```\n\n提示：连续数字可以用 `\\d+`。",
+  "starterCode": "import re\n\ns = 'abc123def456ghi789'\n# nums = re.findall(...)\n# print(nums)\n",
+  "solution": "import re\n\ns = 'abc123def456ghi789'\nnums = re.findall(r'\\d+', s)\nprint(nums)",
+  "grading": {
+    "stdoutEquals": "['123', '456', '789']\n",
+    "requiredAst": ["Import:re"]
+  },
+  "hints": [
+    "记得 import re",
+    "正则用 r'...' 原始字符串避免反斜杠转义",
+    "完整代码：\nimport re\ns = 'abc123def456ghi789'\nnums = re.findall(r'\\d+', s)\nprint(nums)"
+  ]
+}

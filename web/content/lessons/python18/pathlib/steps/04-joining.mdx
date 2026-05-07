@@ -1,0 +1,79 @@
+# 三、用 `/` 拼接路径
+
+路径拼接是最常见的操作，没有之一。
+
+## 老写法
+
+```python
+import os
+
+base = '/tmp'
+data_path = os.path.join(base, 'demo', 'sub', 'foo.txt')
+print(data_path)
+```
+
+输出：
+
+```
+/tmp/demo/sub/foo.txt
+```
+
+`os.path.join` 用是好用，但写起来嘴里念三个词「os」「path」「join」，手指都不想动了。
+
+## 新写法：直接用 `/`
+
+```python
+from pathlib import Path
+
+base = Path('/tmp')
+data_path = base / 'demo' / 'sub' / 'foo.txt'
+print(data_path)
+```
+
+输出（一模一样）：
+
+```
+/tmp/demo/sub/foo.txt
+```
+
+注意——拼接路径用的是 `/` 这个**操作符**！
+
+## 为什么能这么写？
+
+因为 `Path` 重载了 `__truediv__`（除法操作符），所以 `Path('/tmp') / 'demo'` 这种表达式被翻译成了路径拼接。
+
+这种设计简直是天才——路径在 URL、Linux 文件系统里用的本来就是 `/`，跟我们脑子里的语义完全一致。
+
+## 字符串和 Path 可以混着用
+
+```python
+from pathlib import Path
+
+p1 = Path('/tmp') / 'foo'         # Path / str
+p2 = Path('/tmp') / Path('foo')   # Path / Path
+p3 = 'foo' / Path('/tmp')         # str / Path（注意结果）
+
+print(p1)
+print(p2)
+print(p3)
+```
+
+输出：
+
+```
+/tmp/foo
+/tmp/foo
+/tmp/foo
+```
+
+只要 `/` 的**有一边是 Path**，结果就是 Path 对象。
+
+## 老 vs 新对照表
+
+| 操作 | 老写法 | 新写法 |
+|---|---|---|
+| 拼三段 | `os.path.join(a, b, c)` | `Path(a) / b / c` |
+| 取脚本目录 | `os.path.join(os.path.dirname(__file__), 'data')` | `Path(__file__).parent / 'data'` |
+| 拼到家目录 | `os.path.expanduser('~/Documents')` | `Path.home() / 'Documents'` |
+
+写一次新写法，就回不去了。

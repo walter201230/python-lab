@@ -1,0 +1,21 @@
+{
+  "id": "01-dict-create",
+  "title": "创建一个 dict",
+  "prompt": "请创建一个字典 `phone_book`，存这三对联系人：\n\n- `'Alice'` → `'13800001111'`\n- `'Bob'` → `'13800002222'`\n- `'Carol'` → `'13800003333'`\n\n然后 `print(phone_book)`。\n\n输出应该是：\n```\n{'Alice': '13800001111', 'Bob': '13800002222', 'Carol': '13800003333'}\n```",
+  "starterCode": "# 用花括号 {} 创建 dict，写法是 {key: value, ...}\n",
+  "solution": "phone_book = {'Alice': '13800001111', 'Bob': '13800002222', 'Carol': '13800003333'}\nprint(phone_book)",
+  "grading": {
+    "varsEqual": {
+      "phone_book": {
+        "Alice": "13800001111",
+        "Bob": "13800002222",
+        "Carol": "13800003333"
+      }
+    },
+    "stdoutEquals": "{'Alice': '13800001111', 'Bob': '13800002222', 'Carol': '13800003333'}\n"
+  },
+  "hints": [
+    "dict 的写法：{'key1': 'value1', 'key2': 'value2'}",
+    "完整代码：\nphone_book = {'Alice': '13800001111', 'Bob': '13800002222', 'Carol': '13800003333'}\nprint(phone_book)"
+  ]
+}

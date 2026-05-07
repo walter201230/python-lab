@@ -1,0 +1,15 @@
+{
+  "id": "02-iter-next",
+  "title": "用 iter 和 next 一个一个取",
+  "prompt": "已经给了你一个 list：\n\n```python\nnums = [10, 20, 30]\n```\n\n请：\n\n1. 用 `iter()` 把 `nums` 变成迭代器，赋给变量 `it`。\n2. 用 `next(it)` 连续取 3 次，分别 `print` 出来。\n\n输出应该是：\n```\n10\n20\n30\n```",
+  "starterCode": "nums = [10, 20, 30]\n# it = iter(nums)\n# print(next(it))\n# ...\n",
+  "solution": "nums = [10, 20, 30]\nit = iter(nums)\nprint(next(it))\nprint(next(it))\nprint(next(it))",
+  "grading": {
+    "stdoutEquals": "10\n20\n30\n"
+  },
+  "hints": [
+    "iter(nums) 会把 list 变成迭代器对象",
+    "每调用一次 next(it) 就吐出下一个元素",
+    "完整代码：\nit = iter(nums)\nprint(next(it))\nprint(next(it))\nprint(next(it))"
+  ]
+}

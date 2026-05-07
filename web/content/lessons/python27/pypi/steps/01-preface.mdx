@@ -1,0 +1,62 @@
+# 打包发布到 PyPI + typer：让全世界一行 pip install 用上你的工具
+
+> **这一章是纯阅读章节，没有练习题。**
+>
+> `uv build`、`uv publish`、`twine`、`typer` 这些都是命令行工具，浏览器里的 Pyodide 跑不起来；PyPI 注册账号、上传包也都是网络操作。这一章我们把概念、流程讲清楚，各位在自己本地装好 Python 环境之后实际操作一遍就能掌握。
+
+各位有没有过这样的瞬间——
+
+自己在本地写了一个小工具，比如「批量重命名截图文件」、「统计微信导出的聊天记录」、「自动给图片加水印」。脚本一两百行，跑起来挺顺手，自己天天用。然后某天一个朋友看见了：「这玩意儿挺好啊，能给我一份吗？」
+
+把 `tool.py` 用微信发过去。朋友收到之后，第一句话是——「这怎么用？」
+
+「装一下 pillow 和 httpx。」
+
+「好，装好了。」
+
+「再装一下 pyyaml。」
+
+「装好了。」
+
+「跑一下 `python tool.py`。」
+
+「报错了，说找不到 requests。」
+
+「哦对，还要 requests。」
+
+来回折腾五分钟，朋友放弃了。
+
+各位看，这就是 Python 工具的「最后一公里」问题——代码自己能跑，可是给别人用就费劲。Node 圈一行 `npm install -g xxx`，Rust 圈一行 `cargo install xxx`，Go 圈一行 `go install xxx`，到了 Python 这边，难道就要「先装这个再装那个」吗？
+
+当然不是。Python 也有自己的「全球应用商店」，叫 **PyPI**（Python Package Index）。把工具按照规范打包发上去，别人就能用一行 `pip install my-tool` 装上，再也不用各位手把手教了。
+
+这一章咱们把整个流程从零跑通。学完之后，各位应该能：
+
+1. 知道 PyPI 是什么、它跟 pip 是啥关系
+2. 把自己的项目改造成「可发布」的标准结构
+3. 用 `uv build` 一条命令把项目打成 wheel 和 sdist
+4. 先在 TestPyPI 演练一遍，再正式发布到 PyPI
+5. 用 `[project.scripts]` 把 Python 函数变成系统命令
+6. 用 typer 写出比 argparse 优雅 10 倍的命令行工具
+7. 把整套发布流程接进 GitHub Actions，打 tag 自动发版
+
+后半段我们会用 typer 写一个 todo-cli 的命令行小工具，再把它发到 PyPI，让全世界都能 `pip install todo-cli` 装上。
+
+## PyPI 是个啥
+
+各位平时一行 `pip install requests`，包是从哪儿下载的？答案是 PyPI。
+
+**PyPI（Python Package Index）是 Python 官方维护的全球公共包仓库**，地址 https://pypi.org。截至 2026 年，上面挂着 60 多万个 Python 包，每个月被下载几百亿次。所有 Python 圈知名的包——requests、numpy、flask、django、pandas、fastapi——都住在 PyPI 上。
+
+`pip install xxx` 这条命令的本质是——「从 PyPI 下载叫 xxx 的包，装到当前 Python 环境」。
+
+PyPI 跟 GitHub 是啥关系？两者各管一摊：
+
+- **GitHub** 是放源代码的地方，给开发者看
+- **PyPI** 是放打好包的地方，给用户用 pip 装
+
+一个项目通常两头都有——源码托管在 GitHub，发布版本上传到 PyPI。各位常用的 requests、flask，源码都在 GitHub，包都在 PyPI，两边版本号对得上。
+
+PyPI 还有一个「兄弟站点」叫 **TestPyPI**，地址 https://test.pypi.org。它是 PyPI 的演练场——发版本之前先发到 TestPyPI 试一下，确认没问题再发正式 PyPI。两个网站各自独立，账号、密码、token 都不通用。
+
+「为什么要有 TestPyPI？」因为 PyPI **正式版本一旦发布就不能修改、不能删除**。各位发版本的时候手抖了，把 0.1.0 发上去之后发现版本号写错了或者打包漏文件，没法撤回，只能再发一个 0.1.1，那个错版本会永远挂在 PyPI 上当历史档案。所以发正式 PyPI 之前先在 TestPyPI 演练一遍，是发版本的好习惯。

@@ -1,0 +1,19 @@
+{
+  "id": "functions",
+  "title": "函数",
+  "chapter": "python6",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-define.mdx" },
+    { "kind": "exercise", "file": "01-define-add.json" },
+    { "kind": "step", "file": "03-return.mdx" },
+    { "kind": "exercise", "file": "02-multi-return.json" },
+    { "kind": "step", "file": "04-arguments.mdx" },
+    { "kind": "exercise", "file": "03-default-arg.json" },
+    { "kind": "exercise", "file": "04-args.json" },
+    { "kind": "step", "file": "05-lambda.mdx" },
+    { "kind": "exercise", "file": "05-lambda.json" }
+  ]
+}

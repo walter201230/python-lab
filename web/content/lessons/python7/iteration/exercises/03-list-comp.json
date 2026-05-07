@@ -1,0 +1,16 @@
+{
+  "id": "03-list-comp",
+  "title": "列表生成式：偶数的平方",
+  "prompt": "用 **一行** 列表生成式，生成 1 到 10（含 10）中所有 **偶数的平方**，赋给变量 `result`，然后 `print(result)`。\n\n输出应该是：\n```\n[4, 16, 36, 64, 100]\n```",
+  "starterCode": "# result = [... for ... in range(...) if ...]\n# print(result)\n",
+  "solution": "result = [x * x for x in range(1, 11) if x % 2 == 0]\nprint(result)",
+  "grading": {
+    "varsEqual": { "result": [4, 16, 36, 64, 100] },
+    "stdoutEquals": "[4, 16, 36, 64, 100]\n"
+  },
+  "hints": [
+    "1 到 10（含 10）用 range(1, 11)",
+    "判断偶数：x % 2 == 0",
+    "完整代码：\nresult = [x * x for x in range(1, 11) if x % 2 == 0]\nprint(result)"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "03-custom-meta",
+  "title": "自定义元类自动加属性",
+  "prompt": "请定义一个**继承 `type`** 的元类 `AnimalMeta`：\n\n- 重写 `__new__(mcs, name, bases, attrs)`\n- 在 `attrs` 里塞一个 `species = 'animal'`\n- 用 `super().__new__(mcs, name, bases, attrs)` 返回类\n\n然后定义一个空类 `Dog(metaclass=AnimalMeta)`，里面写 `pass`。\n\n最后打印 `Dog.species`。\n\n输出应该是：\n```\nanimal\n```",
+  "starterCode": "# class AnimalMeta(type):\n#     def __new__(mcs, name, bases, attrs):\n#         attrs['species'] = 'animal'\n#         return super().__new__(mcs, name, bases, attrs)\n\n# class Dog(metaclass=AnimalMeta):\n#     pass\n\n# print(Dog.species)\n",
+  "solution": "class AnimalMeta(type):\n    def __new__(mcs, name, bases, attrs):\n        attrs['species'] = 'animal'\n        return super().__new__(mcs, name, bases, attrs)\n\nclass Dog(metaclass=AnimalMeta):\n    pass\n\nprint(Dog.species)",
+  "grading": {
+    "stdoutEquals": "animal\n",
+    "requiredAst": ["ClassDef:AnimalMeta", "ClassDef:Dog", "FunctionDef:__new__"]
+  },
+  "hints": [
+    "元类要继承 type：class AnimalMeta(type):",
+    "在 __new__ 里给 attrs 字典加一个键值对，然后 super().__new__ 返回",
+    "用元类的语法是 class Dog(metaclass=AnimalMeta):"
+  ]
+}

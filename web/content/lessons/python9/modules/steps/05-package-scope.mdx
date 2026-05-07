@@ -1,0 +1,82 @@
+# 四、包（Package）和作用域
+
+## 1、什么是包
+
+模块多了，难免会出现重名——你写了一个 `utils.py`，别人也写了一个 `utils.py`，怎么办？
+
+Python 的解决方案是 **包（Package）**：用 **目录** 来组织模块，不同目录下可以有同名模块。
+
+一个典型的包结构：
+
+```
+myproject/
+└── com/
+    └── learn/
+        └── module/
+            ├── __init__.py
+            └── lname.py     ← 完整名是 com.learn.module.lname
+```
+
+注意每个目录里都有一个 `__init__.py`：
+
+> 这个文件 **必须存在**（哪怕是空的），Python 才会把这个目录当成包，而不是普通目录。
+>
+> `__init__.py` 本身也是一个模块——它对应的模块名就是 **包名本身**。
+
+导入包里的模块时，用点号一层层进去：
+
+```python
+import com.learn.module.lname
+from com.learn.module import lname
+from com.learn.module.lname import some_func
+```
+
+> 现代 Python（3.3+）也支持 **命名空间包**——不强制要求 `__init__.py`。但传统包结构仍然最常见，初学阶段记住「目录里要有 `__init__.py`」就够了。
+
+## 2、作用域：public vs private
+
+学过 Java / C++ 的同学知道，类成员可以标 `public` / `private`。
+
+Python **没有真正的访问控制关键字**，但有一套约定俗成的命名规则：
+
+| 命名 | 含义 | 例子 |
+|------|------|------|
+| `abc` / `MyClass` | 公开（public），任何地方都可以用 | 普通函数、变量 |
+| `_abc` | 「内部使用」（约定），外部 **不应该** 直接引用 | 内部辅助函数 |
+| `__abc` | 名字改写（name mangling），主要用于类内部 | 类的私有属性 |
+| `__abc__` | 特殊变量 / 魔法方法 | `__name__`、`__init__` |
+
+举例：
+
+```python
+def _diamond_vip(lv):
+    print('尊敬的钻石会员用户，您好')
+    return f'DiamondVIP{lv}'
+
+
+def _gold_vip(lv):
+    print('尊敬的黄金会员用户，您好')
+    return f'GoldVIP{lv}'
+
+
+def vip_lv_name(lv):
+    """对外公开的入口"""
+    if lv == 1:
+        print(_gold_vip(lv))
+    elif lv == 2:
+        print(_diamond_vip(lv))
+
+
+vip_lv_name(2)
+```
+
+输出：
+
+```
+尊敬的钻石会员用户，您好
+DiamondVIP2
+```
+
+`vip_lv_name` 是公开的（外部调用入口），`_diamond_vip` / `_gold_vip` 名字带下划线——告诉别人「这是我内部用的辅助函数，别去依赖它」。
+
+> ⚠️ Python 不会真的阻止你访问 `_xxx`，只是 **大家约定** 不要这么干。代码就像城市的红绿灯，靠协作而不是栏杆。

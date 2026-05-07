@@ -1,0 +1,18 @@
+{
+  "id": "regex",
+  "title": "正则表达式",
+  "chapter": "python14",
+  "order": 1,
+  "estimatedMinutes": 35,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-basic-syntax.mdx" },
+    { "kind": "exercise", "file": "01-findall-digits.json" },
+    { "kind": "step", "file": "03-functions.mdx" },
+    { "kind": "exercise", "file": "02-match-phone.json" },
+    { "kind": "step", "file": "04-groups.mdx" },
+    { "kind": "exercise", "file": "03-groups-email.json" },
+    { "kind": "step", "file": "05-replace.mdx" },
+    { "kind": "exercise", "file": "04-sub-spaces.json" }
+  ]
+}

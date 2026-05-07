@@ -1,0 +1,121 @@
+# 三、不可变 dataclass——frozen=True
+
+默认的 dataclass 实例是「可变」的，你随时能给字段重新赋值：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Point:
+    x: int
+    y: int
+
+
+p = Point(1, 2)
+p.x = 100
+print(p)
+```
+
+输出：
+
+```
+Point(x=100, y=2)
+```
+
+但有时候你希望对象创建之后就不再变了——比如「坐标点」、「枚举值」、「配置项」这种概念上就该是只读的东西。这时候就该 `frozen=True` 上场：
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Point:
+    x: int
+    y: int
+
+
+p = Point(1, 2)
+print(p)
+
+try:
+    p.x = 100
+except Exception as e:
+    print(type(e).__name__, '：', e)
+```
+
+输出：
+
+```
+Point(x=1, y=2)
+FrozenInstanceError ： cannot assign to field 'x'
+```
+
+赋值就抛 `FrozenInstanceError`。这个保护是「运行时」的——也就是说就算静态检查工具没拦住你，运行时也会炸。
+
+## frozen 的副产品：自动 __hash__
+
+`frozen=True` 还有一个重要的副作用：**Python 会顺便给你生成 `__hash__`**，让这个对象能放进 `set`、能当 `dict` 的 key。
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Point:
+    x: int
+    y: int
+
+
+p1 = Point(1, 2)
+p2 = Point(1, 2)
+p3 = Point(3, 4)
+
+s = {p1, p2, p3}
+print(len(s))
+
+mapping = {Point(0, 0): '原点', Point(1, 0): '右一格'}
+print(mapping[Point(0, 0)])
+```
+
+输出：
+
+```
+2
+原点
+```
+
+`p1` 和 `p2` 字段值一样，被 set 当成了同一个元素，最后 `len(s)` 是 2 不是 3。`Point(0, 0)` 还能拿来当 dict 的 key，新建一个相同字段的 Point 也能精确查到——这正是「frozen + dataclass 自动生成的 hash」加在一起的效果。
+
+## 为什么必须 frozen 才能 hash？
+
+那不加 frozen，能不能 hash 呢？默认情况下：可以加 `eq=True, frozen=False` 但是要显式 `unsafe_hash=True`，但**绝对不建议**。因为可变对象一旦被 hash 进集合，你再改它的字段，它在集合里就「迷路」了——hash 还是旧的，但字段已经变了，从此再也找不到。这种坑别去踩，要 hash 就 frozen。
+
+## 典型场景：复合 key
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class CacheKey:
+    user_id: int
+    api_path: str
+
+
+# 模拟一个简单的缓存
+cache = {}
+key = CacheKey(1001, '/api/profile')
+cache[key] = {'name': '两点水', 'avatar': 'xxx.png'}
+
+# 后面查询的时候只需要 key 字段一致，就能命中
+print(cache[CacheKey(1001, '/api/profile')])
+```
+
+输出：
+
+```
+{'name': '两点水', 'avatar': 'xxx.png'}
+```
+
+这是 frozen dataclass 一个非常典型的场景——做「复合 key」。

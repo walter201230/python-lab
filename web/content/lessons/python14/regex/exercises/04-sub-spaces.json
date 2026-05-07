@@ -1,0 +1,16 @@
+{
+  "id": "04-sub-spaces",
+  "title": "用 re.sub 把多空格压成单空格",
+  "prompt": "已知一段被「多空格」污染的文本：\n\n```python\ns = 'hello   world  python  is   cool'\n```\n\n请用 `re.sub` 把**一段或多段连续的空白**替换成**一个空格**，赋给变量 `cleaned`，然后 `print(cleaned)`。\n\n输出应该是：\n```\nhello world python is cool\n```\n\n提示：`\\s+` 匹配「一个或多个空白字符」。",
+  "starterCode": "import re\n\ns = 'hello   world  python  is   cool'\n# cleaned = re.sub(...)\n# print(cleaned)\n",
+  "solution": "import re\n\ns = 'hello   world  python  is   cool'\ncleaned = re.sub(r'\\s+', ' ', s)\nprint(cleaned)",
+  "grading": {
+    "stdoutEquals": "hello world python is cool\n",
+    "requiredAst": ["Import:re"]
+  },
+  "hints": [
+    "re.sub(pattern, repl, string)：第二个参数是替换值",
+    "用 `\\s+` 匹配「一个或多个空白」，加号是 1 次或多次",
+    "完整代码：\nimport re\ns = 'hello   world  python  is   cool'\ncleaned = re.sub(r'\\s+', ' ', s)\nprint(cleaned)"
+  ]
+}

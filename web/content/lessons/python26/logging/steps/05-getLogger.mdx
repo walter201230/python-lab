@@ -1,0 +1,77 @@
+# 四、正经做法：getLogger(__name__)
+
+新手最常见的反模式是直接 `import logging` 之后到处 `logging.info(...)`、`logging.error(...)`。这其实是用了 **root logger**——所有模块共用同一个 logger，分不清日志是哪儿来的。
+
+**正经做法：每个模块开一个独立的 logger**：
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+def punch_in(user):
+    logger.info("用户 %s 开始打卡", user)
+```
+
+`__name__` 是 Python 内置的变量。在 `mymodule.py` 里 `__name__ == 'mymodule'`，在包 `app/services/punch.py` 里 `__name__ == 'app.services.punch'`。这个名字会出现在每条日志里，一眼就能看出日志是哪个模块打的。
+
+## 为什么要这么干？
+
+1. **能看出哪个模块打的日志**——出 bug 时直接定位
+2. **能给不同模块设不同级别**——比如 `app.services` 整组打 `DEBUG`、`app.api` 只打 `WARNING`
+3. **logger 自动按层级继承**——`app.services.punch` 找不到配置时会去查 `app.services`，再查 `app`，再查 `root`
+
+## 完整例子
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(name)s - %(levelname)s - %(message)s',
+)
+
+logger = logging.getLogger('app.punch')
+
+logger.info("用户开始打卡")
+logger.warning("迟到了")
+```
+
+输出：
+
+```
+app.punch - INFO - 用户开始打卡
+app.punch - WARNING - 迟到了
+```
+
+# 五、logger.exception()：在 except 里自动带 traceback
+
+写错误日志最容易踩的坑——只 `logger.error('xxx')` 不带异常信息：
+
+```python
+try:
+    1 / 0
+except Exception as e:
+    logging.error('出错了')   # ❌ 完全看不出错在哪
+```
+
+正确写法是 `logger.exception()`，它会自动把当前 traceback 带进去：
+
+```python
+try:
+    1 / 0
+except Exception as e:
+    logging.exception('出错了')   # ✓ 自动附上完整 traceback
+```
+
+输出：
+
+```
+ERROR:root:出错了
+Traceback (most recent call last):
+  File "main.py", line 4, in <module>
+    1 / 0
+ZeroDivisionError: division by zero
+```
+
+> 写日志时最有用的一条建议：**在 `except` 里永远用 `logger.exception()`**，不要用 `logger.error(str(e))`。

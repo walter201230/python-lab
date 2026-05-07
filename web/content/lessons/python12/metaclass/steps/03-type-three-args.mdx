@@ -1,0 +1,84 @@
+# 二、用 `type()` 动态创建类
+
+既然 `type` 是创建类的元类，那我们能不能**直接调用 `type` 来造一个类**？答案是能。
+
+`type()` 还有第二种用法——传**三个参数**：
+
+```python
+type(类名, 父类元组, 属性字典)
+```
+
+| 参数      | 说明                                                |
+|-----------|-----------------------------------------------------|
+| 类名      | 字符串，例如 `'Hello'`                              |
+| 父类元组  | 单父类要写成单元素元组：`(object,)`，多继承就多个   |
+| 属性字典  | `{'方法名': 函数, '属性名': 值}`                    |
+
+## 一行造一个类
+
+普通写法：
+
+```python
+class Hello:
+    def hello(self, name='Py'):
+        print('Hello,', name)
+```
+
+用 `type()` 三参数完全等价的写法：
+
+```python
+def hello_method(self, name='Py'):
+    print('Hello,', name)
+
+Hello = type('Hello', (object,), {'hello': hello_method})
+
+h = Hello()
+h.hello()
+print(type(Hello))
+```
+
+输出：
+
+```
+Hello, Py
+<class 'type'>
+```
+
+这两种写法**完全等价**——Python 解释器看到 `class` 关键字时，背后做的事其实就是「调一下 `type()`」。
+
+## 这有什么用
+
+> **动态语言的核心特性：类不是编译时定下来的，而是运行时创建的。**
+
+这意味着你可以：
+
+- 根据配置文件、数据库 schema 在程序跑起来后才**生成类**
+- 在测试里临时拼一个 mock 类
+- ORM 框架（Django Models、SQLAlchemy）就是用这个机制把表结构转成类
+
+静态语言（Java、C++）想做这件事得先生成源码再编译，麻烦得多。Python 一行 `type()` 就搞定。
+
+## 小练手
+
+注意属性字典里**值可以是任何东西**——函数变成方法，普通值变成类属性：
+
+```python
+def greet(self):
+    print(f'你好，我是 {self.name}')
+
+Person = type('Person', (object,), {
+    'name': '匿名',
+    'greet': greet,
+})
+
+p = Person()
+p.greet()
+```
+
+输出：
+
+```
+你好，我是 匿名
+```
+
+下一题就来动手用 `type()` 造一个类。

@@ -1,0 +1,18 @@
+{
+  "id": "logging",
+  "title": "日志 logging",
+  "chapter": "python26",
+  "order": 1,
+  "estimatedMinutes": 30,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-first-logger.mdx" },
+    { "kind": "exercise", "file": "01-first-log.json" },
+    { "kind": "step", "file": "03-levels.mdx" },
+    { "kind": "exercise", "file": "02-five-levels.json" },
+    { "kind": "exercise", "file": "04-warning-only.json" },
+    { "kind": "step", "file": "04-format.mdx" },
+    { "kind": "step", "file": "05-getLogger.mdx" },
+    { "kind": "exercise", "file": "03-named-logger.json" }
+  ]
+}

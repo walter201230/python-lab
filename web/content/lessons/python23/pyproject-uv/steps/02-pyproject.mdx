@@ -1,0 +1,158 @@
+# pyproject.toml 是个啥
+
+`pyproject.toml` 是一个文件名，文件格式是 TOML。各位没接触过 TOML 的童鞋别紧张，它就是个比 JSON 友好、比 YAML 严格的配置格式。长这样：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+```
+
+中括号 `[project]` 是「段」，下面 `key = value` 是配置项。字符串用双引号，数字直接写，列表用方括号，跟大多数语言的语法差不多。
+
+`pyproject.toml` 的核心思想是：**项目的所有信息，集中放一个文件**。具体能放什么？看下面这个完整例子：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+description = "两点水的小工具"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+    "click>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+```
+
+各位数一下，这一个文件里同时承担了多少职责：
+
+- `[project]` 段：项目名字、版本、Python 版本要求、依赖列表——以前这些写在 `setup.py` 里
+- `[project.optional-dependencies]` 段：开发依赖、可选依赖——以前是 `requirements-dev.txt`
+- `[build-system]` 段：怎么打包这个项目——以前是 `setup.py` + `MANIFEST.in`
+- `[tool.ruff]` 段：ruff 的配置——以前是 `.ruff.toml` 或 `setup.cfg`
+- `[tool.pytest.ini_options]` 段：pytest 的配置——以前是 `pytest.ini`
+
+一个文件搞定一切。新人接手一个项目，打开 `pyproject.toml`，从上到下扫一遍，整个项目的元数据、依赖、工具配置全在脑子里了。
+
+## 最简 pyproject.toml 逐字段拆解
+
+下面这段是一个项目能跑起来的最小集合：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+]
+```
+
+五个字段，每个都讲清楚。
+
+### name
+
+```toml
+name = "my-project"
+```
+
+项目的名字。这个名字是发布到 PyPI 时用的，全网唯一。命名规则：
+
+- 只能包含字母、数字、连字符 `-`、下划线 `_`、点 `.`
+- 不区分大小写
+- 习惯上用全小写 + 连字符
+
+注意：项目名（`name`）和包导入名（`import` 用的）不一定相同。比如著名的 Pillow，项目名是 `Pillow`，但导入时是 `import PIL`；scikit-learn 项目名带连字符，导入时是 `import sklearn`。
+
+### version
+
+```toml
+version = "0.1.0"
+```
+
+版本号。建议遵守**语义化版本**（Semantic Versioning），格式是 `MAJOR.MINOR.PATCH`：
+
+- `MAJOR`：大改动、不兼容更新
+- `MINOR`：新加功能，向后兼容
+- `PATCH`：修 bug，向后兼容
+
+新项目从 `0.1.0` 起步，第一个稳定版打 `1.0.0`。
+
+### requires-python
+
+```toml
+requires-python = ">=3.10"
+```
+
+声明这个项目需要哪个版本的 Python。强烈建议都写上这一行，原因有三：
+
+1. 有人用 Python 3.7 装你的包，能立刻报错，而不是跑到一半才挂
+2. pip 在解析依赖时会用这个信息选合适的子依赖
+3. 工具（ruff、mypy）会用这个信息决定哪些语法可用
+
+版本范围语法用的是 PEP 440：
+
+- `>=3.10`：3.10 或更高都行
+- `>=3.10,<4.0`：3.10 起，但 4.0 之前
+- `~=3.10`：3.10.x 系列，不允许 3.11
+- `==3.10.*`：3.10 的任意小版本
+
+2026 年开新项目，建议直接写 `>=3.10` 或 `>=3.11`。3.9 已经接近退役。
+
+### dependencies
+
+```toml
+dependencies = [
+    "httpx>=0.27",
+    "click>=8.0",
+]
+```
+
+项目运行时需要的依赖列表。每一项是一个字符串，遵守 PEP 508 语法。常见的几种写法：
+
+```toml
+dependencies = [
+    "httpx",                   # 任意版本
+    "httpx>=0.27",             # 0.27 起
+    "httpx>=0.27,<1.0",        # 范围
+    "httpx==0.27.2",           # 钉死
+    "httpx[http2]",            # 带 extras
+    "httpx ; python_version >= '3.10'",  # 条件依赖
+]
+```
+
+各位平时最常用的是 `>=X.Y` 这种「下限」写法。这是社区惯例：写下限，别写上限，除非确实知道某个上限会出问题。原因是：你今天写了 `httpx<1.0`，明天 httpx 1.0 出来了，所有依赖你的项目都被卡住——这个就叫「上限污染」，是个流毒。
+
+依赖的「精确版本」靠 lock 文件（`uv.lock`）来记录，下面会讲。
+
+### 一个完整的最小例子
+
+把这五个字段拼起来，一个能跑的最小 `pyproject.toml`：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+]
+```
+
+就这。五行，比 `setup.py` 短得多。新人看一眼就懂。

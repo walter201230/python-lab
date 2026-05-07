@@ -1,0 +1,16 @@
+{
+  "id": "closure",
+  "title": "闭包",
+  "chapter": "python15",
+  "order": 1,
+  "estimatedMinutes": 25,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-what-is-closure.mdx" },
+    { "kind": "exercise", "file": "01-make-counter.json" },
+    { "kind": "step", "file": "03-nonlocal.mdx" },
+    { "kind": "exercise", "file": "02-make-adder.json" },
+    { "kind": "step", "file": "04-use-cases.mdx" },
+    { "kind": "exercise", "file": "03-study-time.json" }
+  ]
+}

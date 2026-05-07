@@ -1,0 +1,16 @@
+{
+  "id": "01-log",
+  "title": "写一个 @log 装饰器",
+  "prompt": "请写一个装饰器 `log`：\n\n- 接收一个函数作为参数\n- 在调用原函数前 `print('开始执行')`\n- 在调用原函数后 `print('执行结束')`\n\n然后用 `@log` 装饰一个 `hello()` 函数（函数体里 `print('hello world')`），再调用 `hello()`。\n\n输出应该是：\n```\n开始执行\nhello world\n执行结束\n```",
+  "starterCode": "# def log(func):\n#     def wrapper(*args, **kwargs):\n#         print('开始执行')\n#         func(*args, **kwargs)\n#         print('执行结束')\n#     return wrapper\n#\n# @log\n# def hello():\n#     print('hello world')\n#\n# hello()\n",
+  "solution": "def log(func):\n    def wrapper(*args, **kwargs):\n        print('开始执行')\n        func(*args, **kwargs)\n        print('执行结束')\n    return wrapper\n\n@log\ndef hello():\n    print('hello world')\n\nhello()",
+  "grading": {
+    "stdoutEquals": "开始执行\nhello world\n执行结束\n",
+    "requiredAst": ["FunctionDef:log"]
+  },
+  "hints": [
+    "装饰器三件套：接收 func，定义 wrapper，return wrapper（注意是 wrapper 不是 wrapper()）",
+    "在 wrapper 里：先 print('开始执行') → 调 func() → 再 print('执行结束')",
+    "完整代码：\ndef log(func):\n    def wrapper(*args, **kwargs):\n        print('开始执行')\n        func(*args, **kwargs)\n        print('执行结束')\n    return wrapper\n\n@log\ndef hello():\n    print('hello world')\n\nhello()"
+  ]
+}

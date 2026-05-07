@@ -1,0 +1,84 @@
+# 三、`re.match` / `re.search` / `re.findall`
+
+`re` 模块里最常用的三个函数。它们都接收两个参数：**正则规则** 和 **要查的字符串**，但**查找方式不同**。
+
+## 1、`re.match`：只看开头
+
+```python
+re.match(pattern, string)
+```
+
+`re.match` **只在字符串的最开头**尝试匹配——**不在开头就直接返回 `None`**。
+
+```python
+import re
+
+m1 = re.match(r'\d+', '123abc456')
+print(m1)            # <re.Match object; span=(0, 3), match='123'>
+print(m1.group())    # '123'
+
+m2 = re.match(r'\d+', 'abc123')
+print(m2)            # None  ← 开头不是数字，直接 None
+```
+
+适合做**格式校验**：「这个字符串是不是以某种规则开头」。
+
+## 2、`re.search`：扫描整个字符串
+
+```python
+re.search(pattern, string)
+```
+
+`re.search` 会**扫整个字符串**，找到**第一个**匹配就返回。
+
+```python
+import re
+
+m = re.search(r'\d+', 'abc123def456')
+print(m.group())   # '123'  ← 找到第一个就停
+```
+
+`re.match` 和 `re.search` 返回的都是 `Match` 对象（或 `None`）。常用方法：
+
+| 方法 | 含义 |
+|---|---|
+| `m.group()` / `m.group(0)` | 整个匹配 |
+| `m.group(1)` | 第 1 个分组（下节讲） |
+| `m.start()` / `m.end()` | 匹配位置 |
+| `m.span()` | (start, end) 元组 |
+
+## 3、`re.findall`：找出全部
+
+```python
+re.findall(pattern, string)
+```
+
+返回一个**列表**，包含**所有不重叠**的匹配。
+
+```python
+import re
+
+print(re.findall(r'\d+', 'abc123def456ghi789'))
+# ['123', '456', '789']
+```
+
+`findall` 通常是日常使用最多的——一次拿到所有结果，不用循环。
+
+## 4、三者对比
+
+| 函数 | 找几个 | 不匹配时返回 |
+|---|---|---|
+| `re.match` | 最多 1 个，**只看开头** | `None` |
+| `re.search` | 最多 1 个，扫整个 | `None` |
+| `re.findall` | 全部 | `[]` |
+
+```python
+import re
+
+s = 'abc123def456'
+print(re.match(r'\d+', s))    # None（开头不是数字）
+print(re.search(r'\d+', s))   # <Match '123'>
+print(re.findall(r'\d+', s))  # ['123', '456']
+```
+
+> 选择建议：要校验/解析格式用 `match`；要在长文本里找东西用 `search` 或 `findall`。

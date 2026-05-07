@@ -1,0 +1,16 @@
+{
+  "id": "02-make-adder",
+  "title": "加法器工厂",
+  "prompt": "请定义一个函数 `make_adder(n)`：\n\n- 接收一个数字 `n`\n- 返回一个内层函数 `adder(x)`，作用是返回 `x + n`\n\n然后：\n\n1. 用 `make_adder(10)` 生成 `add10`\n2. `print(add10(5))` —— 应该输出 `15`\n3. 用 `make_adder(100)` 生成 `add100`\n4. `print(add100(5))` —— 应该输出 `105`\n\n输出应该是：\n```\n15\n105\n```",
+  "starterCode": "# def make_adder(n):\n#     def adder(x):\n#         return x + n\n#     return adder\n#\n# add10 = make_adder(10)\n# print(add10(5))\n# add100 = make_adder(100)\n# print(add100(5))\n",
+  "solution": "def make_adder(n):\n    def adder(x):\n        return x + n\n    return adder\n\nadd10 = make_adder(10)\nprint(add10(5))\nadd100 = make_adder(100)\nprint(add100(5))",
+  "grading": {
+    "stdoutEquals": "15\n105\n",
+    "requiredAst": ["FunctionDef:make_adder"]
+  },
+  "hints": [
+    "内层函数只读 n，不修改它，所以不需要 nonlocal",
+    "make_adder(10) 和 make_adder(100) 是两个不同的闭包，各自带着不同的 n",
+    "完整代码：\ndef make_adder(n):\n    def adder(x):\n        return x + n\n    return adder\n\nadd10 = make_adder(10)\nprint(add10(5))\nadd100 = make_adder(100)\nprint(add100(5))"
+  ]
+}

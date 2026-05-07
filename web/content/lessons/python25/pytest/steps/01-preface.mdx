@@ -1,0 +1,78 @@
+# pytest：30 秒跑完 100 个用例的测试框架
+
+> **这一章是纯阅读章节，没有练习题。**
+>
+> pytest 是命令行工具，浏览器里的 Pyodide 跑不起来。这一章我们把概念、用法、最佳实践讲清楚，各位在自己本地装好 Python 环境之后实际跑一遍就能熟练。
+
+各位写代码的时候，是不是经常被这种问题烦到——
+
+「这个函数我刚才改了一行，会不会把别的地方搞挂？」
+
+「老板让加个新功能，可这一坨代码我都不敢动，万一改坏了线上炸了怎么办？」
+
+「同事给我提了个 PR，看起来没毛病，可我心里没底。」
+
+这种「不敢动代码」的恐惧，老司机都懂。第一次维护一个三千行的老项目，每改一行都心惊胆战，因为没有测试，谁也不知道改完会不会出事。最后只能小心翼翼地手动点几个页面、构造几个请求看看，跑十分钟才敢提交。效率低得感人。
+
+「我代码改一改没事吧？」这个问题的答案永远是——**跑一下测试才知道**。
+
+那写测试要多麻烦呢？很多童鞋一听「写测试」就头疼，觉得是给自己加活儿。其实在 Python 圈，有一个工具能让各位 30 秒跑完 100 个测试用例，写一个测试只要三行代码——它就是 `pytest`。
+
+pytest 是 Python 圈测试的事实标准。Django、FastAPI、Pandas、NumPy、SQLAlchemy、Pydantic、Requests、httpx，几乎你能叫出名字的 Python 项目都用它来跑测试。GitHub 上 12k+ 的 stars，PyPI 上每月几亿次下载量。
+
+这一章咱们把 pytest 从零讲到能上手。学完之后，各位应该能：
+
+1. 写出第一个 pytest 测试，跑起来看到绿色的 PASS
+2. 看懂别人项目里 `tests/` 目录在干啥
+3. 用 fixture、参数化、tmp_path、monkeypatch 这些核心工具把测试写得又简洁又强壮
+4. 给自己的项目接上覆盖率，知道哪行代码还没被测到
+5. 把测试接进 CI，提交 PR 自动跑
+
+走起。
+
+## pytest vs unittest——为什么选 pytest
+
+各位可能会问：「Python 不是自带 `unittest` 标准库吗？为什么还要装 pytest？」
+
+好问题。咱们对比一下同一个测试，两种写法的区别。
+
+unittest 写法：
+
+```python
+import unittest
+
+
+class TestMyMath(unittest.TestCase):
+    def test_add(self):
+        self.assertEqual(add(2, 3), 5)
+
+    def test_divide(self):
+        self.assertEqual(divide(10, 2), 5)
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+pytest 写法：
+
+```python
+def test_add():
+    assert add(2, 3) == 5
+
+
+def test_divide():
+    assert divide(10, 2) == 5
+```
+
+差别在哪？
+
+1. **不需要继承 TestCase**。pytest 用普通函数就行，少写一层类
+2. **不需要记一堆断言方法名**。unittest 有 `assertEqual`、`assertNotEqual`、`assertTrue`、`assertFalse`、`assertIn`、`assertIsInstance`、`assertGreater`、`assertRaises`…… 几十个方法都得记。pytest 只用一个 `assert` 就完事
+3. **不需要写 `__main__`**。直接 `pytest` 命令一跑就完了
+
+unittest 风格其实是从 Java 的 JUnit 抄过来的，「类 + 方法」这一套是 OOP 思维。Python 这种动态语言用普通函数就能搞定的事，没必要搞这么重。所以 2010 年后，Python 圈逐步全面倒向 pytest。
+
+那 unittest 还能用吗？能。pytest 是**向后兼容** unittest 的，你写的 unittest 测试用例，pytest 直接也能跑。所以老项目从 unittest 迁过来很丝滑——一行代码不改，把跑测试的命令从 `python -m unittest` 换成 `pytest` 就行。新项目则建议直接全用 pytest 风格。
+
+记一句话：**Python 圈如果现在还有人推荐用 unittest 写新项目，要么是十年前的资料，要么是没跟上时代**。直接 pytest。

@@ -1,0 +1,16 @@
+{
+  "id": "02-eq",
+  "title": "用 __eq__ 自定义相等",
+  "prompt": "请定义类 `Money`：\n\n- `__init__` 接收 `amount`，保存到 `self.amount`\n- `__eq__` 比较两个 `Money` 对象的 `amount` 是否相等\n\n然后创建：\n\n```python\na = Money(100)\nb = Money(100)\nc = Money(50)\n```\n\n并依次执行：\n\n```python\nprint(a == b)\nprint(a == c)\n```\n\n输出应该是：\n```\nTrue\nFalse\n```",
+  "starterCode": "# class Money:\n#     def __init__(self, amount):\n#         self.amount = amount\n#     def __eq__(self, other):\n#         return self.amount == other.amount\n# a = Money(100)\n# b = Money(100)\n# c = Money(50)\n# print(a == b)\n# print(a == c)\n",
+  "solution": "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __eq__(self, other):\n        return self.amount == other.amount\n\na = Money(100)\nb = Money(100)\nc = Money(50)\nprint(a == b)\nprint(a == c)",
+  "grading": {
+    "stdoutEquals": "True\nFalse\n",
+    "requiredAst": ["ClassDef:Money", "FunctionDef:__eq__"]
+  },
+  "hints": [
+    "__eq__(self, other) 接收第二个参数 other",
+    "直接 return self.amount == other.amount 即可",
+    "完整代码：\nclass Money:\n    def __init__(self, amount):\n        self.amount = amount\n    def __eq__(self, other):\n        return self.amount == other.amount\na = Money(100)\nb = Money(100)\nc = Money(50)\nprint(a == b)\nprint(a == c)"
+  ]
+}

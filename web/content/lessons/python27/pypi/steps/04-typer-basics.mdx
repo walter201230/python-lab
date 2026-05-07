@@ -1,0 +1,271 @@
+# typer：写 CLI 工具的利器
+
+## CLI 的痛：argparse 太啰嗦
+
+各位写过命令行工具吗？Python 标准库自带一个 `argparse`，能用，但是写起来啰嗦得要命。看一段：
+
+```python
+import argparse
+
+parser = argparse.ArgumentParser(description="给图片加水印")
+parser.add_argument("input", type=str, help="输入图片路径")
+parser.add_argument("--watermark", type=str, default="© 两点水", help="水印文本")
+parser.add_argument("--opacity", type=float, default=0.5, help="不透明度")
+parser.add_argument("--verbose", action="store_true", help="显示详细信息")
+args = parser.parse_args()
+
+print(f"输入：{args.input}")
+print(f"水印：{args.watermark}")
+print(f"不透明度：{args.opacity}")
+print(f"详细：{args.verbose}")
+```
+
+这段代码 9 行，但实际有用的逻辑只有 4 个变量。为啥这么啰嗦？因为 argparse 是 2009 年写的，那时候 Python 还没有类型注解。所有参数都得手动 `add_argument` 一遍，类型、默认值、帮助文本各填一遍。
+
+更糟的是子命令——比如 `git commit`、`git push` 这种「主命令 + 子命令」结构，argparse 写起来嵌套一堆 subparsers，看一眼就头疼。
+
+到了 2026 年，各位有没有更好的选择？
+
+有，叫 **typer**。它是 FastAPI 作者 Tiangolo 写的，思路跟 FastAPI 一脉相承——**用类型注解直接当参数声明**。同样的功能，typer 写出来是这样：
+
+```python
+import typer
+
+app = typer.Typer()
+
+
+@app.command()
+def watermark(
+    input: str,
+    watermark: str = "© 两点水",
+    opacity: float = 0.5,
+    verbose: bool = False,
+):
+    print(f"输入：{input}")
+    print(f"水印：{watermark}")
+    print(f"不透明度：{opacity}")
+    print(f"详细：{verbose}")
+
+
+if __name__ == "__main__":
+    app()
+```
+
+各位看看——参数直接写在函数签名里，类型注解就是参数类型，默认值就是命令行默认值，帮助文本能从 docstring 自动提取。逻辑跟 argparse 等价，行数少了一半，可读性高了 10 倍。
+
+## 第一个 typer
+
+各位先装一下 typer：
+
+```bash
+uv add typer
+```
+
+写一个最简单的脚本 `hello.py`：
+
+```python
+import typer
+
+
+def hello(name: str):
+    print(f"Hi {name}")
+
+
+if __name__ == "__main__":
+    typer.run(hello)
+```
+
+跑一下：
+
+```bash
+python hello.py 两点水
+```
+
+输出：
+
+```
+Hi 两点水
+```
+
+各位再试试不带参数：
+
+```bash
+python hello.py
+```
+
+输出：
+
+```
+Usage: hello.py [OPTIONS] NAME
+Try 'hello.py --help' for help.
+
+Error: Missing argument 'NAME'.
+```
+
+typer 自动帮你做了——
+
+- 解析命令行参数
+- 类型转换（name 是 str，从命令行字符串直接拿）
+- 缺参数报错
+- 提示有 `--help` 命令
+
+试试 `--help`：
+
+```bash
+python hello.py --help
+```
+
+输出：
+
+```
+Usage: hello.py [OPTIONS] NAME
+
+Arguments:
+  NAME  [required]
+
+Options:
+  --help  Show this message and exit.
+```
+
+帮助文本是 typer 自动生成的。各位压根没写 `parser.add_argument`、没写 `--help`、没写 Usage，全是 typer 自动整出来的。这就是「**类型注解即文档**」的威力。
+
+## 多命令 app
+
+各位写过 git 没？`git commit`、`git push`、`git pull`，一个主命令带一堆子命令。这种结构在 typer 里叫**多命令 app**：
+
+```python
+import typer
+
+app = typer.Typer()
+
+
+@app.command()
+def add(item: str):
+    """添加一项任务。"""
+    print(f"添加：{item}")
+
+
+@app.command()
+def list():
+    """列出所有任务。"""
+    print("列出全部任务...")
+
+
+@app.command()
+def done(index: int):
+    """标记任务完成。"""
+    print(f"完成第 {index} 项")
+
+
+if __name__ == "__main__":
+    app()
+```
+
+三个步骤——
+
+1. `app = typer.Typer()`：创建一个 app 实例
+2. 用 `@app.command()` 装饰每个命令对应的函数
+3. `app()` 启动
+
+跑一下：
+
+```bash
+python todo.py add "学 typer"
+python todo.py list
+python todo.py done 1
+```
+
+输出：
+
+```
+添加：学 typer
+列出全部任务...
+完成第 1 项
+```
+
+每个 `@app.command()` 装饰的函数都会变成一个子命令，函数名就是子命令名。
+
+`--help` 输出：
+
+```
+Usage: todo.py [OPTIONS] COMMAND [ARGS]...
+
+Commands:
+  add   添加一项任务。
+  done  标记任务完成。
+  list  列出所有任务。
+```
+
+每个命令旁边的描述来自每个函数的 docstring。typer 直接读 docstring 生成命令帮助。
+
+## 类型注解 = CLI 参数
+
+typer 最神奇的地方在于——**函数参数的类型注解，就是 CLI 参数的类型**。各位写什么类型，CLI 自动转什么类型，不用写一行类型转换代码。
+
+支持的类型——
+
+```python
+import typer
+from pathlib import Path
+from enum import Enum
+
+
+class Color(str, Enum):
+    red = "red"
+    green = "green"
+    blue = "blue"
+
+
+def cmd(
+    text: str,
+    count: int,
+    ratio: float,
+    enabled: bool,
+    file: Path,
+    color: Color,
+):
+    print(f"text={text!r}")
+    print(f"count={count} (类型 {type(count).__name__})")
+    print(f"ratio={ratio} (类型 {type(ratio).__name__})")
+    print(f"enabled={enabled}")
+    print(f"file={file} (类型 {type(file).__name__})")
+    print(f"color={color}")
+```
+
+跑：
+
+```bash
+python cmd.py "hi" 10 1.5 ./README.md red
+```
+
+输出：
+
+```
+text='hi'
+count=10 (类型 int)
+ratio=1.5 (类型 float)
+enabled=False
+file=README.md (类型 PosixPath)
+color=Color.red
+```
+
+注意几个细节——
+
+- `int` 类型，命令行的 `"10"` 自动变成整数
+- `float` 类型，命令行的 `"1.5"` 自动变成浮点数
+- `Path` 类型，自动包装成 `pathlib.Path` 对象
+- `Enum` 类型，限定值只能是 red/green/blue，输入别的值直接报错
+
+要是各位输错类型试试：
+
+```bash
+python cmd.py "hi" abc 1.5 ./README.md red
+```
+
+typer 直接拒绝：
+
+```
+Error: Invalid value for 'COUNT': 'abc' is not a valid integer.
+```
+
+「类型即验证」——你写 `int`，typer 就只接受能转成 int 的值，转不了的连函数都进不去。

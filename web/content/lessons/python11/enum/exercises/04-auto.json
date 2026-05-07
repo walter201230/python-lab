@@ -1,0 +1,16 @@
+{
+  "id": "04-auto",
+  "title": "用 auto() 自动分配值",
+  "prompt": "请用 `from···import` 从 `enum` 模块同时导入 `Enum` 和 `auto`，然后：\n\n1. 定义一个继承 `Enum` 的类 `Weekday`，三个成员都用 `auto()` 自动赋值：\n   - `MON = auto()`\n   - `TUE = auto()`\n   - `WED = auto()`\n2. `print(Weekday.MON.value)`\n3. `print(Weekday.WED.value)`\n\n输出应该是：\n```\n1\n3\n```\n\n> 提示：`auto()` 默认从 1 开始，按定义顺序递增。",
+  "starterCode": "# from enum import Enum, auto\n#\n# class Weekday(Enum):\n#     MON = auto()\n#     TUE = auto()\n#     WED = auto()\n#\n# print(Weekday.MON.value)\n# print(Weekday.WED.value)\n",
+  "solution": "from enum import Enum, auto\n\nclass Weekday(Enum):\n    MON = auto()\n    TUE = auto()\n    WED = auto()\n\nprint(Weekday.MON.value)\nprint(Weekday.WED.value)",
+  "grading": {
+    "stdoutEquals": "1\n3\n",
+    "requiredAst": ["ImportFrom", "ClassDef:Weekday"]
+  },
+  "hints": [
+    "from enum import Enum, auto 一次导入两个名字",
+    "成员定义里直接写 MON = auto()",
+    "完整代码：\nfrom enum import Enum, auto\n\nclass Weekday(Enum):\n    MON = auto()\n    TUE = auto()\n    WED = auto()\n\nprint(Weekday.MON.value)\nprint(Weekday.WED.value)"
+  ]
+}

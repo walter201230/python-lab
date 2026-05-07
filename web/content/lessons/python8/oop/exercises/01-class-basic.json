@@ -1,0 +1,16 @@
+{
+  "id": "01-class-basic",
+  "title": "定义你的第一个类",
+  "prompt": "请定义一个类 `Animal`，类里有一个方法 `bark`，方法体打印 `'某种声音'`。\n\n然后：\n1. 实例化 `Animal()` 赋给 `a`\n2. 调用 `a.bark()`\n\n输出应该是：\n```\n某种声音\n```",
+  "starterCode": "# class Animal:\n#     def bark(self):\n#         print('某种声音')\n# a = Animal()\n# a.bark()\n",
+  "solution": "class Animal:\n    def bark(self):\n        print('某种声音')\n\na = Animal()\na.bark()",
+  "grading": {
+    "stdoutEquals": "某种声音\n",
+    "requiredAst": ["ClassDef:Animal"]
+  },
+  "hints": [
+    "用 class 定义类，方法跟函数差不多但第一个参数要写 self",
+    "实例化：a = Animal()，调用方法：a.bark()",
+    "完整代码：\nclass Animal:\n    def bark(self):\n        print('某种声音')\n\na = Animal()\na.bark()"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "pytest",
+  "title": "pytest：测试框架",
+  "chapter": "python25",
+  "order": 1,
+  "estimatedMinutes": 22,
+  "blocks": [
+    { "kind": "step", "file": "01-preface.mdx" },
+    { "kind": "step", "file": "02-first-test.mdx" },
+    { "kind": "step", "file": "03-fixture.mdx" },
+    { "kind": "step", "file": "04-parametrize.mdx" },
+    { "kind": "step", "file": "05-coverage-and-config.mdx" },
+    { "kind": "step", "file": "06-pitfalls.mdx" }
+  ]
+}

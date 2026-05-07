@@ -1,0 +1,61 @@
+# 三、继承
+
+「继承」就是**子类自动获得父类的所有属性和方法**——可以再加自己的，也可以「重写」父类的。
+
+## 1、定义继承
+
+```python
+class 子类(父类):
+    ...
+```
+
+例子——`Student` 继承 `Person`：
+
+```python
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def greet(self):
+        print(f'我叫 {self.name}，今年 {self.age} 岁')
+
+class Student(Person):
+    pass   # 啥都不加，但已经继承了 __init__ 和 greet
+
+s = Student('小明', 16)
+s.greet()
+```
+
+输出：
+
+```
+我叫 小明，今年 16 岁
+```
+
+`Student` 没写任何代码，但**自动具备** `Person` 的初始化和 `greet` 方法。这就是继承的好处。
+
+## 2、子类加自己的属性 / 方法
+
+```python
+class Student(Person):
+    def __init__(self, name, age, school):
+        super().__init__(name, age)   # 调父类的 __init__
+        self.school = school
+
+    def study(self):
+        print(f'{self.name} 正在 {self.school} 学习')
+
+s = Student('小明', 16, '希望小学')
+s.greet()
+s.study()
+```
+
+输出：
+
+```
+我叫 小明，今年 16 岁
+小明 正在 希望小学 学习
+```
+
+`super()` 是「父类」的引用，用来调用父类的方法——避免把同样的代码再写一遍。

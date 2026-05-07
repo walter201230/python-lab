@@ -1,0 +1,84 @@
+# ruff 是个啥
+
+ruff 是 Astral 公司开源的 Python 代码检查 + 格式化工具。两个关键属性：
+
+1. **用 Rust 写的**。Python 工具用 Python 写，速度天花板就在那里。换成 Rust，速度能上一两个数量级
+2. **一个工具替掉一堆**。flake8、black、isort、pyupgrade、pydocstyle、bandit、pylint 的部分规则、autoflake，全部内置
+
+看一下 ruff 官方公布的速度对比。在 CPython 项目（约 25 万行代码）上跑：
+
+| 工具 | 耗时 |
+|---|---|
+| `flake8` | 12 秒左右 |
+| `pylint` | 几分钟 |
+| `ruff check` | 0.4 秒左右 |
+
+这速度有什么用？两点重要：
+
+1. **保存文件时实时跑 lint** 成为可能。编辑器里每次 `Ctrl+S`，ruff 后台跑一遍，几乎感觉不到延迟
+2. **CI 时间短**。从前 lint 阶段要 30 秒，现在 1 秒就过了
+
+「那它支持多少规则？」截至 2026 年，ruff 已经实现了 800 多条规则，覆盖了 flake8 主线 + 几十个 flake8-* 插件 + isort + pyupgrade + pydocstyle + pylint 的一部分 + bandit 的一部分。换句话说，几乎所有主流 Python lint 工具的能力，ruff 都吃下来了。
+
+## 常用规则集一览
+
+ruff 用「字母前缀」给规则分组：
+
+| 前缀 | 来源工具 | 管什么 |
+|---|---|---|
+| `E` | `pycodestyle` | PEP 8 风格错误（缩进、空格） |
+| `W` | `pycodestyle` | PEP 8 风格警告 |
+| `F` | `pyflakes` | 未使用变量、未定义引用、import 错 |
+| `I` | `isort` | import 排序与分组 |
+| `UP` | `pyupgrade` | 老语法升级到新版本 |
+| `B` | `flake8-bugbear` | 常见 bug 模式 |
+| `SIM` | `flake8-simplify` | 代码简化建议 |
+| `N` | `pep8-naming` | 命名规范（驼峰、下划线） |
+| `D` | `pydocstyle` | docstring 规范 |
+| `S` | `flake8-bandit` | 安全漏洞检查 |
+| `ANN` | `flake8-annotations` | 类型注解检查 |
+| `C4` | `flake8-comprehensions` | 推导式优化 |
+| `RET` | `flake8-return` | return 语句风格 |
+| `ARG` | `flake8-unused-arguments` | 未使用参数 |
+| `PT` | `flake8-pytest-style` | pytest 风格 |
+| `PL` | `pylint` | pylint 部分规则 |
+| `RUF` | `ruff` | ruff 自家原创规则 |
+
+完整清单官方文档里有，叫「Rules」页面，规则号、说明、是否能自动修都列得清清楚楚。
+
+## ruff vs black + flake8 + isort 对照表
+
+| 维度 | 老组合 | ruff |
+|---|---|---|
+| 工具数量 | 至少 3 个（black + flake8 + isort），加 pyupgrade、pydocstyle 更多 | 1 个 |
+| 配置位置 | 散落在 `pyproject.toml`、`.flake8`、`setup.cfg` 等 | 全部在 `pyproject.toml` |
+| 速度 | 几秒到几十秒 | 通常 1 秒以内 |
+| 规则数量 | 各家加起来约 500 条 | 800+ 条 |
+| 自动修复 | 部分支持（black、isort、pyupgrade 自动；flake8 不修） | 大部分规则支持 |
+| 实现语言 | Python | Rust |
+| 二进制依赖 | 安装 Python 包 | 单二进制（也能 pip 装） |
+| 编辑器实时 lint | 慢，体验差 | 快，体验丝滑 |
+| pyproject.toml 支持 | 部分（flake8 不支持） | 完全支持 |
+
+## 一个常见坑：和 mypy 的关系
+
+很多童鞋会问：「ruff 能替代 mypy 吗？」
+
+**不能。**
+
+ruff 是 lint + formatter，做的是「代码风格、常见错误模式」检查。mypy 是**类型检查器**，做的是「这个变量传给那个函数，类型对不对」这种全局类型推导。两者是不同维度的工具，互补使用。
+
+正确的姿势：
+
+- 用 ruff 管风格、import、明显 bug、语法升级
+- 用 mypy 或者 pyright 管类型
+
+CI 上两个都跑：
+
+```yaml
+- run: ruff check .
+- run: ruff format --check .
+- run: mypy .
+```
+
+ruff 倒是有几条规则（前缀 `ANN`）会做粗浅的类型注解检查，比如「这个函数没有写 return 类型」。但是它**不会**真正去推导类型一致性，复杂的类型问题还是要靠 mypy。

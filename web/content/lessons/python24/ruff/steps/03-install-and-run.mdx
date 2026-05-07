@@ -1,0 +1,234 @@
+# 安装与第一次跑
+
+老规矩，推荐用 uv 装：
+
+```bash
+uv add --dev ruff
+```
+
+`--dev` 的意思是「装到开发依赖组」，发布生产环境时不会带上。ruff 是开发工具，只在开发和 CI 时用，所以放 `--dev` 最合适。
+
+如果项目还没用 uv，用 pip 装也行：
+
+```bash
+pip install ruff
+```
+
+或者用 pipx 装成全局命令：
+
+```bash
+pipx install ruff
+```
+
+装完之后，验证一下：
+
+```bash
+ruff --version
+```
+
+输出类似：
+
+```
+ruff 0.8.0
+```
+
+## 第一次跑
+
+进项目目录，跑一下：
+
+```bash
+ruff check .
+```
+
+这条命令会扫描当前目录下所有 `.py` 文件，按默认规则检查。各位第一次跑大概率会看到一堆告警：
+
+```
+foo.py:3:1: F401 [*] `os` imported but unused
+foo.py:8:5: E731 Do not assign a `lambda` expression, use a `def`
+bar.py:12:80: E501 Line too long (95 > 79)
+```
+
+格式很清晰：`文件名:行:列: 规则号 描述`。规则号前面如果带个 `[*]`，说明这条规则可以**自动修复**。
+
+要让 ruff 自动修，加 `--fix`：
+
+```bash
+ruff check --fix .
+```
+
+跑完之后，`os imported but unused` 这种问题，ruff 直接把那行 `import os` 删掉了。
+
+格式化代码用另一个子命令：
+
+```bash
+ruff format .
+```
+
+这条命令的行为基本和 `black .` 一样——把整个项目的代码风格统一到一致的缩进、引号、换行规则。
+
+把这两条命令加在一起，就是日常 commit 之前的标准流程：
+
+```bash
+ruff check --fix . && ruff format .
+```
+
+先 lint 再 format，齐活。
+
+## 自动修复实战
+
+`ruff check --fix .` 能修哪些东西？挑几个常见的看看。
+
+### F401：未使用的 import
+
+```python
+import os
+import sys
+
+print(sys.version)
+```
+
+`ruff check --fix` 之后：
+
+```python
+import sys
+
+print(sys.version)
+```
+
+`os` 没用上，直接删掉。
+
+### E711：和 None 比较应该用 is
+
+```python
+if x == None:
+    print("x 是 None")
+```
+
+修复后：
+
+```python
+if x is None:
+    print("x 是 None")
+```
+
+为什么要改？因为 `==` 会触发 `__eq__` 方法，有些类的 `__eq__` 实现得稀奇古怪（比如 numpy 数组），跟 None 比较会出意想不到的结果。`is None` 是身份比较，永远只看「是不是同一个对象」，绝对安全。
+
+### C408：不必要的 list/dict/tuple 调用
+
+```python
+empty = list()
+d = dict()
+t = tuple()
+```
+
+修复后：
+
+```python
+empty = []
+d = {}
+t = ()
+```
+
+`list()` 和 `[]` 等价，但是 `list()` 要去全局名字空间里查 `list` 这个名字、再调用，慢一点。直接写字面量更快也更短。
+
+### UP006：用新版类型注解
+
+```python
+from typing import List, Dict
+
+def foo(x: List[int]) -> Dict[str, int]:
+    pass
+```
+
+修复后（`target-version = "py39"` 以上）：
+
+```python
+def foo(x: list[int]) -> dict[str, int]:
+    pass
+```
+
+Python 3.9+ 已经支持直接用 `list[int]` 写类型注解，不用再从 `typing` 里 import 了。
+
+### UP008：用 super() 不要带参数
+
+```python
+class Foo(Bar):
+    def __init__(self):
+        super(Foo, self).__init__()
+```
+
+修复后：
+
+```python
+class Foo(Bar):
+    def __init__(self):
+        super().__init__()
+```
+
+Python 3 里 `super()` 不传参数就够了，老 Python 2 风格的 `super(Foo, self)` 是历史包袱。
+
+### I001：import 排序
+
+```python
+import sys
+from my_project import utils
+import os
+import requests
+```
+
+修复后：
+
+```python
+import os
+import sys
+
+import requests
+
+from my_project import utils
+```
+
+ruff 把 import 按「标准库 → 第三方 → 第一方」分成三组，每组之间空一行，组内按字母序排。这等同于跑了一遍 isort。
+
+### 不安全修复
+
+有些修复 ruff 不会默认做，因为可能改变行为。比如把 `dict()` 改成 `{}`——99% 情况下等价，但是如果你的代码里 `dict` 这个名字被覆盖了，行为就变了。这种修复叫「unsafe fix」，要加 `--unsafe-fixes` 才会做：
+
+```bash
+ruff check --fix --unsafe-fixes .
+```
+
+各位如果心里没底，先 `ruff check --fix .` 跑安全的，再用 `--unsafe-fixes` 单独跑一遍并 review 改动。
+
+## ruff format：black 替代品
+
+`ruff format .` 干的事跟 `black .` 几乎一样：
+
+- 行宽默认 88
+- 字符串默认双引号
+- 缩进 4 空格
+- 函数参数过长自动换行
+- 字典、列表、set 字面量按一致风格排版
+
+格式化前：
+
+```python
+def foo(a,b,c, d ):
+    return  {  'name':a,'age':b,'list':[1,2,3]  }
+```
+
+`ruff format .` 之后：
+
+```python
+def foo(a, b, c, d):
+    return {"name": a, "age": b, "list": [1, 2, 3]}
+```
+
+Astral 在文档里明确写过「ruff format 与 black 99.9% 兼容」，各位从 black 迁过来不用担心代码风格突变。
+
+`ruff format` 也支持 `--check` 模式，只检查不改：
+
+```bash
+ruff format --check .
+```
+
+如果有文件需要格式化，命令返回非零 exit code，CI 上可以拿来卡住「忘了 format 就提交」的 PR。

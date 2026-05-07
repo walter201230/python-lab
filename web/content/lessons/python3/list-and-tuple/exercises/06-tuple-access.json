@@ -1,0 +1,15 @@
+{
+  "id": "06-tuple-access",
+  "title": "tuple 取值与切片",
+  "prompt": "已经给你定义了 `days = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri')`。\n\n请：\n\n1. `print` 第 4 个元素（也就是 `Thu`）\n2. `print` 切片 `days[2:4]`\n\n输出应该是：\n```\nThu\n('Wed', 'Thu')\n```",
+  "starterCode": "days = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri')\n# 1. 用索引 print 第 4 个元素\n# 2. print 切片 days[2:4]\n",
+  "solution": "days = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri')\nprint(days[3])\nprint(days[2:4])",
+  "grading": {
+    "stdoutEquals": "Thu\n('Wed', 'Thu')\n"
+  },
+  "hints": [
+    "索引从 0 开始：第 4 个是 days[3]",
+    "切片用法跟 List 一样：days[2:4]",
+    "完整代码：\nprint(days[3])\nprint(days[2:4])"
+  ]
+}

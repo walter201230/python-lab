@@ -1,0 +1,68 @@
+# 二、`__str__` 与 `__repr__`：让 print 输出友好
+
+先看一个问题。我们写一个最普通的 `Book` 类：
+
+```python
+class Book:
+    def __init__(self, title):
+        self.title = title
+
+b = Book('Python 入门')
+print(b)
+```
+
+输出是什么？
+
+```
+<__main__.Book object at 0x10a9f3d50>
+```
+
+一串 ✗ 的乱码。这是因为默认情况下，`print(obj)` 会调用 `object` 的 `__str__`，它只会告诉你「这是一个 Book 对象，地址是 0x...」——对人类来说毫无信息量。
+
+## 1、`__str__`：给「人」看的字符串
+
+我们来重写它：
+
+```python
+class Book:
+    def __init__(self, title):
+        self.title = title
+
+    def __str__(self):
+        return f'《{self.title}》'
+
+b = Book('Python 入门')
+print(b)         # 《Python 入门》
+print(str(b))    # 《Python 入门》
+```
+
+`__str__` 必须返回一个**字符串**。`print(obj)` 和 `str(obj)` 都会调用它。
+
+## 2、`__repr__`：给「程序员」看的字符串
+
+`__repr__` 也是返回字符串，但用途不同：它通常是**面向开发者的、最好能复现这个对象**的写法。
+
+最典型的场景是：在交互式终端里直接敲变量名，或者把对象放进 list 后 print：
+
+```python
+class Book:
+    def __init__(self, title):
+        self.title = title
+
+    def __str__(self):
+        return f'《{self.title}》'
+
+    def __repr__(self):
+        return f"Book(title={self.title!r})"
+
+b = Book('Python 入门')
+print(b)        # 《Python 入门》  ← 走 __str__
+print([b])      # [Book(title='Python 入门')]  ← 容器里走 __repr__
+```
+
+注意：
+
+- 如果只定义了 `__repr__`、没定义 `__str__`，那 `print(obj)` 会**回退**到 `__repr__`
+- 反过来不会——只定义 `__str__` 时，`[obj]` 仍然显示默认的乱码
+
+> 经验法则：**至少先把 `__repr__` 写了**。再考虑要不要加更友好的 `__str__`。

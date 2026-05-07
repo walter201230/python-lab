@@ -1,0 +1,16 @@
+{
+  "id": "02-name-value",
+  "title": "访问 .name 和 .value",
+  "prompt": "继续上一题的 `Color` 枚举（含 `RED=1` / `GREEN=2` / `BLUE=3`），这次：\n\n1. `print(Color.GREEN.name)` —— 打印成员名\n2. `print(Color.GREEN.value)` —— 打印成员值\n\n输出应该是：\n```\nGREEN\n2\n```",
+  "starterCode": "# from enum import Enum\n#\n# class Color(Enum):\n#     RED = 1\n#     GREEN = 2\n#     BLUE = 3\n#\n# print(Color.GREEN.name)\n# print(Color.GREEN.value)\n",
+  "solution": "from enum import Enum\n\nclass Color(Enum):\n    RED = 1\n    GREEN = 2\n    BLUE = 3\n\nprint(Color.GREEN.name)\nprint(Color.GREEN.value)",
+  "grading": {
+    "stdoutEquals": "GREEN\n2\n",
+    "requiredAst": ["ClassDef:Color"]
+  },
+  "hints": [
+    ".name 是字符串形式的成员名",
+    ".value 是定义时给的那个值",
+    "完整代码：\nfrom enum import Enum\n\nclass Color(Enum):\n    RED = 1\n    GREEN = 2\n    BLUE = 3\n\nprint(Color.GREEN.name)\nprint(Color.GREEN.value)"
+  ]
+}

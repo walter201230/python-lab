@@ -1,0 +1,94 @@
+# 一、`type()` 不止是「查类型」
+
+各位都用过 `type()` 函数——查一个变量是什么类型：
+
+```python
+print(type(123))
+print(type('abc'))
+```
+
+输出：
+
+```
+<class 'int'>
+<class 'str'>
+```
+
+这是 `type()` 的**第一种用法**：传一个对象，返回它的类型。
+
+## 类的类型是什么？
+
+那如果我把一个**类**传给 `type()` 呢？
+
+```python
+class Hello:
+    def hi(self):
+        print('Hello')
+
+h = Hello()
+print(type(h))        # 实例的类型
+print(type(Hello))    # 类的类型
+```
+
+输出：
+
+```
+<class '__main__.Hello'>
+<class 'type'>
+```
+
+注意第二行——`Hello` 这个类的类型是 **`type`**。
+
+换句话说：**`Hello` 是 `type` 的一个实例**。
+
+## 一切对象都源自类，一切类都源自 type
+
+Python 里所有东西都是对象，都有 `__class__` 属性：
+
+```python
+print((123).__class__)
+print('abc'.__class__)
+
+def fn(): pass
+print(fn.__class__)
+
+class Eat: pass
+print(Eat().__class__)
+```
+
+输出：
+
+```
+<class 'int'>
+<class 'str'>
+<class 'function'>
+<class '__main__.Eat'>
+```
+
+这些 class 自己又是从哪儿来的？继续往上一层：
+
+```python
+print((123).__class__.__class__)
+print('abc'.__class__.__class__)
+print(Eat().__class__.__class__)
+```
+
+输出：
+
+```
+<class 'type'>
+<class 'type'>
+<class 'type'>
+```
+
+全是 `type`。这就是核心结论：
+
+> **`type` 是 Python 内建的「元类」——所有类的类。**
+
+| 对象           | 它的类         |
+|----------------|----------------|
+| `123`          | `int`          |
+| `'abc'`        | `str`          |
+| `int` / `str` / 你自己写的类 | `type` |
+
+「类」也是「对象」——是 `type` 的实例。这就是元类的第一层意思。

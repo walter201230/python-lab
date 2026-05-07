@@ -1,0 +1,239 @@
+# 集成：pre-commit、CI、编辑器
+
+## 集成 pre-commit
+
+pre-commit 是一个 git hook 框架，让各位在 `git commit` 时自动跑一些检查。装一下：
+
+```bash
+uv add --dev pre-commit
+pre-commit install
+```
+
+然后在项目根目录建 `.pre-commit-config.yaml`：
+
+```yaml
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+```
+
+这一段配置干了两件事：
+
+1. `ruff` hook：跑 `ruff check --fix`，自动修能修的
+2. `ruff-format` hook：跑 `ruff format`
+
+每次 `git commit`，pre-commit 会自动跑这两个 hook，跑通才让 commit。
+
+`rev: v0.8.0` 怎么填？pre-commit 上有命令自动填最新版：
+
+```bash
+pre-commit autoupdate
+```
+
+跑一下，`.pre-commit-config.yaml` 里的版本号就更新到最新了。建议各位每隔几个月跑一次。
+
+第一次装好 pre-commit，可以手动跑一遍：
+
+```bash
+pre-commit run --all-files
+```
+
+把项目里所有文件都过一遍，把历史欠债一次性清干净。
+
+## 集成 GitHub Actions CI
+
+ruff 在 CI 上的用法非常简单。新建 `.github/workflows/lint.yml`：
+
+```yaml
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install ruff
+        run: uv tool install ruff
+
+      - name: Run ruff check
+        run: ruff check --output-format=github .
+
+      - name: Run ruff format check
+        run: ruff format --check .
+```
+
+`--output-format=github` 这个选项很重要——它把告警输出成 GitHub Actions 能识别的格式，PR 页面上会直接在出问题的代码行上显示一个小标记，鼠标悬停就能看到具体规则和说明。
+
+也有官方做的 action，更省事：
+
+```yaml
+- name: Run ruff
+  uses: astral-sh/ruff-action@v3
+```
+
+这个 action 自动装 ruff 并跑 `ruff check`，一行搞定。
+
+CI 时间方面，ruff 这部分通常 5 秒以内跑完（包括环境准备），比从前 `flake8 + black + isort` 那一套快太多。
+
+## 集成编辑器
+
+代码风格工具最后一公里——编辑器集成。装好之后，每次保存文件，编辑器自动跑 ruff，问题立刻显示在出错的行上。
+
+### VS Code
+
+装这个插件：Ruff（charliermarsh.ruff）。
+
+装完之后，`settings.json` 里加几行：
+
+```json
+{
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    }
+}
+```
+
+效果：
+
+- 保存文件时自动跑 `ruff format`
+- 自动应用所有能自动修的 lint 修复
+- 自动整理 import
+
+### PyCharm
+
+PyCharm 有官方支持的 Ruff 插件，去 `Settings → Plugins` 搜「Ruff」装上。
+
+装完之后：
+
+- `Settings → Tools → Ruff`：勾上「Use ruff format」、「Run ruff on save」
+- `Settings → Editor → Code Style → Python`：行宽改成 88，跟 ruff 一致
+
+PyCharm 的好处是检查在编辑时实时显示，不用等保存。
+
+### Neovim / Vim
+
+通过 `nvim-lspconfig` + `mason.nvim` 装 ruff 的 LSP server：
+
+```lua
+require("lspconfig").ruff.setup({})
+```
+
+或者直接用 `null-ls` / `none-ls` 的 ruff 集成。
+
+## 从 black + flake8 + isort 迁移
+
+老项目要换过来，怎么办？步骤：
+
+### 第一步：装 ruff
+
+```bash
+uv add --dev ruff
+```
+
+### 第二步：写 ruff 配置
+
+参考前面的「完整配置示例」，写一份 `[tool.ruff]` 进 `pyproject.toml`。`line-length`、`target-version` 等关键参数对齐原来 black 的配置。
+
+### 第三步：跑一遍看看差异
+
+```bash
+ruff check .
+ruff format --check .
+```
+
+`ruff format` 跟 black 99.9% 兼容，但还是会有少量文件被改。各位先 `ruff format .` 跑一遍，git diff 看一下，确认改动可接受再提交。
+
+### 第四步：删掉老工具
+
+```bash
+uv remove --dev black flake8 isort pyupgrade
+```
+
+### 第五步：删配置
+
+`.flake8` 删掉，`setup.cfg` 里的 `[flake8]` 段删掉，`pyproject.toml` 里的 `[tool.black]`、`[tool.isort]` 段删掉。
+
+### 第六步：更新 pre-commit 和 CI
+
+`.pre-commit-config.yaml` 里把 black、flake8、isort 的 hook 删掉，换成 ruff 的。CI 同理。
+
+## 几个易踩的坑
+
+### 坑 1：select 写错前缀
+
+`select = ["E1"]` 不会启用 pycodestyle E1xx 这一组，**只会启用 E1 这一条**。要启用 E1xx 整组，要写 `select = ["E1"]` 或者更宽的 `select = ["E"]`。
+
+具体规则：
+
+- `"E"`：启用所有 E 开头的规则
+- `"E1"`：启用所有 E1xx 开头的规则
+- `"E101"`：只启用 E101 这一条
+
+### 坑 2：select 和 ignore 同时写
+
+```toml
+select = ["E"]
+ignore = ["E501"]
+```
+
+这样配的意思是「启用 E 全组，但 E501 这条不要」。这是合法的，**ignore 优先级高**。这是标准用法。
+
+### 坑 3：ruff format 不读 [tool.ruff.lint] 的配置
+
+`[tool.ruff.lint]` 管 lint，`[tool.ruff.format]` 管 format，**两者完全独立**。最常见的踩坑是：在 `[tool.ruff.lint]` 里设了 `quote-style = "double"`，结果 ruff format 还是按默认风格跑。
+
+```toml
+# 错误位置
+[tool.ruff.lint]
+quote-style = "double"  # 这里写了没用
+
+# 正确位置
+[tool.ruff.format]
+quote-style = "double"
+```
+
+### 坑 4：preview 规则
+
+ruff 还有一批正在开发的「preview」规则，默认不启用。要打开：
+
+```toml
+[tool.ruff.lint]
+preview = true
+```
+
+或者命令行 `ruff check --preview`。preview 规则的好处是抢先用上新东西，坏处是规则号、行为可能在版本之间变。生产项目稳着来，**不建议默认开 preview**。
+
+### 坑 5：忘了升级 pre-commit hook 版本
+
+各位 `.pre-commit-config.yaml` 里的 `rev: v0.8.0` 是写死的，ruff 升了新版本不会自动同步。建议每个月或每个季度跑一次 `pre-commit autoupdate`。
+
+## 小结
+
+各位走完这一章，应该已经能：
+
+1. 装 ruff：`uv add --dev ruff`
+2. 跑 ruff：`ruff check --fix .` 和 `ruff format .`
+3. 配 ruff：`pyproject.toml` 里写 `[tool.ruff.lint] select = ["E", "F", "I", "UP", "B", "SIM"]`
+4. 接 pre-commit：写 `.pre-commit-config.yaml`，加 ruff-pre-commit 仓库
+5. 接 CI：GitHub Actions 用 `astral-sh/ruff-action@v3`
+6. 接编辑器：VS Code 装 charliermarsh.ruff 插件，配置保存时自动 format
+
+这套工作流配好之后，新项目从零到「能自动检查、能自动修复、能 CI 兜底、能编辑器实时反馈」只需要十分钟。代码风格的事，交给 ruff 就行。

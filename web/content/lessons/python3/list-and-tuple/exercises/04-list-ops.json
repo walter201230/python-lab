@@ -1,0 +1,16 @@
+{
+  "id": "04-list-ops",
+  "title": "拼接与长度",
+  "prompt": "已经给你定义了 `a = [1, 2, 3]` 和 `b = [4, 5, 6]`。\n\n请：\n\n1. 用 `+` 把它们拼成新的列表 `c`\n2. `print(c)`\n3. 用 `len()` 打印 `c` 的元素个数\n\n输出应该是：\n```\n[1, 2, 3, 4, 5, 6]\n6\n```",
+  "starterCode": "a = [1, 2, 3]\nb = [4, 5, 6]\n# 1. c = a + b\n# 2. print(c)\n# 3. print(len(c))\n",
+  "solution": "a = [1, 2, 3]\nb = [4, 5, 6]\nc = a + b\nprint(c)\nprint(len(c))",
+  "grading": {
+    "varsEqual": { "c": [1, 2, 3, 4, 5, 6] },
+    "stdoutEquals": "[1, 2, 3, 4, 5, 6]\n6\n"
+  },
+  "hints": [
+    "List 之间可以用 + 拼接：c = a + b",
+    "len(c) 返回列表的元素个数",
+    "完整代码：\nc = a + b\nprint(c)\nprint(len(c))"
+  ]
+}

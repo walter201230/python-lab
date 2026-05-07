@@ -1,0 +1,16 @@
+{
+  "id": "01-early-return",
+  "title": "用早返回重写嵌套 if",
+  "prompt": "下面这段函数 `check(score)` 用了三层嵌套——请用**早返回**重写一个函数 `check(score)`，逻辑保持一致：\n\n- `score < 0` 或 `score > 100`：返回 `'非法分数'`\n- `score >= 90`：返回 `'优秀'`\n- `score >= 60`：返回 `'及格'`\n- 其他：返回 `'不及格'`\n\n然后依次调用 `print(check(95))`、`print(check(72))`、`print(check(40))`、`print(check(150))`。\n\n输出应该是：\n```\n优秀\n及格\n不及格\n非法分数\n```\n\n提示：用「早返回」就是先把异常情况先 return 掉，把主流程留在最外层，不写 else、不嵌套。",
+  "starterCode": "# 旧的嵌套版本（仅供参考，不要交这种）：\n# def check(score):\n#     if 0 <= score <= 100:\n#         if score >= 90:\n#             return '优秀'\n#         else:\n#             if score >= 60:\n#                 return '及格'\n#             else:\n#                 return '不及格'\n#     else:\n#         return '非法分数'\n\n# 在这里写早返回版的 check\n\n",
+  "solution": "def check(score):\n    if score < 0 or score > 100:\n        return '非法分数'\n    if score >= 90:\n        return '优秀'\n    if score >= 60:\n        return '及格'\n    return '不及格'\n\nprint(check(95))\nprint(check(72))\nprint(check(40))\nprint(check(150))",
+  "grading": {
+    "stdoutEquals": "优秀\n及格\n不及格\n非法分数\n",
+    "requiredAst": ["FunctionDef:check"]
+  },
+  "hints": [
+    "先把「非法分数」的情况 return 掉——这一步退出后，剩下都是合法分数",
+    "再依次 if score >= 90: return '优秀'，if score >= 60: return '及格'，最后 return '不及格'",
+    "完整代码：\ndef check(score):\n    if score < 0 or score > 100:\n        return '非法分数'\n    if score >= 90:\n        return '优秀'\n    if score >= 60:\n        return '及格'\n    return '不及格'"
+  ]
+}

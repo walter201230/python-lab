@@ -1,0 +1,16 @@
+{
+  "id": "01-safe-divide",
+  "title": "safe_divide：用 try/except 处理除零",
+  "prompt": "请写一个函数 `safe_divide(a, b)`：\n\n- 正常情况下返回 `a / b`\n- 如果 `b` 是 0，捕获 `ZeroDivisionError`，打印 `'除数不能是零'`，然后返回 `None`\n\n然后调用：\n\n```python\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))\n```\n\n输出应该是：\n```\n5.0\n除数不能是零\nNone\n```\n\n注意 `safe_divide(10, 0)` 因为返回 `None`，外层 `print` 会打印 `None`。",
+  "starterCode": "# def safe_divide(a, b):\n#     try:\n#         return a / b\n#     except ZeroDivisionError:\n#         print('除数不能是零')\n#         return None\n#\n# print(safe_divide(10, 2))\n# print(safe_divide(10, 0))\n",
+  "solution": "def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print('除数不能是零')\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))",
+  "grading": {
+    "stdoutEquals": "5.0\n除数不能是零\nNone\n",
+    "requiredAst": ["FunctionDef:safe_divide"]
+  },
+  "hints": [
+    "用 try / except ZeroDivisionError 包住 a / b",
+    "except 分支里先 print，再 return None",
+    "完整代码：\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print('除数不能是零')\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))"
+  ]
+}

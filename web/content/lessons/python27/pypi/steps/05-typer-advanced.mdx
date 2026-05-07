@@ -1,0 +1,285 @@
+# typer 进阶：选项、交互、彩色输出
+
+## Optional 参数：默认值的魔法
+
+参数 `text: str` 是「必填」还是「可选」？是必填，因为没写默认值。
+
+要是想让它变成可选，加一个默认值即可：
+
+```python
+def hello(name: str = "World"):
+    print(f"Hi {name}")
+```
+
+这时候 typer 会把它从「位置参数」变成「**选项参数**」，命令行用法变成：
+
+```bash
+python hello.py            # 输出 Hi World
+python hello.py --name 两点水  # 输出 Hi 两点水
+```
+
+注意——
+
+- **没有默认值的参数 = 位置参数（Argument）**，必填，直接跟在命令后面
+- **有默认值的参数 = 选项参数（Option）**，可选，要带 `--name` 前缀
+
+短选项也很容易加，用 `typer.Option`：
+
+```python
+import typer
+
+
+def hello(
+    name: str = typer.Option("World", "--name", "-n", help="谁的名字"),
+):
+    print(f"Hi {name}")
+
+
+if __name__ == "__main__":
+    typer.run(hello)
+```
+
+这时候——
+
+```bash
+python hello.py -n 两点水
+python hello.py --name 两点水
+```
+
+两种写法等价。`typer.Option` 第一个参数是默认值，后面是各种命令行别名，最后 help 是帮助文本。
+
+## 必选参数 vs 可选参数：一句话区分
+
+各位老在「位置参数」和「选项参数」之间纠结，给一个一句话原则——
+
+- **「这个值非给不可」→ 位置参数**。比如 `cp 源 目标`，没源、没目标，命令没法跑
+- **「这个值可以省略，省略时有个默认行为」→ 选项参数**。比如 `ls --all`，不加也能跑
+
+写到 typer 函数签名里——
+
+```python
+def watermark(
+    input: Path,                 # 位置参数：必填
+    output: Path,                # 位置参数：必填
+    text: str = "© 两点水",       # 选项参数：可选，默认水印
+    opacity: float = 0.5,        # 选项参数：可选，默认 0.5
+    verbose: bool = False,       # 选项参数：可选，默认 False
+):
+    ...
+```
+
+CLI 用法：
+
+```bash
+my-tool input.jpg output.jpg
+my-tool input.jpg output.jpg --text "两点水版权所有" --opacity 0.8 --verbose
+```
+
+各位写 CLI 工具的时候，**位置参数一般 1-3 个**，多了用户记不住顺序。3 个以上的参数全用选项参数，写出来反而清楚。
+
+## 交互式输入：prompt 和 confirm
+
+各位写 CLI 工具的时候，常常有这种场景——「这个参数用户没传，我想问一下他」。比如删除文件之前问「确定吗？」、初始化项目时问「项目名叫啥？」。
+
+老办法是用 `input()`。typer 提供了更好用的两件武器——`typer.prompt` 和 `typer.confirm`。
+
+先看 prompt，它问用户一个问题然后拿到答案：
+
+```python
+import typer
+
+
+def init():
+    name = typer.prompt("项目名叫啥")
+    author = typer.prompt("作者是谁", default="两点水")
+    print(f"创建项目 {name}，作者 {author}")
+
+
+if __name__ == "__main__":
+    typer.run(init)
+```
+
+跑起来——
+
+```
+项目名叫啥: my-tool
+作者是谁 [两点水]:
+创建项目 my-tool，作者 两点水
+```
+
+`default` 参数给一个默认值，用户直接回车就用默认值。
+
+`confirm` 是「问 yes/no」：
+
+```python
+import typer
+
+
+def delete(path: str):
+    sure = typer.confirm(f"确定要删除 {path} 吗")
+    if not sure:
+        print("取消")
+        raise typer.Abort()
+    print(f"已删除 {path}")
+
+
+if __name__ == "__main__":
+    typer.run(delete)
+```
+
+跑起来——
+
+```
+$ python del.py /tmp/foo
+确定要删除 /tmp/foo 吗 [y/N]: y
+已删除 /tmp/foo
+```
+
+confirm 默认是「不」（用户直接回车 = no），加 `default=True` 改成默认「是」。
+
+`typer.Abort()` 是另一个特殊异常——「用户主动放弃」，CLI 会用一个统一的退出码（默认 1）退出，比 `typer.Exit()` 语义更清楚。
+
+## 错误退出：typer.Exit 和 typer.Abort
+
+各位写 CLI 工具，有些情况下要让命令以「失败」退出——文件不存在、网络挂了、用户输错值。Linux 圈的惯例是「退出码 0 = 成功，非 0 = 失败」，shell 脚本会根据这个判断要不要继续。
+
+typer 提供了两种退出方式——
+
+```python
+import typer
+
+
+def deploy(env: str):
+    if env not in ("dev", "staging", "prod"):
+        print(f"不认识的环境：{env}")
+        raise typer.Exit(code=2)
+    print(f"开始部署到 {env}")
+```
+
+`typer.Exit(code=N)` 直接让 CLI 退出，退出码是 N。约定俗成——
+
+- `0`：成功
+- `1`：通用失败
+- `2`：用户输错参数
+
+各位也别瞎用 `sys.exit(N)`——它绕过了 typer 的退出钩子，写日志、清理资源都来不及。统一用 `typer.Exit`。
+
+## 彩色输出：echo 和 secho
+
+各位看 `git status` 输出有没有发现——modified 文件是红的、staged 文件是绿的、提示文本是黄的。命令行工具加点颜色，可读性立刻提升。
+
+typer 内置了简单的彩色输出，叫 `typer.echo` 和 `typer.secho`：
+
+```python
+import typer
+
+
+def status():
+    typer.echo("普通文本，跟 print 一样")
+    typer.secho("成功！", fg=typer.colors.GREEN)
+    typer.secho("警告！", fg=typer.colors.YELLOW)
+    typer.secho("错误！", fg=typer.colors.RED, bold=True)
+
+
+if __name__ == "__main__":
+    typer.run(status)
+```
+
+跑起来在支持彩色的终端里——「成功！」是绿色、「警告！」是黄色、「错误！」是红色加粗。在不支持彩色的环境（比如重定向到文件），typer 自动去掉色码，输出还是干净的。
+
+可选颜色——`BLACK`、`RED`、`GREEN`、`YELLOW`、`BLUE`、`MAGENTA`、`CYAN`、`WHITE`，外加 `bold=True`、`underline=True` 这些样式。
+
+要更花哨的输出（表格、进度条、Markdown 渲染），typer 可以无缝接 rich——`pip install "typer[all]"` 之后，它默认就用 rich 当后端。
+
+## 子命令嵌套：app.add_typer
+
+各位写大型 CLI 工具，命令多了之后想分组管理——比如 `git remote add`、`git remote rm`、`git stash push`、`git stash pop` 这种「子命令的子命令」。
+
+typer 支持子 app 嵌套：
+
+```python
+import typer
+
+app = typer.Typer()
+remote_app = typer.Typer()
+stash_app = typer.Typer()
+
+app.add_typer(remote_app, name="remote", help="管理远程仓库")
+app.add_typer(stash_app, name="stash", help="管理暂存区")
+
+
+@remote_app.command("add")
+def remote_add(name: str, url: str):
+    print(f"添加远程：{name} -> {url}")
+
+
+@remote_app.command("rm")
+def remote_rm(name: str):
+    print(f"删除远程：{name}")
+
+
+@stash_app.command("push")
+def stash_push():
+    print("暂存当前修改")
+
+
+@stash_app.command("pop")
+def stash_pop():
+    print("恢复最近一次暂存")
+
+
+if __name__ == "__main__":
+    app()
+```
+
+跑起来——
+
+```bash
+python git.py remote add origin git@github.com:walter/python.git
+python git.py remote rm origin
+python git.py stash push
+python git.py stash pop
+```
+
+每个子 app 又可以再嵌套子 app，理论上无限层。但是各位别真嵌套三层以上，用户记不住。两层够用。
+
+## 打包成系统命令：[project.scripts]
+
+各位现在的 typer 工具，跑起来是 `python todo.py add ...`，每次都要加 `python`，不像 git 那样直接敲。怎么变成全局命令？
+
+答案是 `pyproject.toml` 里的 `[project.scripts]` 段：
+
+```toml
+[project.scripts]
+todo-cli = "my_tool.cli:app"
+```
+
+格式是 `命令名 = "包路径:函数名"`。这一行的意思是——
+
+- 装这个包之后，命令行多一个叫 `todo-cli` 的命令
+- 跑 `todo-cli` 时，等于跑 `my_tool/cli.py` 里的 `app` 函数
+
+`typer.Typer()` 实例本身就是可调用的，直接当 app 用。
+
+各位重装一下包：
+
+```bash
+uv pip install -e .
+```
+
+然后试试：
+
+```bash
+todo-cli --help
+```
+
+直接出帮助。再试：
+
+```bash
+todo-cli add "学 typer"
+todo-cli list
+```
+
+跟之前 `python todo.py add ...` 一模一样，但是命令短了一截，体验立刻像样起来。
+
+`uv pip install -e .` 中的 `-e` 是 editable 模式，把包以「软链接」的方式装进去——你改源码，命令立刻生效，不用重装。开发期间一定加 `-e`。

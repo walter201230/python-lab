@@ -1,0 +1,55 @@
+# 第二十节：dataclass
+
+写代码这事，一不留神就会陷入「样板代码」的泥潭。先做个小实验：现在请你写一个 `Employee` 类，要求是这样的——存员工的姓名、部门、工号、入职日期、月薪，要能正常打印（不能是 `<__main__.Employee object at 0x...>` 这种鬼东西），要能比较两个员工对象是否相等，最好还能拿出来做字典的 key。
+
+听起来不难是吧？大概长这样：
+
+```python
+class Employee:
+    def __init__(self, name, dept, emp_id, hire_date, salary):
+        self.name = name
+        self.dept = dept
+        self.emp_id = emp_id
+        self.hire_date = hire_date
+        self.salary = salary
+
+    def __repr__(self):
+        return (
+            f'Employee(name={self.name!r}, dept={self.dept!r}, '
+            f'emp_id={self.emp_id!r}, hire_date={self.hire_date!r}, '
+            f'salary={self.salary!r})'
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, Employee):
+            return NotImplemented
+        return (
+            self.name == other.name
+            and self.dept == other.dept
+            and self.emp_id == other.emp_id
+            and self.hire_date == other.hire_date
+            and self.salary == other.salary
+        )
+
+    def __hash__(self):
+        return hash((self.name, self.dept, self.emp_id, self.hire_date, self.salary))
+```
+
+数一下，光这么一个普普通通的「数据类」，就花了二十多行。`__init__` 写一遍字段，`__repr__` 写一遍字段，`__eq__` 写一遍字段，`__hash__` 又写一遍字段——同一组字段名重复出现了五次。再想象一下你这个类有 15 个字段，那 `__init__` 的参数列表就要排成一列火车，每个 `self.xxx = xxx` 都要复制粘贴，写到第十个就开始想骂人。
+
+## 这就是「样板代码」
+
+它没创造任何业务价值，纯粹是 Python 语法要求你必须这么写。写代码的人讨厌它，看代码的人也讨厌它，因为信息密度太低，真正重要的「这个类有哪些字段」被淹没在 `self.xxx = xxx` 的重复噪声里。
+
+那有没有什么办法，能让我们只声明字段，剩下的活儿让 Python 自己干？
+
+有。Python 3.7 给我们送来了 `dataclass`。从 3.10 起又给它加了 `slots`、`kw_only` 等更现代的开关。这一节，我们就把 dataclass 这条线从基础用法一路捋到现代写法，让各位写数据结构的时候，再也不用手指头打结。
+
+## 这一节要学什么
+
+- **基础**：`@dataclass` 三行代码搞定 `__init__` / `__repr__` / `__eq__`
+- **默认值**：普通默认值 + `field(default_factory=...)` 处理可变默认值
+- **frozen**：让对象不可变，副产品是能进 set、能当 dict key
+- **比较**：`__eq__` 自动按字段值比较
+
+学完之后，再写数据类基本上就是「贴一个装饰器、列一下字段」这种轻松活儿。

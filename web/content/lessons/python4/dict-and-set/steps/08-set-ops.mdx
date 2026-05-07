@@ -1,0 +1,51 @@
+# 4、set 的集合运算
+
+因为 set 是一个无序不重复元素集，所以两个 set 可以做数学意义上的 **并集（union）**、**交集（intersection）**、**差集（difference）** 等操作。
+
+| 运算 | 符号 | 含义 |
+|---|---|---|
+| 交集 | `a & b` | a 和 b 都有的元素 |
+| 并集 | `a \| b` | a 和 b 任一有的元素（去重） |
+| 差集 | `a - b` | a 有但 b 没有的元素 |
+| 对称差 | `a ^ b` | 仅在 a 或仅在 b 中的元素（不要两个都有的） |
+
+例子：
+
+```python
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+print(a & b)   # 交集
+print(a | b)   # 并集
+print(a - b)   # 差集
+print(a ^ b)   # 对称差
+```
+
+输出（顺序可能不同）：
+
+```
+{3, 4}
+{1, 2, 3, 4, 5, 6}
+{1, 2}
+{1, 2, 5, 6}
+```
+
+## 5、什么时候该用 set 而不是 list？
+
+最后这一点很重要。我们做「成员判断」（`x in collection`）的时候：
+
+- 如果 `collection` 是 list，复杂度是 **O(n)**——元素越多越慢
+- 如果 `collection` 是 set（或 dict），复杂度接近 **O(1)**——跟元素数量基本无关
+
+所以，如果代码里有大量「这个东西在不在那一堆里」的判断，**把 list 转成 set 性能会大幅提升**：
+
+```python
+names_list = [f'user_{i}' for i in range(100000)]
+names_set = set(names_list)
+
+# 这两种结果一样，但是后者快得多
+print('user_99999' in names_list)
+print('user_99999' in names_set)
+```
+
+set 的价值不光是去重，更重要的是**快查**。

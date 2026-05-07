@@ -1,0 +1,16 @@
+{
+  "id": "04-polymorphism",
+  "title": "多态：重写父类方法",
+  "prompt": "已经给你定义了：\n```python\nclass Animal:\n    def sound(self):\n        print('一些声音')\n```\n\n请定义两个继承自 `Animal` 的类 `Dog` 和 `Cat`，分别**重写** `sound` 方法：\n\n- `Dog.sound` 打印 `'汪汪'`\n- `Cat.sound` 打印 `'喵喵'`\n\n然后用 `for` 循环依次调用 `Dog().sound()`、`Cat().sound()`。\n\n输出应该是：\n```\n汪汪\n喵喵\n```",
+  "starterCode": "class Animal:\n    def sound(self):\n        print('一些声音')\n\n# class Dog(Animal):\n#     def sound(self):\n#         print('汪汪')\n# class Cat(Animal):\n#     def sound(self):\n#         print('喵喵')\n# for a in [Dog(), Cat()]:\n#     a.sound()\n",
+  "solution": "class Animal:\n    def sound(self):\n        print('一些声音')\n\nclass Dog(Animal):\n    def sound(self):\n        print('汪汪')\n\nclass Cat(Animal):\n    def sound(self):\n        print('喵喵')\n\nfor a in [Dog(), Cat()]:\n    a.sound()",
+  "grading": {
+    "stdoutEquals": "汪汪\n喵喵\n",
+    "requiredAst": ["ClassDef:Dog", "ClassDef:Cat"]
+  },
+  "hints": [
+    "在子类里重新定义同名方法，就会覆盖父类的",
+    "for a in [Dog(), Cat()]: 遍历两个对象",
+    "完整代码：\nclass Dog(Animal):\n    def sound(self):\n        print('汪汪')\n\nclass Cat(Animal):\n    def sound(self):\n        print('喵喵')\n\nfor a in [Dog(), Cat()]:\n    a.sound()"
+  ]
+}

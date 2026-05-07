@@ -1,0 +1,17 @@
+{
+  "id": "04-args",
+  "title": "*args：可变参数",
+  "prompt": "请定义函数 `total(*nums)`，把传入的所有数字加起来返回。\n\n然后：\n1. 调用 `total(1, 2, 3)` 赋给 `a`\n2. 调用 `total(1, 2, 3, 4, 5, 6)` 赋给 `b`\n3. `print(a)` `print(b)`\n\n输出应该是：\n```\n6\n21\n```",
+  "starterCode": "# def total(*nums):\n#     ...\n# a = total(1, 2, 3)\n# b = total(1, 2, 3, 4, 5, 6)\n# print(a)\n# print(b)\n",
+  "solution": "def total(*nums):\n    s = 0\n    for n in nums:\n        s = s + n\n    return s\n\na = total(1, 2, 3)\nb = total(1, 2, 3, 4, 5, 6)\nprint(a)\nprint(b)",
+  "grading": {
+    "varsEqual": { "a": 6, "b": 21 },
+    "stdoutEquals": "6\n21\n",
+    "requiredAst": ["FunctionDef:total"]
+  },
+  "hints": [
+    "*nums 接收任意多个参数收成 tuple",
+    "函数体里 for n in nums 遍历累加，或者直接 return sum(nums)",
+    "完整代码：\ndef total(*nums):\n    return sum(nums)\n\na = total(1, 2, 3)\nb = total(1, 2, 3, 4, 5, 6)\nprint(a)\nprint(b)"
+  ]
+}

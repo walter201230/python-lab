@@ -1,0 +1,15 @@
+{
+  "id": "01-hello-world",
+  "title": "打印 Hello, World!",
+  "prompt": "用 `print` 函数打印 `Hello, World!`（注意首字母大写、感叹号是英文半角）。",
+  "starterCode": "# 在这里写你的代码\n",
+  "solution": "print('Hello, World!')",
+  "grading": {
+    "stdoutEquals": "Hello, World!\n"
+  },
+  "hints": [
+    "用 print 函数",
+    "字符串要用引号（单引号 ' 或双引号 \" 都可以）",
+    "完整代码大概是：print('Hello, World!')"
+  ]
+}
