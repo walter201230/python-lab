@@ -82,16 +82,30 @@ self.onmessage = async (event) => {
     } catch (_) { /* ignore */ }
 
     // 收集指定的全局变量值
+    // dict_converter: Object.fromEntries —— 把 Python dict 转成 plain JS object，
+    // 否则 toJs() 默认返回 Map，内部嵌套的 PyProxy 引用会让跨 worker 的 postMessage
+    // 报 "[object Map] could not be cloned"，主线程永不收到 result → 5 秒超时（issue #281）
     const vars = {};
     if (msg.expectedVarNames && msg.expectedVarNames.length > 0) {
       const globals = pyodide.globals;
       for (const name of msg.expectedVarNames) {
+        let v;
         try {
-          if (globals.has(name)) {
-            const v = globals.get(name);
-            vars[name] = (v && typeof v.toJs === 'function') ? v.toJs() : v;
+          if (!globals.has(name)) continue;
+          v = globals.get(name);
+          if (v && typeof v.toJs === 'function') {
+            vars[name] = v.toJs({ dict_converter: Object.fromEntries });
+          } else {
+            vars[name] = v;
           }
-        } catch (_) { /* ignore */ }
+        } catch (_) {
+          /* ignore：拿不到就当未定义，由判分给出"变量未定义"提示 */
+        } finally {
+          // 释放 PyProxy 引用，避免内存泄漏
+          if (v && typeof v.destroy === 'function') {
+            try { v.destroy(); } catch (_) { /* ignore */ }
+          }
+        }
       }
     }
 
