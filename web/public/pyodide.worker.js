@@ -110,15 +110,30 @@ self.onmessage = async (event) => {
     }
 
     // AST 检测：对用户代码做 ast.parse 并返回所有节点的 Type:Name 列表
+    // Import/ImportFrom 特殊处理：除了裸节点名（如 'ImportFrom'），还从 names 列表
+    // 展开成 'Import:re' / 'ImportFrom:Path' 形式 —— 因为 ast.Import 本身没有 name
+    // 属性（只有 names: list[alias]），不展开就永远命中不了 requiredAst: ["Import:re"]
+    // 这种直觉写法。issue #284-#288 就是这个 bug。
     let astNodes = [];
     if (msg.detectAst) {
       try {
         const result = pyodide.runPython(
           `import ast, json\n` +
           `__nodes = []\n` +
+          `__skip = set()\n` +
           `__tree = ast.parse(${JSON.stringify(msg.code)})\n` +
           `for __n in ast.walk(__tree):\n` +
+          `    if id(__n) in __skip:\n` +
+          `        continue\n` +
           `    __t = type(__n).__name__\n` +
+          `    if __t in ('Import', 'ImportFrom'):\n` +
+          `        __nodes.append(__t)\n` +
+          `        for __a in getattr(__n, 'names', None) or []:\n` +
+          `            __an = getattr(__a, 'name', None)\n` +
+          `            if __an:\n` +
+          `                __nodes.append(f"{__t}:{__an}")\n` +
+          `            __skip.add(id(__a))\n` +
+          `        continue\n` +
           `    __nm = getattr(__n, 'name', None)\n` +
           `    if __nm:\n` +
           `        __nodes.append(f"{__t}:{__nm}")\n` +
