@@ -7,6 +7,29 @@ const PYODIDE_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full`;
 
 importScripts(`${PYODIDE_URL}/pyodide.js`);
 
+// issue #289/#290：Pyodide 沙箱是单线程，浏览器事件循环始终在运行，用户代码里的
+// asyncio.run() 会撞上「asyncio.run() cannot be called from a running event loop」
+// 而报错——连 async 章节 4 道题的标准答案也跑不通。修法是在执行用户代码前，把
+// asyncio.run 换成「把协程调度成 task」：不再去抢已在跑的事件循环，而是交给它，
+// 由下面的 ASYNCIO_DRAIN 在用户代码结束后统一 await 到完成。
+const ASYNCIO_PATCH =
+  `import asyncio as __aio\n` +
+  `def __pyodide_asyncio_run(__main, *, debug=None):\n` +
+  `    return __aio.get_running_loop().create_task(__main)\n` +
+  `__aio.run = __pyodide_asyncio_run\n`;
+
+// 收尾：把本次运行新建、但还没跑完的协程 task 全部 await 到结束。用 while 反复
+// 扫描，处理 task 里再派生 task 的情况；必须排除 current_task() 自己，否则
+// gather 会把这段收尾代码自身也等进去 → 永久死锁。
+const ASYNCIO_DRAIN =
+  `import asyncio as __aio\n` +
+  `while True:\n` +
+  `    __cur = __aio.current_task()\n` +
+  `    __pending = [__t for __t in __aio.all_tasks() if not __t.done() and __t is not __cur]\n` +
+  `    if not __pending:\n` +
+  `        break\n` +
+  `    await __aio.gather(*__pending)\n`;
+
 let pyodide = null;
 let initPromise = null;
 
@@ -57,9 +80,19 @@ self.onmessage = async (event) => {
 
     let error;
     try {
+      // 先打上 asyncio.run 补丁（见文件顶部 ASYNCIO_PATCH），再执行用户代码
+      pyodide.runPython(ASYNCIO_PATCH);
       await pyodide.runPythonAsync(msg.code);
     } catch (e) {
       error = e.message || String(e);
+    }
+    // 不论上面成功还是失败，都把本次产生的协程 task 收尾跑完：既能拿到协程内的
+    // print 输出，也避免残留 task 污染下一次运行（worker 复用同一个 pyodide）。
+    try {
+      await pyodide.runPythonAsync(ASYNCIO_DRAIN);
+    } catch (e) {
+      // 协程内部抛的异常会在这里冒出来——保留它作为给用户的报错
+      if (!error) error = e.message || String(e);
     }
 
     let stdout = '';
