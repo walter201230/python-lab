@@ -11,6 +11,6 @@
   "hints": [
     "Python 3.9+ 才有 | 合并写法",
     "右边的 'b': 99 会覆盖左边的 'b': 2",
-    "完整代码：\nmerged = old | new\nprint(merged)"
+    "完整代码：\nold = {'a': 1, 'b': 2}\nnew = {'b': 99, 'c': 3}\nmerged = old | new\nprint(merged)"
   ]
 }

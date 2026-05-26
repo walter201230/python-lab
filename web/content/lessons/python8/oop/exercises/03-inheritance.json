@@ -11,6 +11,6 @@
   "hints": [
     "继承写法：class Student(Person):",
     "Student 没写 __init__ 也没关系——会自动用父类的",
-    "完整代码：\nclass Student(Person):\n    def study(self):\n        print(f'{self.name} 在学习')\n\ns = Student('小明')\ns.greet()\ns.study()"
+    "完整代码：\nclass Person:\n    def __init__(self, name):\n        self.name = name\n    def greet(self):\n        print(f'我叫 {self.name}')\n\nclass Student(Person):\n    def study(self):\n        print(f'{self.name} 在学习')\n\ns = Student('小明')\ns.greet()\ns.study()"
   ]
 }

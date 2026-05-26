@@ -11,6 +11,6 @@
     "zip(names, ages) 会同时从两个 list 各取一个元素，组成 (name, age)",
     "在 for 里直接拆包：for name, age in zip(...)",
     "print(name, age) 默认就用空格分隔",
-    "完整代码：\nfor name, age in zip(names, ages):\n    print(name, age)"
+    "完整代码：\nnames = ['Alice', 'Bob', 'Cathy']\nages = [18, 19, 20]\nfor name, age in zip(names, ages):\n    print(name, age)"
   ]
 }

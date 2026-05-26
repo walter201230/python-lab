@@ -11,6 +11,6 @@
   "hints": [
     "结构是：{键: 值 for 变量 in 可迭代对象}",
     "用 prices.items() 同时拿到键 k 和值 v",
-    "完整代码：\ndoubled = {k: v * 2 for k, v in prices.items()}\nprint(doubled)"
+    "完整代码：\nprices = {'apple': 5, 'banana': 3, 'cherry': 10}\ndoubled = {k: v * 2 for k, v in prices.items()}\nprint(doubled)"
   ]
 }

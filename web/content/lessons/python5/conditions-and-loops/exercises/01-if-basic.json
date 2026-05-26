@@ -9,6 +9,6 @@
   },
   "hints": [
     "if 后面要冒号，下一行缩进 4 个空格",
-    "完整代码：\nif score >= 60:\n    print('及格')\nelse:\n    print('不及格')"
+    "完整代码：\nscore = 75\nif score >= 60:\n    print('及格')\nelse:\n    print('不及格')"
   ]
 }

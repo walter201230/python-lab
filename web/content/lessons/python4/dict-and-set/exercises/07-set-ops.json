@@ -11,6 +11,6 @@
   "hints": [
     "a & b 求两个 set 的交集",
     "sorted() 转成有序 list 让输出稳定",
-    "完整代码：\ncommon = sorted(a & b)\nprint(common)"
+    "完整代码：\na = {1, 2, 3, 4, 5}\nb = {3, 4, 5, 6, 7}\ncommon = sorted(a & b)\nprint(common)"
   ]
 }

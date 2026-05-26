@@ -10,6 +10,6 @@
   },
   "hints": [
     "新增和修改都是 dict[key] = value——key 不存在就新增，存在就覆盖",
-    "完整代码：\nscores['英语'] = 78\nscores['数学'] = 92\nprint(scores)"
+    "完整代码：\nscores = {'语文': 90, '数学': 85}\nscores['英语'] = 78\nscores['数学'] = 92\nprint(scores)"
   ]
 }

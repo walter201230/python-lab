@@ -10,6 +10,6 @@
   "hints": [
     "logging.getLogger('名字') 拿一个有名字的 logger",
     "用这个 logger 打印日志：logger.info(...)",
-    "完整代码：\nlogger = logging.getLogger('app.punch')\nlogger.info('用户开始打卡')"
+    "完整代码：\nimport logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.INFO,\n    format='%(name)s:%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogger = logging.getLogger('app.punch')\nlogger.info('用户开始打卡')"
   ]
 }

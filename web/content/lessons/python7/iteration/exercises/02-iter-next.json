@@ -10,6 +10,6 @@
   "hints": [
     "iter(nums) 会把 list 变成迭代器对象",
     "每调用一次 next(it) 就吐出下一个元素",
-    "完整代码：\nit = iter(nums)\nprint(next(it))\nprint(next(it))\nprint(next(it))"
+    "完整代码：\nnums = [10, 20, 30]\nit = iter(nums)\nprint(next(it))\nprint(next(it))\nprint(next(it))"
   ]
 }

@@ -10,6 +10,6 @@
   "hints": [
     "两个条件都成立才行：用 and 把它们连起来",
     "has_id 已经是 bool，直接 has_id 即可，不用 has_id == True",
-    "完整代码：\nif age >= 18 and has_id:\n    print('可以进入')\nelse:\n    print('谢绝入内')"
+    "完整代码：\nage = 22\nhas_id = True\nif age >= 18 and has_id:\n    print('可以进入')\nelse:\n    print('谢绝入内')"
   ]
 }

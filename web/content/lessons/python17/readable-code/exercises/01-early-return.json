@@ -11,6 +11,6 @@
   "hints": [
     "先把「非法分数」的情况 return 掉——这一步退出后，剩下都是合法分数",
     "再依次 if score >= 90: return '优秀'，if score >= 60: return '及格'，最后 return '不及格'",
-    "完整代码：\ndef check(score):\n    if score < 0 or score > 100:\n        return '非法分数'\n    if score >= 90:\n        return '优秀'\n    if score >= 60:\n        return '及格'\n    return '不及格'"
+    "完整代码：\ndef check(score):\n    if score < 0 or score > 100:\n        return '非法分数'\n    if score >= 90:\n        return '优秀'\n    if score >= 60:\n        return '及格'\n    return '不及格'\n\nprint(check(95))\nprint(check(72))\nprint(check(40))\nprint(check(150))"
   ]
 }

@@ -11,6 +11,6 @@
   "hints": [
     "在子类里重新定义同名方法，就会覆盖父类的",
     "for a in [Dog(), Cat()]: 遍历两个对象",
-    "完整代码：\nclass Dog(Animal):\n    def sound(self):\n        print('汪汪')\n\nclass Cat(Animal):\n    def sound(self):\n        print('喵喵')\n\nfor a in [Dog(), Cat()]:\n    a.sound()"
+    "完整代码：\nclass Animal:\n    def sound(self):\n        print('一些声音')\n\nclass Dog(Animal):\n    def sound(self):\n        print('汪汪')\n\nclass Cat(Animal):\n    def sound(self):\n        print('喵喵')\n\nfor a in [Dog(), Cat()]:\n    a.sound()"
   ]
 }

@@ -10,6 +10,6 @@
   "hints": [
     "索引从 0 开始：第 4 个是 days[3]",
     "切片用法跟 List 一样：days[2:4]",
-    "完整代码：\nprint(days[3])\nprint(days[2:4])"
+    "完整代码：\ndays = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri')\nprint(days[3])\nprint(days[2:4])"
   ]
 }

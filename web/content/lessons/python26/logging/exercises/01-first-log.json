@@ -10,6 +10,6 @@
   "hints": [
     "logging.info('内容') 是调用 root logger 打印 INFO 级别日志",
     "格式由 basicConfig 的 format 控制，咱们已经预设成 '级别:内容'",
-    "完整代码：\nlogging.info('第一条日志')"
+    "完整代码：\nimport logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.INFO,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogging.info('第一条日志')"
   ]
 }

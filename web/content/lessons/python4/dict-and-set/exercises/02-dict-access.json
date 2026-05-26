@@ -9,6 +9,6 @@
   },
   "hints": [
     "用 dict[key] 的形式取值",
-    "完整代码：print(scores['数学'])"
+    "完整代码：\nscores = {'语文': 90, '数学': 85, '英语': 78}\nprint(scores['数学'])"
   ]
 }

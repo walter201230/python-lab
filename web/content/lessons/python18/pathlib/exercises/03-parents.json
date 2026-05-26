@@ -11,6 +11,6 @@
   "hints": [
     ".parent 跟 .parents[0] 等价——都是直接父目录",
     ".parents[1] 是 .parent.parent，再往上一层",
-    "完整代码：\nprint(p.parent)\nprint(p.parents[1])"
+    "完整代码：\nfrom pathlib import Path\np = Path('/a/b/c/d.txt')\nprint(p.parent)\nprint(p.parents[1])"
   ]
 }

@@ -11,6 +11,6 @@
   "hints": [
     "结构是：[表达式 for 变量 in 序列 if 条件]",
     "表达式是 x * x，过滤条件是 x > 0",
-    "完整代码：\nresult = [x * x for x in nums if x > 0]\nprint(result)"
+    "完整代码：\nnums = [-2, 1, -3, 4, 0, -5, 6]\nresult = [x * x for x in nums if x > 0]\nprint(result)"
   ]
 }

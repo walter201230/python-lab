@@ -10,6 +10,6 @@
   "hints": [
     "level=logging.DEBUG 让所有级别都打出来",
     "顺序：debug → info → warning → error → critical",
-    "完整代码：5 个 logging.xxx 调用"
+    "完整代码：\nimport logging\nimport sys\n\nlogging.basicConfig(\n    stream=sys.stdout,\n    level=logging.DEBUG,\n    format='%(levelname)s:%(message)s',\n    force=True,\n)\n\nlogging.debug('调试')\nlogging.info('信息')\nlogging.warning('警告')\nlogging.error('错误')\nlogging.critical('致命')"
   ]
 }

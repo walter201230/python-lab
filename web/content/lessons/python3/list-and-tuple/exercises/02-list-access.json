@@ -10,6 +10,6 @@
   "hints": [
     "索引从 0 开始：第 3 个元素是 fruits[2]",
     "切片 [1:4] 是左闭右开，包含索引 1、2、3，不包含 4",
-    "完整代码：\nprint(fruits[2])\nprint(fruits[1:4])"
+    "完整代码：\nfruits = ['apple', 'banana', 'cherry', 'date', 'fig']\nprint(fruits[2])\nprint(fruits[1:4])"
   ]
 }

@@ -10,6 +10,6 @@
   "hints": [
     "elif 是 else if 的简写",
     "判断从严到松：>= 90 → >= 80 → >= 60 → else",
-    "完整代码：\nif score >= 90:\n    print('优秀')\nelif score >= 80:\n    print('良好')\nelif score >= 60:\n    print('及格')\nelse:\n    print('不及格')"
+    "完整代码：\nscore = 85\nif score >= 90:\n    print('优秀')\nelif score >= 80:\n    print('良好')\nelif score >= 60:\n    print('及格')\nelse:\n    print('不及格')"
   ]
 }

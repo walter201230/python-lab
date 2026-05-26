@@ -10,6 +10,6 @@
   "hints": [
     "sorted 的 key 参数接收一个函数：每个元素拿来生成「排序依据」",
     "lambda u: u['age'] 等价于 def f(u): return u['age']",
-    "完整代码：\nsorted_users = sorted(users, key=lambda u: u['age'])\nfor u in sorted_users:\n    print(u['name'], u['age'])"
+    "完整代码：\nusers = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 28},\n]\nsorted_users = sorted(users, key=lambda u: u['age'])\nfor u in sorted_users:\n    print(u['name'], u['age'])"
   ]
 }

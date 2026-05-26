@@ -11,6 +11,6 @@
   "hints": [
     "List 之间可以用 + 拼接：c = a + b",
     "len(c) 返回列表的元素个数",
-    "完整代码：\nc = a + b\nprint(c)\nprint(len(c))"
+    "完整代码：\na = [1, 2, 3]\nb = [4, 5, 6]\nc = a + b\nprint(c)\nprint(len(c))"
   ]
 }

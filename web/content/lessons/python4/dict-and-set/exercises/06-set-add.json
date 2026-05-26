@@ -10,6 +10,6 @@
   "hints": [
     "tags.add(x) 添加元素，重复添加同一个值无效",
     "set 是无序的，print 顺序不固定——所以题目让你 sorted 再 print",
-    "完整代码：\ntags.add('ai')\ntags.add('python')\nprint(sorted(tags))"
+    "完整代码：\ntags = {'python', 'web'}\ntags.add('ai')\ntags.add('python')\nprint(sorted(tags))"
   ]
 }

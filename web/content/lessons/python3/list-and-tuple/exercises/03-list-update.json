@@ -11,6 +11,6 @@
   "hints": [
     "改某个位置：colors[1] = 'GREEN'",
     "末尾追加：colors.append('yellow')",
-    "完整代码：\ncolors[1] = 'GREEN'\ncolors.append('yellow')\nprint(colors)"
+    "完整代码：\ncolors = ['red', 'green', 'blue']\ncolors[1] = 'GREEN'\ncolors.append('yellow')\nprint(colors)"
   ]
 }
