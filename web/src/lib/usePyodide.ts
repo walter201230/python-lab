@@ -17,6 +17,12 @@ export interface RunOptions {
   expectedVarNames?: string[];
   detectAst?: boolean;
   timeoutMs?: number;
+  /**
+   * 隔离执行：在全新命名空间里跑这段代码，跑完即销毁，不读写共享的 pyodide.globals。
+   * 练习题判分用（互不污染、也不被教学块累积状态污染，修 #296/#301）。
+   * 教学代码块不传（缺省共享 globals，故意跨块累积变量）。
+   */
+  isolated?: boolean;
 }
 
 export interface RunResult {
@@ -104,6 +110,7 @@ export function usePyodide() {
           code,
           expectedVarNames: opts.expectedVarNames,
           detectAst: opts.detectAst,
+          isolated: opts.isolated,
         });
       });
     },

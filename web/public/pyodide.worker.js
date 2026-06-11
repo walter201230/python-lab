@@ -30,6 +30,22 @@ const ASYNCIO_DRAIN =
   `        break\n` +
   `    await __aio.gather(*__pending)\n`;
 
+// 练习题判分用「隔离命名空间」执行：每次 run 前新建一个空 dict 当命名空间，跑完即销毁。
+// 起因——worker 复用同一个 pyodide 实例（见 pyodideSingleton.ts：跨题/跨路由存活，只有
+// timeout 才重建）。若所有运行都共用 pyodide.globals，上一道题定义的变量会残留：新手常把
+// 内置名当变量（max = .. / list = [..] / tuple = ..），一旦覆盖，本会话后续用到该内置的题
+// 连标准答案都跑不通，重载页面才好——issue #296/#301。
+// 为什么不直接「每次清空 globals」：教学代码块（RunnableCodeBlock）共用同一个 worker，且
+// 故意「接着上一块累积变量」（前块 import re / 定义 Color，后块直接用）。清空 globals 会把
+// 这些教学块全改崩成 NameError。所以按用途分两条命名空间：
+//   - 练习题（msg.isolated=true）：每次跑在全新 dict 里 → 互不污染、也不碰教学累积状态；
+//   - 教学块（msg.isolated 缺省）：仍跑在共享的 pyodide.globals 里 → 保持跨块累积。
+// 隔离 dict 预置 __name__='__main__'，模拟「直接运行脚本」语义（否则 if __name__ 取不到名）；
+// __builtins__ 由 CPython 首次 exec 时自动注入，故内置函数照常可用。
+function makeRunGlobals(isolated) {
+  return isolated ? pyodide.toPy({ __name__: '__main__' }) : null;
+}
+
 let pyodide = null;
 let initPromise = null;
 
@@ -68,6 +84,12 @@ self.onmessage = async (event) => {
       return;
     }
 
+    // 选择本次运行的命名空间：练习题隔离（全新 dict）、教学块共享（默认 globals，runNs=null）。
+    // runOpts 透传给本次所有 runPython/runPythonAsync，确保重定向、用户代码、收尾、取变量、
+    // AST 都在同一命名空间里（详见顶部 makeRunGlobals）。
+    const runNs = makeRunGlobals(msg.isolated);
+    const runOpts = runNs ? { globals: runNs } : undefined;
+
     // 用 io.StringIO 重定向 stdout/stderr：比 setStdout({batched}) 更稳定，
     // 能完整捕获所有字符（包括 trailing \n），中文 UTF-8 也不会出错。
     pyodide.runPython(
@@ -75,21 +97,22 @@ self.onmessage = async (event) => {
       `__captured_stdout = io.StringIO()\n` +
       `__captured_stderr = io.StringIO()\n` +
       `sys.stdout = __captured_stdout\n` +
-      `sys.stderr = __captured_stderr\n`
+      `sys.stderr = __captured_stderr\n`,
+      runOpts
     );
 
     let error;
     try {
       // 先打上 asyncio.run 补丁（见文件顶部 ASYNCIO_PATCH），再执行用户代码
-      pyodide.runPython(ASYNCIO_PATCH);
-      await pyodide.runPythonAsync(msg.code);
+      pyodide.runPython(ASYNCIO_PATCH, runOpts);
+      await pyodide.runPythonAsync(msg.code, runOpts);
     } catch (e) {
       error = e.message || String(e);
     }
     // 不论上面成功还是失败，都把本次产生的协程 task 收尾跑完：既能拿到协程内的
     // print 输出，也避免残留 task 污染下一次运行（worker 复用同一个 pyodide）。
     try {
-      await pyodide.runPythonAsync(ASYNCIO_DRAIN);
+      await pyodide.runPythonAsync(ASYNCIO_DRAIN, runOpts);
     } catch (e) {
       // 协程内部抛的异常会在这里冒出来——保留它作为给用户的报错
       if (!error) error = e.message || String(e);
@@ -103,14 +126,16 @@ self.onmessage = async (event) => {
         `sys.stdout.flush()\n` +
         `__r = __captured_stdout.getvalue()\n` +
         `sys.stdout = sys.__stdout__\n` +
-        `__r`
+        `__r`,
+        runOpts
       ) || '';
       stderr = pyodide.runPython(
         `import sys\n` +
         `sys.stderr.flush()\n` +
         `__r = __captured_stderr.getvalue()\n` +
         `sys.stderr = sys.__stderr__\n` +
-        `__r`
+        `__r`,
+        runOpts
       ) || '';
     } catch (_) { /* ignore */ }
 
@@ -120,7 +145,8 @@ self.onmessage = async (event) => {
     // 报 "[object Map] could not be cloned"，主线程永不收到 result → 5 秒超时（issue #281）
     const vars = {};
     if (msg.expectedVarNames && msg.expectedVarNames.length > 0) {
-      const globals = pyodide.globals;
+      // 隔离模式从本次的 runNs 取变量，共享模式从 pyodide.globals 取
+      const globals = runNs ?? pyodide.globals;
       for (const name of msg.expectedVarNames) {
         let v;
         try {
@@ -176,10 +202,16 @@ self.onmessage = async (event) => {
           `                __nodes.append(f"{__t}:{__target.id}")\n` +
           `    else:\n` +
           `        __nodes.append(__t)\n` +
-          `json.dumps(__nodes)`
+          `json.dumps(__nodes)`,
+          runOpts
         );
         astNodes = JSON.parse(result);
       } catch (_) { /* ignore */ }
+    }
+
+    // 释放隔离命名空间的 PyProxy，避免内存泄漏（共享模式 runNs 为 null，跳过）
+    if (runNs) {
+      try { runNs.destroy(); } catch (_) { /* ignore */ }
     }
 
     self.postMessage({ type: 'result', stdout, stderr, vars, astNodes, error });

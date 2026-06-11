@@ -68,7 +68,8 @@ export function ExerciseCard({
   const detectAst = !!ex.grading.requiredAst?.length;
 
   async function execute(): Promise<ActualResult> {
-    const result = await run(code, { expectedVarNames, detectAst });
+    // isolated：练习判分跑在全新命名空间，避免被别题/教学块残留的全局名污染（#296/#301）
+    const result = await run(code, { expectedVarNames, detectAst, isolated: true });
     setOutput({ stdout: result.stdout, stderr: result.stderr, error: result.error });
     return result;
   }
