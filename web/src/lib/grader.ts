@@ -48,7 +48,9 @@ export function grade(actual: ActualResult, rules: GradingRules): GradeOutcome {
     return { pass: false, msg: '执行超时（5 秒），可能写了死循环——检查 while/for 退出条件' };
   }
   if (actual.error) {
-    return { pass: false, msg: `代码报错：${actual.error.split('\n').slice(-1)[0]}` };
+    // Pyodide 的 PythonError.message 是完整 traceback 且以 \n 结尾——不 trim 的话
+    // 取最后一行恒为空串，「代码报错：」后面就没内容了
+    return { pass: false, msg: `代码报错：${actual.error.trim().split('\n').slice(-1)[0]}` };
   }
 
   // 1. stdoutEquals
@@ -59,7 +61,7 @@ export function grade(actual: ActualResult, rules: GradingRules): GradeOutcome {
         pass: false,
         msg:
           `输出与期望不一致——${describeFirstDiff(rules.stdoutEquals, actual.stdout)}。` +
-          `期望 \`${escape(rules.stdoutEquals)}\`，实际 \`${escape(actual.stdout)}\``,
+          `期望 ${inlineCode(escape(rules.stdoutEquals))}，实际 ${inlineCode(escape(actual.stdout))}`,
       };
     }
   }
@@ -72,8 +74,8 @@ export function grade(actual: ActualResult, rules: GradingRules): GradeOutcome {
         return {
           pass: false,
           msg: got === undefined
-            ? `变量 \`${name}\` 没定义——题目要求它的值是 \`${JSON.stringify(expected)}\``
-            : `变量 \`${name}\` 的值不对——期望 \`${JSON.stringify(expected)}\`，实际 \`${JSON.stringify(got)}\``,
+            ? `变量 \`${name}\` 没定义——题目要求它的值是 ${inlineCode(stringifyValue(expected))}`
+            : `变量 \`${name}\` 的值不对——期望 ${inlineCode(stringifyValue(expected))}，实际 ${inlineCode(stringifyValue(got))}`,
         };
       }
     }
@@ -96,6 +98,30 @@ export function grade(actual: ActualResult, rules: GradingRules): GradeOutcome {
 
 function escape(s: string): string {
   return s.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+}
+
+/**
+ * BigInt 安全的 JSON.stringify。用户代码算出超大整数（如 2**100）时 Pyodide 会转成
+ * BigInt，原生 JSON.stringify 直接抛 TypeError——错误消息构造一炸，判分流程整个中断，
+ * 按钮卡死在「运行中…」。
+ */
+function stringifyValue(v: unknown): string {
+  return (
+    JSON.stringify(v, (_k, x: unknown) => (typeof x === 'bigint' ? x.toString() : x)) ?? String(v)
+  );
+}
+
+/**
+ * markdown 行内代码的自适应围栏：内容里有 N 个连续反引号时外层用 N+1 个，
+ * 否则用户输出里的 ` 会提前终止 inline code，把「期望 vs 实际」提示渲染搞乱
+ * （判分消息经 ReactMarkdown 渲染，见 GradingResult）。
+ */
+function inlineCode(s: string): string {
+  const runs = s.match(/`+/g);
+  const fence = '`'.repeat(runs ? Math.max(...runs.map((r) => r.length)) + 1 : 1);
+  // CommonMark：内容以反引号开头/结尾（或为空）时需要空格垫边
+  const pad = s.startsWith('`') || s.endsWith('`') || s === '' ? ' ' : '';
+  return `${fence}${pad}${s}${pad}${fence}`;
 }
 
 /**
@@ -139,7 +165,7 @@ function charDesc(c: string | undefined): string {
   const cp = (c.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(4, '0');
   const shown = c === '\n' ? '\\n' : c === '\t' ? '\\t' : c;
   const name = CHAR_NAMES[c];
-  return `\`${shown}\`（U+${cp}${name ? ' ' + name : ''}）`;
+  return `${inlineCode(shown)}（U+${cp}${name ? ' ' + name : ''}）`;
 }
 
 /**
