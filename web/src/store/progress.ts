@@ -71,8 +71,20 @@ export const useProgress = create<ProgressState>()(
       byLesson: {},
       ensureLesson: (lessonId, firstExerciseId) =>
         set((s) => {
-          if (s.byLesson[lessonId]) return s;
-          return { byLesson: { ...s.byLesson, [lessonId]: empty(firstExerciseId) } };
+          const cur = s.byLesson[lessonId];
+          if (!cur) {
+            return { byLesson: { ...s.byLesson, [lessonId]: empty(firstExerciseId) } };
+          }
+          // 内容迭代可能改练习 ID：老用户的 unlocked 里只有旧 ID 时，第一题会被锁死
+          //（ExerciseCard 的 `?? index === 0` 兜底对 includes 返回 false 不生效），
+          // 整课无法操作。这里保证当前内容的第一题始终在 unlocked 里。
+          if (cur.unlocked.includes(firstExerciseId)) return s;
+          return {
+            byLesson: {
+              ...s.byLesson,
+              [lessonId]: { ...cur, unlocked: [...cur.unlocked, firstExerciseId] },
+            },
+          };
         }),
       setCurrent: (lessonId, exerciseId) =>
         set((s) => ({

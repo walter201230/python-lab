@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { usePyodide } from '@/lib/usePyodide';
 import { useProgress } from '@/store/progress';
 import { ExerciseCard } from './ExerciseCard';
@@ -18,7 +18,8 @@ import type { LoadedLesson } from '@/lib/loadLesson';
 
 /**
  * 渐进通关式布局：按 lesson.blocks 顺序从前往后渲染，
- * 遇到第一个未通过的 exercise 即截断（含此 ex），后续 step+ex 全部隐藏。
+ * 遇到第一个未过关的 exercise 即截断（含此 ex），后续 step+ex 全部隐藏。
+ * 过关 = 判分通过 OR 查看过答案（与 store 的 unlocked 语义一致）；
  * 每过一关，下一段教学和练习才会展开。
  */
 export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
@@ -47,28 +48,45 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
   const allCompleted = exercises.length > 0 && completedCount === exercises.length;
   const readOnlyDone = exercises.length === 0 && (lessonProgress?.lessonCompleted ?? false);
 
-  // 庆祝动效：仅在 allCompleted 从 false 变 true 时触发，避免重新进入页面也放
+  // 庆祝动效：仅在本次会话里 allCompleted 从 false 变 true 时触发。
+  // 两个坑：① ref 初值若为 false，重访已通关课程会被当成新通关再放一次；
+  // ② zustand persist 水合晚于首渲染，必须等水合完成后再建立基线，否则基线记到的
+  // 是水合前的 false，效果同坑 ①。所以先等 hydrated，第一次只记录（null→值）不触发。
   const [confettiKey, setConfettiKey] = useState(0);
-  const prevAllCompletedRef = useRef(false);
+  const prevAllCompletedRef = useRef<boolean | null>(null);
+  // persist 水合完成信号：订阅 onFinishHydration、快照读 hasHydrated（服务端恒 false）。
+  // 用 useSyncExternalStore 而非 setState-in-effect，天然覆盖「订阅前已水合完」的竞态。
+  const hydrated = useSyncExternalStore(
+    (cb) => useProgress.persist.onFinishHydration(cb),
+    () => useProgress.persist.hasHydrated(),
+    () => false,
+  );
   useEffect(() => {
-    if (!prevAllCompletedRef.current && allCompleted) {
+    if (!hydrated) return;
+    if (prevAllCompletedRef.current === false && allCompleted) {
       setConfettiKey((k) => k + 1);
     }
     prevAllCompletedRef.current = allCompleted;
-  }, [allCompleted]);
+  }, [hydrated, allCompleted]);
 
   const visibleBlocks = useMemo(() => {
-    const completedSet = new Set(lessonProgress?.completed ?? []);
+    // 过关判定 = 判分通过 OR 查看过答案——与 store 的 unlocked 语义、「查看答案后
+    // 不影响解锁下一题」的弹窗文案一致。此前只认 completed：查看答案后 store 解锁了
+    // 下一题、sticky bar 题号可点，但这里不渲染 → 锚点不存在，点了没反应。
+    const passedSet = new Set([
+      ...(lessonProgress?.completed ?? []),
+      ...(lessonProgress?.viewedSolution ?? []),
+    ]);
     let cutoff = blocks.length;
     for (let i = 0; i < blocks.length; i++) {
       const b = blocks[i];
-      if (b.kind === 'exercise' && !completedSet.has(b.exercise.id)) {
+      if (b.kind === 'exercise' && !passedSet.has(b.exercise.id)) {
         cutoff = i + 1;
         break;
       }
     }
     return blocks.slice(0, cutoff);
-  }, [blocks, lessonProgress?.completed]);
+  }, [blocks, lessonProgress?.completed, lessonProgress?.viewedSolution]);
 
   // 当前打开的 step 索引（最后一个未被截断的 step）— 给 StepCard 上"已读/当前"区分
   const currentStepIndex = useMemo(() => {
