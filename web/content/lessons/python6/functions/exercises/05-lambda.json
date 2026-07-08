@@ -5,7 +5,9 @@
   "starterCode": "users = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 28},\n]\n# sorted_users = sorted(users, key=lambda u: u['age'])\n# for u in sorted_users:\n#     print(u['name'], u['age'])\n",
   "solution": "users = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Carol', 'age': 28},\n]\nsorted_users = sorted(users, key=lambda u: u['age'])\nfor u in sorted_users:\n    print(u['name'], u['age'])",
   "grading": {
-    "stdoutEquals": "Bob 25\nCarol 28\nAlice 30\n"
+    "varsEqual": { "sorted_users": [{ "name": "Bob", "age": 25 }, { "name": "Carol", "age": 28 }, { "name": "Alice", "age": 30 }] },
+    "stdoutEquals": "Bob 25\nCarol 28\nAlice 30\n",
+    "requiredAst": ["Lambda"]
   },
   "hints": [
     "sorted 的 key 参数接收一个函数：每个元素拿来生成「排序依据」",

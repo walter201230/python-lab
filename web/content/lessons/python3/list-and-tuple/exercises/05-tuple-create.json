@@ -5,7 +5,8 @@
   "starterCode": "# 单元素 tuple 必须加逗号\n",
   "solution": "t = (42,)\nprint(t)",
   "grading": {
-    "stdoutEquals": "(42,)\n"
+    "stdoutEquals": "(42,)\n",
+    "requiredAst": ["Assign:t", "Tuple"]
   },
   "hints": [
     "(42) 是一个数字表达式，不是 tuple",

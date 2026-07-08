@@ -6,7 +6,7 @@
   "solution": "class InvalidScoreError(Exception):\n    pass\n\ndef check_score(score):\n    if score < 0 or score > 100:\n        raise InvalidScoreError(f'分数 {score} 不合法')\n    print(f'分数合法：{score}')\n\ncheck_score(85)\ntry:\n    check_score(120)\nexcept InvalidScoreError as e:\n    print(f'捕获到异常：{e}')",
   "grading": {
     "stdoutEquals": "分数合法：85\n捕获到异常：分数 120 不合法\n",
-    "requiredAst": ["ClassDef:InvalidScoreError", "FunctionDef:check_score"]
+    "requiredAst": ["ClassDef:InvalidScoreError", "FunctionDef:check_score", "Raise", "Try"]
   },
   "hints": [
     "class InvalidScoreError(Exception): pass 一行就够",

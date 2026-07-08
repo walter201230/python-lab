@@ -6,10 +6,10 @@
   "solution": "def study_time(time):\n    def insert_time(min):\n        nonlocal time\n        time = time + min\n        return time\n    return insert_time\n\nf = study_time(0)\nprint(f(2))\nprint(f(10))\nprint(f(5))",
   "grading": {
     "stdoutEquals": "2\n12\n17\n",
-    "requiredAst": ["FunctionDef:study_time"]
+    "requiredAst": ["FunctionDef:study_time", "Nonlocal"]
   },
   "hints": [
-    "外层 study_time 接收 time 作为参数；内层 insert_time 通过 nonlocal time 修改它",
+    "外层 study_time 接收 time 作为参数；内层 insert_time 通过 nonlocal time 修改它（参数名 min 沿用原教程写法，它会临时遮住内置函数 min()——真实项目里建议用 minutes 这类不冲突的名字）",
     "外层函数 return 内层函数对象 insert_time（不要带括号）",
     "完整代码：\ndef study_time(time):\n    def insert_time(min):\n        nonlocal time\n        time = time + min\n        return time\n    return insert_time\n\nf = study_time(0)\nprint(f(2))\nprint(f(10))\nprint(f(5))"
   ]

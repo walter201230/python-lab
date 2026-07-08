@@ -5,7 +5,8 @@
   "starterCode": "score = 85\n# 用 if / elif / else 判断\n",
   "solution": "score = 85\nif score >= 90:\n    print('优秀')\nelif score >= 80:\n    print('良好')\nelif score >= 60:\n    print('及格')\nelse:\n    print('不及格')",
   "grading": {
-    "stdoutEquals": "良好\n"
+    "stdoutEquals": "良好\n",
+    "requiredAst": ["If"]
   },
   "hints": [
     "elif 是 else if 的简写",

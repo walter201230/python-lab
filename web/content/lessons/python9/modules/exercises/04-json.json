@@ -5,6 +5,7 @@
   "starterCode": "# import json\n# data = {'name': 'Alice', 'age': 18}\n# s = json.dumps(data)\n# print(s)\n",
   "solution": "import json\n\ndata = {'name': 'Alice', 'age': 18}\ns = json.dumps(data)\nprint(s)",
   "grading": {
+    "varsEqual": { "s": "{\"name\": \"Alice\", \"age\": 18}" },
     "stdoutEquals": "{\"name\": \"Alice\", \"age\": 18}\n",
     "requiredAst": ["Import"]
   },

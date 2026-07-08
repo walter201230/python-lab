@@ -5,11 +5,12 @@
   "starterCode": "command = 'pause'\n# match command:\n#     case 'start': print('启动')\n#     case ...:\n",
   "solution": "command = 'pause'\nmatch command:\n    case 'start':\n        print('启动')\n    case 'stop':\n        print('停止')\n    case 'pause':\n        print('暂停')\n    case _:\n        print('未知指令')",
   "grading": {
-    "stdoutEquals": "暂停\n"
+    "stdoutEquals": "暂停\n",
+    "requiredAst": ["Match"]
   },
   "hints": [
-    "match 后面是要匹配的变量；每个 case 后面是要匹配的值",
+    "match 后面是要匹配的变量；每个 case 后面是要匹配的值（match 语法需要 Python 3.10+，这里的运行环境是 3.12，放心用）",
     "case _ 是兜底，相当于 else",
-    "需要 Python 3.10+（咱们的 Pyodide 是 3.12，没问题）"
+    "完整代码：\ncommand = 'pause'\nmatch command:\n    case 'start':\n        print('启动')\n    case 'stop':\n        print('停止')\n    case 'pause':\n        print('暂停')\n    case _:\n        print('未知指令')"
   ]
 }

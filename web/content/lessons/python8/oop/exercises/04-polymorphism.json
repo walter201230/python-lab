@@ -6,7 +6,7 @@
   "solution": "class Animal:\n    def sound(self):\n        print('一些声音')\n\nclass Dog(Animal):\n    def sound(self):\n        print('汪汪')\n\nclass Cat(Animal):\n    def sound(self):\n        print('喵喵')\n\nfor a in [Dog(), Cat()]:\n    a.sound()",
   "grading": {
     "stdoutEquals": "汪汪\n喵喵\n",
-    "requiredAst": ["ClassDef:Dog", "ClassDef:Cat"]
+    "requiredAst": ["ClassDef:Dog", "ClassDef:Cat", "FunctionDef:sound", "For"]
   },
   "hints": [
     "在子类里重新定义同名方法，就会覆盖父类的",

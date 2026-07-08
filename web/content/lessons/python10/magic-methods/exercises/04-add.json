@@ -6,7 +6,7 @@
   "solution": "class Vec2:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __add__(self, other):\n        return Vec2(self.x + other.x, self.y + other.y)\n\n    def __repr__(self):\n        return f'Vec2({self.x}, {self.y})'\n\nv1 = Vec2(1, 2)\nv2 = Vec2(3, 4)\nv3 = v1 + v2\nprint(v3)",
   "grading": {
     "stdoutEquals": "Vec2(4, 6)\n",
-    "requiredAst": ["ClassDef:Vec2", "FunctionDef:__add__"]
+    "requiredAst": ["ClassDef:Vec2", "FunctionDef:__add__", "FunctionDef:__repr__"]
   },
   "hints": [
     "__add__ 通常返回一个新对象，不要修改 self",

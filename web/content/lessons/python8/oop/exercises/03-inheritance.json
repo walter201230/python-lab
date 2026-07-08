@@ -6,7 +6,7 @@
   "solution": "class Person:\n    def __init__(self, name):\n        self.name = name\n    def greet(self):\n        print(f'我叫 {self.name}')\n\nclass Student(Person):\n    def study(self):\n        print(f'{self.name} 在学习')\n\ns = Student('小明')\ns.greet()\ns.study()",
   "grading": {
     "stdoutEquals": "我叫 小明\n小明 在学习\n",
-    "requiredAst": ["ClassDef:Student"]
+    "requiredAst": ["ClassDef:Student", "FunctionDef:study"]
   },
   "hints": [
     "继承写法：class Student(Person):",

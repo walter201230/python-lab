@@ -6,7 +6,7 @@
   "solution": "def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        print('除数不能是零')\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))",
   "grading": {
     "stdoutEquals": "5.0\n除数不能是零\nNone\n",
-    "requiredAst": ["FunctionDef:safe_divide"]
+    "requiredAst": ["FunctionDef:safe_divide", "Try"]
   },
   "hints": [
     "用 try / except ZeroDivisionError 包住 a / b",

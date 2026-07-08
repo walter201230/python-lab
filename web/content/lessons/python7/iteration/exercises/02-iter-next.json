@@ -5,7 +5,8 @@
   "starterCode": "nums = [10, 20, 30]\n# it = iter(nums)\n# print(next(it))\n# ...\n",
   "solution": "nums = [10, 20, 30]\nit = iter(nums)\nprint(next(it))\nprint(next(it))\nprint(next(it))",
   "grading": {
-    "stdoutEquals": "10\n20\n30\n"
+    "stdoutEquals": "10\n20\n30\n",
+    "requiredAst": ["Assign:it"]
   },
   "hints": [
     "iter(nums) 会把 list 变成迭代器对象",

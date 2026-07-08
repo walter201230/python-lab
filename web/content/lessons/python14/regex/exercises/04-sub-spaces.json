@@ -5,6 +5,7 @@
   "starterCode": "import re\n\ns = 'hello   world  python  is   cool'\n# cleaned = re.sub(...)\n# print(cleaned)\n",
   "solution": "import re\n\ns = 'hello   world  python  is   cool'\ncleaned = re.sub(r'\\s+', ' ', s)\nprint(cleaned)",
   "grading": {
+    "varsEqual": { "cleaned": "hello world python is cool" },
     "stdoutEquals": "hello world python is cool\n",
     "requiredAst": ["Import:re"]
   },

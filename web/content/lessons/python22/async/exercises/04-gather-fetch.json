@@ -6,7 +6,7 @@
   "solution": "import asyncio\n\nasync def fetch(url):\n    await asyncio.sleep(0.01)\n    return f'fetched {url}'\n\nasync def main():\n    results = await asyncio.gather(fetch('a'), fetch('b'), fetch('c'))\n    for r in results:\n        print(r)\n\nasyncio.run(main())",
   "grading": {
     "stdoutEquals": "fetched a\nfetched b\nfetched c\n",
-    "requiredAst": ["AsyncFunctionDef:fetch", "AsyncFunctionDef:main"]
+    "requiredAst": ["AsyncFunctionDef:fetch", "AsyncFunctionDef:main", "For"]
   },
   "hints": [
     "fetch 函数：await asyncio.sleep(0.01) 之后 return f'fetched {url}'",

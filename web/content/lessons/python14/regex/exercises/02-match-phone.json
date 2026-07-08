@@ -1,7 +1,7 @@
 {
   "id": "02-match-phone",
   "title": "用 re.match 校验手机号",
-  "prompt": "请写一个函数 `is_phone(s)`：判断字符串 `s` 是不是合法的中国大陆手机号。\n\n规则：\n- 总共 11 位\n- 第 1 位必须是 `1`\n- 第 2 位是 `3` ~ `9`\n- 后面 9 位都是数字\n\n用 `re.match` 实现。匹配成功返回 `True`，否则 `False`。\n\n然后调用：\n\n```python\nprint(is_phone('13812345678'))\nprint(is_phone('12345'))\nprint(is_phone('1381234567a'))\n```\n\n输出应该是：\n```\nTrue\nFalse\nFalse\n```\n\n提示：用 `^1[3-9]\\d{9}$` 这条正则。",
+  "prompt": "请写一个函数 `is_phone(s)`：判断字符串 `s` 是不是合法的中国大陆手机号。\n\n规则：\n- 总共 11 位\n- 第 1 位必须是 `1`\n- 第 2 位是 `3` ~ `9`\n- 后面 9 位都是数字\n\n用 `re.match` 实现。匹配成功返回 `True`，否则 `False`。\n\n然后调用：\n\n```python\nprint(is_phone('13812345678'))\nprint(is_phone('12345'))\nprint(is_phone('1381234567a'))\n```\n\n输出应该是：\n```\nTrue\nFalse\nFalse\n```\n\n提示：用 `^1[3-9]\\d{9}$` 这条正则。拆开看：`^` 锁定字符串开头、`$` 锁定结尾（少了它们，半截字符串也能匹配上）；`[3-9]` 表示 3 到 9 之间任意一个数字；`\\d{9}` 表示连续 9 个数字。",
   "starterCode": "import re\n\n# def is_phone(s):\n#     return bool(re.match(r'^1[3-9]\\d{9}$', s))\n\n# print(is_phone('13812345678'))\n# print(is_phone('12345'))\n# print(is_phone('1381234567a'))\n",
   "solution": "import re\n\ndef is_phone(s):\n    return bool(re.match(r'^1[3-9]\\d{9}$', s))\n\nprint(is_phone('13812345678'))\nprint(is_phone('12345'))\nprint(is_phone('1381234567a'))",
   "grading": {

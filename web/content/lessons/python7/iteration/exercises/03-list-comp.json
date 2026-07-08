@@ -6,7 +6,8 @@
   "solution": "result = [x * x for x in range(1, 11) if x % 2 == 0]\nprint(result)",
   "grading": {
     "varsEqual": { "result": [4, 16, 36, 64, 100] },
-    "stdoutEquals": "[4, 16, 36, 64, 100]\n"
+    "stdoutEquals": "[4, 16, 36, 64, 100]\n",
+    "requiredAst": ["ListComp"]
   },
   "hints": [
     "1 到 10（含 10）用 range(1, 11)",

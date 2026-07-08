@@ -5,7 +5,8 @@
   "starterCode": "names = ['Alice', 'Bob', 'Cathy']\nages = [18, 19, 20]\n# for name, age in zip(names, ages):\n#     print(name, age)\n",
   "solution": "names = ['Alice', 'Bob', 'Cathy']\nages = [18, 19, 20]\nfor name, age in zip(names, ages):\n    print(name, age)",
   "grading": {
-    "stdoutEquals": "Alice 18\nBob 19\nCathy 20\n"
+    "stdoutEquals": "Alice 18\nBob 19\nCathy 20\n",
+    "requiredAst": ["For"]
   },
   "hints": [
     "zip(names, ages) 会同时从两个 list 各取一个元素，组成 (name, age)",

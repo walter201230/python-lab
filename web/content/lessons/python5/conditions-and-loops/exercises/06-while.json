@@ -5,7 +5,8 @@
   "starterCode": "n = 5\n# while n >= 1:\n#     print(n)\n#     n = n - 1\n",
   "solution": "n = 5\nwhile n >= 1:\n    print(n)\n    n = n - 1",
   "grading": {
-    "stdoutEquals": "5\n4\n3\n2\n1\n"
+    "stdoutEquals": "5\n4\n3\n2\n1\n",
+    "requiredAst": ["While"]
   },
   "hints": [
     "条件：while n >= 1",

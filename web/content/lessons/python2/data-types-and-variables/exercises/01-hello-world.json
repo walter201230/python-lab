@@ -1,7 +1,7 @@
 {
   "id": "01-hello-world",
   "title": "打印 Hello, World!",
-  "prompt": "用 `print` 函数打印 `Hello, World!`（注意首字母大写、感叹号是英文半角）。",
+  "prompt": "用 `print` 函数打印 `Hello, World!`（注意首字母大写；逗号和感叹号都是英文半角，逗号后面还有一个空格）。",
   "starterCode": "# 在这里写你的代码\n",
   "solution": "print('Hello, World!')",
   "grading": {

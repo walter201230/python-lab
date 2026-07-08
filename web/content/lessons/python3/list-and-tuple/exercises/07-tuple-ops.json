@@ -5,7 +5,8 @@
   "starterCode": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\n# 1. t = tuple(nums)\n# 2. print(len(t))\n# 3. print(max(t))\n",
   "solution": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\nt = tuple(nums)\nprint(len(t))\nprint(max(t))",
   "grading": {
-    "stdoutEquals": "8\n9\n"
+    "stdoutEquals": "8\n9\n",
+    "requiredAst": ["Assign:t"]
   },
   "hints": [
     "tuple(nums) 把 list 转成 tuple",

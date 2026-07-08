@@ -6,7 +6,8 @@
   "solution": "total = 0\nfor n in range(1, 11):\n    total = total + n\nprint(total)",
   "grading": {
     "varsEqual": { "total": 55 },
-    "stdoutEquals": "55\n"
+    "stdoutEquals": "55\n",
+    "requiredAst": ["For"]
   },
   "hints": [
     "range(1, 11) 生成 1 到 10（左闭右开，要写 11 才包含 10）",

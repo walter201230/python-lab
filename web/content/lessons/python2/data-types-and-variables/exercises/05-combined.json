@@ -7,11 +7,11 @@
   "grading": {
     "varsEqual": { "total": 20 },
     "stdoutEquals": "一共 20 个水果。\n",
-    "requiredAst": ["Assign:total"]
+    "requiredAst": ["Assign:total", "JoinedStr"]
   },
   "hints": [
-    "第 1 步：total = apples + oranges",
+    "第 1 步：把 apples 和 oranges 相加，结果存进新变量 total",
     "第 2 步：print(f'一共 {total} 个水果。')",
-    "注意中文逗号「，」是错的——题目要求是「一共 20 个水果。」中间是英文的 ASCII 空格"
+    "注意标点和空格：句号必须是全角「。」，「共」和数字、数字和「个」之间各有一个半角空格"
   ]
 }

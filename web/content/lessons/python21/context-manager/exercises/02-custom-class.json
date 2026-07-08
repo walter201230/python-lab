@@ -6,11 +6,11 @@
   "solution": "class Section:\n    def __enter__(self):\n        print('>>> 开始')\n        return self\n\n    def __exit__(self, exc_type, exc_val, tb):\n        print('<<< 结束')\n\nwith Section():\n    print('做事中')",
   "grading": {
     "stdoutEquals": ">>> 开始\n做事中\n<<< 结束\n",
-    "requiredAst": ["ClassDef:Section"]
+    "requiredAst": ["ClassDef:Section", "With"]
   },
   "hints": [
     "__enter__ 和 __exit__ 都要在类里定义",
     "__exit__ 必须接收 4 个参数：self, exc_type, exc_val, tb",
-    "完整代码见提示 1 / 2"
+    "完整代码：\nclass Section:\n    def __enter__(self):\n        print('>>> 开始')\n        return self\n\n    def __exit__(self, exc_type, exc_val, tb):\n        print('<<< 结束')\n\nwith Section():\n    print('做事中')"
   ]
 }

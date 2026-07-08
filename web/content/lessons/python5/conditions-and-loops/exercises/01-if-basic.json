@@ -5,7 +5,8 @@
   "starterCode": "score = 75\n# 用 if / else 判断\n",
   "solution": "score = 75\nif score >= 60:\n    print('及格')\nelse:\n    print('不及格')",
   "grading": {
-    "stdoutEquals": "及格\n"
+    "stdoutEquals": "及格\n",
+    "requiredAst": ["If"]
   },
   "hints": [
     "if 后面要冒号，下一行缩进 4 个空格",

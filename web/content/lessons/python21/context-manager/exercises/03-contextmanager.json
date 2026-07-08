@@ -6,7 +6,7 @@
   "solution": "from contextlib import contextmanager\n\n@contextmanager\ndef banner(title):\n    print(f'==== {title} ====')\n    try:\n        yield\n    finally:\n        print('================')\n\nwith banner('开始任务'):\n    print('做事中')",
   "grading": {
     "stdoutEquals": "==== 开始任务 ====\n做事中\n================\n",
-    "requiredAst": ["FunctionDef:banner"]
+    "requiredAst": ["FunctionDef:banner", "With", "ImportFrom:contextmanager"]
   },
   "hints": [
     "@contextmanager 只装饰生成器函数，要用 yield",

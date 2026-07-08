@@ -6,7 +6,8 @@
   "solution": "numbers = [1, 2, 3, 4, 5]\ntotal = 0\nfor n in numbers:\n    total = total + n\nprint(total)",
   "grading": {
     "varsEqual": { "total": 15 },
-    "stdoutEquals": "15\n"
+    "stdoutEquals": "15\n",
+    "requiredAst": ["For"]
   },
   "hints": [
     "在 for 循环里把每个 n 累加到 total",

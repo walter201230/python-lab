@@ -5,6 +5,7 @@
   "starterCode": "import re\n\ns = 'abc123def456ghi789'\n# nums = re.findall(...)\n# print(nums)\n",
   "solution": "import re\n\ns = 'abc123def456ghi789'\nnums = re.findall(r'\\d+', s)\nprint(nums)",
   "grading": {
+    "varsEqual": { "nums": ["123", "456", "789"] },
     "stdoutEquals": "['123', '456', '789']\n",
     "requiredAst": ["Import:re"]
   },

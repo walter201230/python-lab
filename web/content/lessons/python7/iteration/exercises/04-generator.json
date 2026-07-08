@@ -6,7 +6,7 @@
   "solution": "def count_up(n):\n    for i in range(1, n + 1):\n        yield i\n\nfor x in count_up(5):\n    print(x)",
   "grading": {
     "stdoutEquals": "1\n2\n3\n4\n5\n",
-    "requiredAst": ["FunctionDef:count_up"]
+    "requiredAst": ["FunctionDef:count_up", "Yield"]
   },
   "hints": [
     "把普通函数里的 print(i) 改成 yield i，就成了生成器函数",

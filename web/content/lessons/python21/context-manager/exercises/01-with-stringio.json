@@ -6,7 +6,8 @@
   "solution": "import io\nwith io.StringIO() as buf:\n    buf.write('Hello')\n    buf.write(' World')\n    text = buf.getvalue()\nprint(text)",
   "grading": {
     "varsEqual": { "text": "Hello World" },
-    "stdoutEquals": "Hello World\n"
+    "stdoutEquals": "Hello World\n",
+    "requiredAst": ["With"]
   },
   "hints": [
     "io.StringIO 也支持 with 语法",

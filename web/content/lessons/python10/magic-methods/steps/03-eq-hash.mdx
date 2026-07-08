@@ -33,6 +33,23 @@ print(a != c)  # True   ← != 默认是 __eq__ 的反
 
 `__eq__(self, other)` 接收两个参数，返回 `True` / `False`。Python 会把 `a == b` 翻译成 `a.__eq__(b)`。
 
+不过上面这个版本有个坑：`other` 不一定是 `Money`。要是有人写 `Money(100) == 100`，`other` 就是数字 `100`，没有 `.amount` 属性，直接抛 `AttributeError` 报错——比较运算不该报错，应该老老实实返回 `False`。
+
+所以稳妥的写法是先检查类型再比较：
+
+```python
+class Money:
+    def __init__(self, amount):
+        self.amount = amount
+
+    def __eq__(self, other):
+        return isinstance(other, Money) and self.amount == other.amount
+
+print(Money(100) == 100)  # False——不再报错
+```
+
+`isinstance(other, Money)` 判断 `other` 是不是 `Money` 类型（含子类）；不是就直接短路返回 `False`，后半句根本不会执行。
+
 ## 完整的比较运算符家族
 
 | 写法 | 魔法方法 |
@@ -63,6 +80,8 @@ print(n1 == n2)  # False
 print(n1 < n2)   # True
 ```
 
+（真实代码里这些方法同样建议先做 `isinstance` 检查，这里为了突出运算符家族省略了。）
+
 ## `__hash__` 的小坑
 
 只要你重写了 `__eq__`，Python 会**自动把 `__hash__` 设为 None**——也就是说，这个对象不能再放进 `set` / `dict` 的 key。
@@ -75,7 +94,7 @@ class Money:
         self.amount = amount
 
     def __eq__(self, other):
-        return self.amount == other.amount
+        return isinstance(other, Money) and self.amount == other.amount
 
     def __hash__(self):
         return hash(self.amount)

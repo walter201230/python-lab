@@ -5,7 +5,8 @@
   "starterCode": "age = 22\nhas_id = True\n# 用 if + and 判断\n",
   "solution": "age = 22\nhas_id = True\nif age >= 18 and has_id:\n    print('可以进入')\nelse:\n    print('谢绝入内')",
   "grading": {
-    "stdoutEquals": "可以进入\n"
+    "stdoutEquals": "可以进入\n",
+    "requiredAst": ["If", "BoolOp"]
   },
   "hints": [
     "两个条件都成立才行：用 and 把它们连起来",
