@@ -1,58 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# web — learn-py.org 站点源码
 
-## Getting Started
+Next.js 16 静态导出应用，[learn-py.org](https://learn-py.org) 的全部源码。项目介绍、技术栈与反馈入口见[仓库根 README](../README.md)。
 
-First, run the development server:
+## 本地开发
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev                            # http://localhost:3000
+pnpm build                          # 静态导出到 out/（含 postbuild 生成 sitemap）
+pnpm tsc --noEmit && pnpm lint      # 类型 + lint
+npm run validate-content            # 校验 content/lessons/ 数据
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 目录速览
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/components/lesson/   课程页核心：渐进解锁布局（LessonLayout）、练习卡（ExerciseCard）、
+                         教学块试运行（RunnableCodeBlock）
+src/lib/                 Pyodide worker 单例 + hook（pyodideSingleton / usePyodide）、
+                         判分纯函数（grader）、课程加载（loadLesson）
+src/store/progress.ts    进度存储（zustand + persist localStorage，唯一进度来源）
+public/pyodide.worker.js 代码执行 worker：练习隔离命名空间 / 教学块共享累积，
+                         run 串行化 + runId 路由（详见文件内注释）
+content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises/*.json}
+```
 
 ## 部署到 Cloudflare Pages
 
-本项目已配置为静态导出（`next.config.ts` 设 `output: 'export'`），构建产物为纯 HTML/CSS/JS，
-可直接由 Cloudflare Pages 的 CDN 托管，无需 Node runtime 或后端服务。
+本项目为纯静态导出（`next.config.ts` 设 `output: 'export'`），构建产物为 HTML/CSS/JS，
+由 Cloudflare Pages 的 CDN 直接托管，无 Node runtime、无后端服务。
 
 ### 构建配置
 
 - **构建命令**：`pnpm install && pnpm build`
 - **构建输出目录**：`out`
 - **Node 版本**：≥ 20（建议 22 LTS）
-- **环境变量**：无（账号系统已移除，进度仅保存在浏览器 `localStorage`）
+- **环境变量**：无（无账号系统，进度仅保存在浏览器 `localStorage`）
 
 ### 两种部署方式
 
-**方式 1：Git 集成（推荐）**
+**方式 1：Git 集成（当前生产方式）**
 
-在 Cloudflare 控制台 → Workers & Pages → Create → Pages → Connect to Git，
-绑定本仓库后填上述构建配置，每次推送自动构建。
+Cloudflare 控制台 → Workers & Pages → Create → Pages → Connect to Git，
+绑定本仓库后填上述构建配置。push 到 `main` 即自动构建，约 2 分钟生效。
 
 **方式 2：手动上传**
 
@@ -65,4 +55,7 @@ npx wrangler pages deploy out --project-name <你的项目名>
 
 - 路由形式为 `/lessons/<chapter>/<lesson>/`（带尾斜杠，CDN 友好）
 - Pyodide 资源（~10MB）由 jsdelivr CDN 加载，不占 Cloudflare 流量
-- 进度仅保存在用户浏览器 `localStorage`：换浏览器/清缓存会丢；这是本站当前的设计折中
+- `public/pyodide.worker.js` 无内容哈希、有 HTTP 缓存：改动 worker 消息协议时，
+  必须同步递增 `pyodideSingleton.ts` 里 worker URL 的 `?v=N`，否则部署期会出现
+  新页面 JS 配旧缓存 worker 的混配
+- 进度仅存用户浏览器 `localStorage`：换浏览器/清缓存会丢；这是本站当前的设计折中

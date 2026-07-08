@@ -51,7 +51,7 @@ from pathlib import Path
 
 p1 = Path('/tmp') / 'foo'         # Path / str
 p2 = Path('/tmp') / Path('foo')   # Path / Path
-p3 = 'foo' / Path('/tmp')         # str / Path（注意结果）
+p3 = 'foo' / Path('tmp')          # str / Path
 
 print(p1)
 print(p2)
@@ -63,7 +63,7 @@ print(p3)
 ```
 /tmp/foo
 /tmp/foo
-/tmp/foo
+foo/tmp
 ```
 
 只要 `/` 的**有一边是 Path**，结果就是 Path 对象。
