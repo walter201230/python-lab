@@ -3,7 +3,17 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+// issue #303 同因：@monaco-editor/react 默认从 cdn.jsdelivr.net 加载 monaco 本体，
+// CDN 不可达的网络环境下编辑器渲染不出来。改从同源 /monaco/vs 加载
+//（scripts/copy-monaco.mjs 随 predev/prebuild 从 node_modules 复制）。
+const MonacoEditor = dynamic(
+  () =>
+    import('@monaco-editor/react').then((m) => {
+      m.loader.config({ paths: { vs: '/monaco/vs' } });
+      return m.default;
+    }),
+  { ssr: false },
+);
 
 interface ExerciseEditorProps {
   code: string;

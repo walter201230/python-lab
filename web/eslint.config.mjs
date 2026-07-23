@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // copy-pyodide.mjs / copy-monaco.mjs 复制的第三方运行时（压缩产物，不 lint）
+    "public/pyodide/**",
+    "public/monaco/**",
   ]),
 ]);
 
