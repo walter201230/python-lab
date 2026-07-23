@@ -42,7 +42,7 @@ export function LessonToc({ blocks, progress, lessonTitle }: LessonTocProps) {
   return (
     <aside
       aria-label="本章目录"
-      className="sticky top-[120px] hidden max-h-[calc(100vh-140px)] w-64 shrink-0 self-start overflow-y-auto pl-6 lg:block"
+      className="sticky top-[120px] max-h-[calc(100vh-140px)] w-56 overflow-y-auto pl-6"
     >
       <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
         本章目录

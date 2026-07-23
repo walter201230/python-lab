@@ -117,9 +117,10 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
         completedCount={completedCount}
       />
 
-      {/* 主内容 + 桌面端 TOC */}
-      <div className="mx-auto flex max-w-7xl gap-6 px-4 sm:px-6">
-      <article className="min-w-0 flex-1 max-w-4xl py-8 sm:py-10 lg:mx-auto">
+      {/* 正文列对视口居中（59rem = 56rem 内容 + 两侧 px-6）；TOC 挂在列右侧的
+          绝对定位槽里，不占布局流，只在整体放得下（≥1440px）时显示 */}
+      <div className="relative mx-auto max-w-[59rem] px-4 sm:px-6">
+      <article className="min-w-0 py-8 sm:py-10">
         <header className="mb-2">
           <h1 className="text-3xl font-bold text-slate-100 sm:text-4xl">{meta.title}</h1>
           {exercises.length > 0 && (
@@ -196,7 +197,9 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
         />
       </article>
 
-      <LessonToc blocks={blocks} progress={lessonProgress} lessonTitle={meta.title} />
+      <div className="absolute left-full top-0 hidden h-full min-[1440px]:block">
+        <LessonToc blocks={blocks} progress={lessonProgress} lessonTitle={meta.title} />
+      </div>
       </div>
     </div>
   );
