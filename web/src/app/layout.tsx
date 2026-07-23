@@ -49,11 +49,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <span>© {new Date().getFullYear()} 小白学 Python · 基于 <a href="https://github.com/walter201230/Python" target="_blank" rel="noopener noreferrer" className="transition hover:text-slate-200">walter201230/Python</a> 教程</span>
             <div className="flex items-center gap-4">
               <Link href="/" className="transition hover:text-slate-200">课程目录</Link>
+              <Link href="/privacy" className="transition hover:text-slate-200">隐私政策</Link>
               <a href="https://github.com/walter201230/Python" target="_blank" rel="noopener noreferrer" className="transition hover:text-slate-200">GitHub</a>
             </div>
           </div>
         </footer>
         <Toast />
+        {/* Google AdSense 站点验证 + 广告库（仅手动广告单元，后台不开自动广告）。
+            用原生 async script（React 19 会提升到 <head>）而非 next/script：
+            AdSense 爬虫需要在静态 HTML 源码里看到字面标签。 */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6749653052850583"
+          crossOrigin="anonymous"
+        />
       </body>
     </html>
   );
