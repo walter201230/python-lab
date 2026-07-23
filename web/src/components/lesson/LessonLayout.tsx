@@ -188,16 +188,16 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
         {(allCompleted || readOnlyDone) && (
           <CompletionBanner title={meta.title} nextChapter={nextChapter} />
         )}
+
+        <LessonBottomNav
+          prevChapter={prevChapter}
+          nextChapter={nextChapter}
+          currentChapterTitle={meta.title}
+        />
       </article>
 
       <LessonToc blocks={blocks} progress={lessonProgress} lessonTitle={meta.title} />
       </div>
-
-      <LessonBottomNav
-        prevChapter={prevChapter}
-        nextChapter={nextChapter}
-        currentChapterTitle={meta.title}
-      />
     </div>
   );
 }

@@ -27,7 +27,7 @@ export function LessonBottomNav({
   return (
     <nav
       aria-label="章节导航"
-      className="mx-auto mt-12 max-w-4xl border-t border-slate-800 px-4 pb-12 pt-8 sm:px-6"
+      className="mt-12 border-t border-slate-800 pt-8"
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {prevChapter ? (
