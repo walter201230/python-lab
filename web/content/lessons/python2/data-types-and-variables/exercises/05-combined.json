@@ -7,7 +7,7 @@
   "grading": {
     "varsEqual": { "total": 20 },
     "stdoutEquals": "一共 20 个水果。\n",
-    "requiredAst": ["Assign:total", "JoinedStr"]
+    "requiredAst": ["Assign:total", "JoinedStr", "FormattedValue"]
   },
   "hints": [
     "第 1 步：把 apples 和 oranges 相加，结果存进新变量 total",
