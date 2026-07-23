@@ -1,11 +1,13 @@
 // Pyodide Web Worker
-// 从 CDN 加载 Pyodide，接收主线程的代码并在沙箱中执行
+// 加载 Pyodide 运行时，接收主线程的代码并在沙箱中执行
 // 主线程通过 5 秒超时 + worker.terminate() 防止死循环卡住浏览器
 
-const PYODIDE_VERSION = '0.27.0';
-const PYODIDE_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full`;
+// issue #303：Pyodide 改为同源加载（/public/pyodide/，由 scripts/copy-pyodide.mjs 从
+// node_modules 复制，版本跟随 package.json 的 pyodide 依赖）。此前用 cdn.jsdelivr.net，
+// 部分网络环境（尤其大陆）打得开网站却拉不到 CDN → 「Python 环境加载失败」。
+const PYODIDE_URL = new URL('/pyodide/', self.location.href).href;
 
-importScripts(`${PYODIDE_URL}/pyodide.js`);
+importScripts(`${PYODIDE_URL}pyodide.js`);
 
 // issue #289/#290：Pyodide 沙箱是单线程，浏览器事件循环始终在运行，用户代码里的
 // asyncio.run() 会撞上「asyncio.run() cannot be called from a running event loop」

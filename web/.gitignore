@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# pyodide 运行时（scripts/copy-pyodide.mjs 从 node_modules 复制，不进 git）
+/public/pyodide/

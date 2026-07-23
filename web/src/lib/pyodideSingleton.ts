@@ -35,9 +35,9 @@ export function ensurePyodideWorker(): Worker {
   }
 
   setState('loading', null);
-  // ?v=N：worker.js 无内容哈希、有 HTTP 缓存。消息协议变更（如 v2 加 runId 回传）时
-  // 递增版本号，保证新页面 JS 一定拿到配套的新 worker，避免新旧混配导致 run 全部超时。
-  const w = new Worker('/pyodide.worker.js?v=2');
+  // ?v=N：worker.js 无内容哈希、有 HTTP 缓存。消息协议或加载行为变更（v2 加 runId 回传、
+  // v3 Pyodide 改同源加载）时递增版本号，保证新页面 JS 一定拿到配套的新 worker。
+  const w = new Worker('/pyodide.worker.js?v=3');
   workerInstance = w;
 
   w.addEventListener('message', (e: MessageEvent) => {
@@ -46,12 +46,12 @@ export function ensurePyodideWorker(): Worker {
     if (data.type === 'init-error') setState('error', data.error ?? '初始化失败');
   });
 
-  // worker 顶层错误（最常见：CDN importScripts 失败）不走 message 通道，只触发 error
-  // 事件——不监听它，状态会永远停在 loading（toast 无限转圈，用户得不到任何提示）。
+  // worker 顶层错误（最常见：importScripts 拉取运行时失败）不走 message 通道，只触发
+  // error 事件——不监听它，状态会永远停在 loading（toast 无限转圈，用户得不到任何提示）。
   // ready 之后的偶发未捕获错误不改状态：worker 仍可用，不要误报「加载失败」。
   w.addEventListener('error', (e: ErrorEvent) => {
     if (currentStatus !== 'ready') {
-      setState('error', e.message || 'Python 环境加载失败（网络或 CDN 不可用）');
+      setState('error', e.message || 'Python 环境加载失败（网络异常）');
     }
   });
 

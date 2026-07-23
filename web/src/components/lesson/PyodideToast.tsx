@@ -1,6 +1,7 @@
 'use client';
 
 import type { PyodideStatus } from '@/lib/usePyodide';
+import { resetPyodideWorker } from '@/lib/pyodideSingleton';
 
 /**
  * Pyodide 加载状态 toast：右下角浮窗，加载完自动淡出。
@@ -29,7 +30,14 @@ export function PyodideToast({ status }: { status: PyodideStatus }) {
       {isError ? (
         <>
           <span aria-hidden>⚠</span>
-          <span>Python 环境加载失败，刷新重试</span>
+          <span>Python 环境加载失败，请检查网络后重试</span>
+          <button
+            type="button"
+            onClick={() => resetPyodideWorker()}
+            className="focus-ring pointer-events-auto rounded-md border border-rose-400/40 px-2 py-0.5 text-rose-100 transition hover:bg-rose-500/20"
+          >
+            重试
+          </button>
         </>
       ) : (
         <>
