@@ -2,7 +2,7 @@
   "id": "01-class-basic",
   "title": "定义你的第一个类",
   "prompt": "请定义一个类 `Animal`，类里有一个方法 `sound`，方法体打印 `'某种声音'`。\n\n然后：\n1. 实例化 `Animal()` 赋给 `a`\n2. 调用 `a.sound()`\n\n输出应该是：\n```\n某种声音\n```",
-  "starterCode": "# class Animal:\n#     def sound(self):\n#         print('某种声音')\n# a = Animal()\n# a.sound()\n",
+  "starterCode": "# 定义类 Animal，写一个 sound 方法打印题目要求的文字\n# 再实例化赋给 a，调用 a.sound()\n\n",
   "solution": "class Animal:\n    def sound(self):\n        print('某种声音')\n\na = Animal()\na.sound()",
   "grading": {
     "stdoutEquals": "某种声音\n",

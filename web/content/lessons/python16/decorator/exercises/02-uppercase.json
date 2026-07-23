@@ -2,7 +2,7 @@
   "id": "02-uppercase",
   "title": "@uppercase：改造返回值",
   "prompt": "请写一个装饰器 `uppercase`：\n\n- 接收一个函数 `func`\n- 调用原函数拿到返回结果 `result`\n- 把 `result.upper()`（转大写）作为 wrapper 的返回值\n\n然后用 `@uppercase` 装饰一个函数 `greet(name)`，函数体 `return 'hello ' + name`。\n\n最后：\n```python\nprint(greet('alice'))\nprint(greet('bob'))\n```\n\n输出应该是：\n```\nHELLO ALICE\nHELLO BOB\n```",
-  "starterCode": "# def uppercase(func):\n#     def wrapper(*args, **kwargs):\n#         result = func(*args, **kwargs)\n#         return result.upper()\n#     return wrapper\n#\n# @uppercase\n# def greet(name):\n#     return 'hello ' + name\n#\n# print(greet('alice'))\n# print(greet('bob'))\n",
+  "starterCode": "# 定义装饰器 uppercase：在 wrapper 里接住原函数的返回值，转大写后返回\n# 用 @uppercase 装饰 greet(name)，最后按题面打印两次调用结果\n\n",
   "solution": "def uppercase(func):\n    def wrapper(*args, **kwargs):\n        result = func(*args, **kwargs)\n        return result.upper()\n    return wrapper\n\n@uppercase\ndef greet(name):\n    return 'hello ' + name\n\nprint(greet('alice'))\nprint(greet('bob'))",
   "grading": {
     "stdoutEquals": "HELLO ALICE\nHELLO BOB\n",

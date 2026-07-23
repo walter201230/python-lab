@@ -2,7 +2,7 @@
   "id": "03-contextmanager",
   "title": "用 @contextmanager 写一个 banner",
   "prompt": "请用 `@contextmanager` 写一个**生成器函数版**的上下文管理器 `banner(title)`：\n\n- 进入时（yield 前）：打印 `f'==== {title} ===='`\n- yield（无值）\n- 退出时（yield 后）：打印 `'================'`\n\n然后用 `with banner('开始任务'):` 包住一行 `print('做事中')`。\n\n输出应该是：\n```\n==== 开始任务 ====\n做事中\n================\n```",
-  "starterCode": "from contextlib import contextmanager\n\n# @contextmanager\n# def banner(title):\n#     print(f'==== {title} ====')\n#     try:\n#         yield\n#     finally:\n#         print('================')\n\n# with banner('开始任务'):\n#     print('做事中')\n",
+  "starterCode": "from contextlib import contextmanager\n\n# 用 @contextmanager 装饰生成器函数 banner(title)\n# yield 前打印开头横幅，yield 后打印结尾横线（用 try/finally 包住 yield）\n# 再用 with 配合 banner('开始任务')，块内打印「做事中」\n\n",
   "solution": "from contextlib import contextmanager\n\n@contextmanager\ndef banner(title):\n    print(f'==== {title} ====')\n    try:\n        yield\n    finally:\n        print('================')\n\nwith banner('开始任务'):\n    print('做事中')",
   "grading": {
     "stdoutEquals": "==== 开始任务 ====\n做事中\n================\n",

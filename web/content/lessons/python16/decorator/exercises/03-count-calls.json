@@ -2,7 +2,7 @@
   "id": "03-count-calls",
   "title": "@count_calls：统计调用次数",
   "prompt": "请写一个装饰器 `count_calls`：\n\n- 在闭包里维护一个计数器 `count = 0`\n- 被装饰的函数每次被调用时，给 `count` 加 1，然后 `print(f'第 {count} 次调用')` 再调用原函数\n- 给 `wrapper` 加上 `@functools.wraps(func)`——上一节刚讲过的好习惯，别忘了\n\n然后用 `@count_calls` 装饰一个函数 `say_hi()`（函数体 `print('hi')`），并连续调用 3 次 `say_hi()`。\n\n输出应该是：\n```\n第 1 次调用\nhi\n第 2 次调用\nhi\n第 3 次调用\nhi\n```",
-  "starterCode": "# import functools\n#\n# def count_calls(func):\n#     count = 0\n#     @functools.wraps(func)\n#     def wrapper(*args, **kwargs):\n#         nonlocal count\n#         count = count + 1\n#         print(f'第 {count} 次调用')\n#         return func(*args, **kwargs)\n#     return wrapper\n#\n# @count_calls\n# def say_hi():\n#     print('hi')\n#\n# say_hi()\n# say_hi()\n# say_hi()\n",
+  "starterCode": "# 定义装饰器 count_calls：闭包里维护 count，wrapper 里用 nonlocal 修改并打印提示\n# 别忘了 import functools，给 wrapper 加上 @functools.wraps(func)\n# 用 @count_calls 装饰 say_hi()，连续调用 3 次\n\n",
   "solution": "import functools\n\ndef count_calls(func):\n    count = 0\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        nonlocal count\n        count = count + 1\n        print(f'第 {count} 次调用')\n        return func(*args, **kwargs)\n    return wrapper\n\n@count_calls\ndef say_hi():\n    print('hi')\n\nsay_hi()\nsay_hi()\nsay_hi()",
   "grading": {
     "stdoutEquals": "第 1 次调用\nhi\n第 2 次调用\nhi\n第 3 次调用\nhi\n",

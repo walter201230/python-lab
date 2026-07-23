@@ -2,7 +2,7 @@
   "id": "01-define-add",
   "title": "定义一个 add 函数",
   "prompt": "请定义一个函数 `add(a, b)`，返回 `a + b`。\n\n然后调用 `add(3, 5)` 把结果赋给 `result`，再 `print(result)`。\n\n输出应该是：\n```\n8\n```",
-  "starterCode": "# def add(a, b):\n#     return a + b\n# result = add(3, 5)\n# print(result)\n",
+  "starterCode": "# 用 def 定义 add 函数，返回两个参数之和\n# 调用它把结果赋给 result，再打印出来\n",
   "solution": "def add(a, b):\n    return a + b\n\nresult = add(3, 5)\nprint(result)",
   "grading": {
     "varsEqual": { "result": 8 },

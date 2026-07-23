@@ -2,7 +2,7 @@
   "id": "04-suppress",
   "title": "用 contextlib.suppress 忽略异常",
   "prompt": "用 `contextlib.suppress` 忽略 `ZeroDivisionError`：\n\n1. 用 `with suppress(ZeroDivisionError):` 包住一段 `x = 1 / 0`（这一行会抛异常但被吞掉）\n2. `with` 之后 `print('done')`\n\n输出应该是：\n```\ndone\n```\n\n（关键是程序不会因为除零异常崩掉）",
-  "starterCode": "from contextlib import suppress\n# with suppress(ZeroDivisionError):\n#     x = 1 / 0\n# print('done')\n",
+  "starterCode": "from contextlib import suppress\n# 用 with 配合 suppress 忽略 ZeroDivisionError，块内做一次除零运算\n# with 结束后打印 done\n\n",
   "solution": "from contextlib import suppress\nwith suppress(ZeroDivisionError):\n    x = 1 / 0\nprint('done')",
   "grading": {
     "stdoutEquals": "done\n",

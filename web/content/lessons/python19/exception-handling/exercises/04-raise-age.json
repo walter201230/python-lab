@@ -2,7 +2,7 @@
   "id": "04-raise-age",
   "title": "raise：主动抛异常",
   "prompt": "请写一个函数 `set_age(age)`：\n\n- 如果 `age < 0`，主动 `raise ValueError(f'年龄不能为负：{age}')`\n- 否则返回 `age`\n\n然后用 `try / except ValueError` 调用 `set_age(-5)`，捕获到异常后打印 `f'参数错误：{e}'`。\n\n输出应该是：\n```\n参数错误：年龄不能为负：-5\n```",
-  "starterCode": "# def set_age(age):\n#     if age < 0:\n#         raise ValueError(f'年龄不能为负：{age}')\n#     return age\n#\n# try:\n#     set_age(-5)\n# except ValueError as e:\n#     print(f'参数错误：{e}')\n",
+  "starterCode": "# 定义 set_age(age)，age 为负时用 raise 抛出 ValueError\n# 再用 try/except ValueError as e 包住 set_age(-5) 的调用并打印错误信息\n\n",
   "solution": "def set_age(age):\n    if age < 0:\n        raise ValueError(f'年龄不能为负：{age}')\n    return age\n\ntry:\n    set_age(-5)\nexcept ValueError as e:\n    print(f'参数错误：{e}')",
   "grading": {
     "stdoutEquals": "参数错误：年龄不能为负：-5\n",

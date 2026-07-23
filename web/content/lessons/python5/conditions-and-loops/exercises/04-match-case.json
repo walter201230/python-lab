@@ -2,7 +2,7 @@
   "id": "04-match-case",
   "title": "match / case：处理指令",
   "prompt": "已经给你定义了 `command = 'pause'`。\n\n请用 `match / case` 按下面规则 `print`：\n\n- `'start'` → `'启动'`\n- `'stop'` → `'停止'`\n- `'pause'` → `'暂停'`\n- 其它 → `'未知指令'`\n\n输出应该是：\n```\n暂停\n```",
-  "starterCode": "command = 'pause'\n# match command:\n#     case 'start': print('启动')\n#     case ...:\n",
+  "starterCode": "command = 'pause'\n# 用 match / case 匹配 command，四种指令各打印对应文字\n# 别忘了用 case _ 兜底打印「未知指令」\n",
   "solution": "command = 'pause'\nmatch command:\n    case 'start':\n        print('启动')\n    case 'stop':\n        print('停止')\n    case 'pause':\n        print('暂停')\n    case _:\n        print('未知指令')",
   "grading": {
     "stdoutEquals": "暂停\n",

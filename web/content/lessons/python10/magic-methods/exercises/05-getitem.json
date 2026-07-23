@@ -2,7 +2,7 @@
   "id": "05-getitem",
   "title": "用 __getitem__ 让对象支持下标",
   "prompt": "请定义类 `Stack`：\n\n- `__init__` 接收 `items`（一个列表），保存到 `self.items`\n- `__getitem__(self, i)` 返回 `self.items[i]`\n\n然后执行：\n\n```python\ns = Stack(['a', 'b', 'c'])\nprint(s[0])\nprint(s[-1])\n```\n\n输出应该是：\n```\na\nc\n```",
-  "starterCode": "# class Stack:\n#     def __init__(self, items):\n#         self.items = items\n#     def __getitem__(self, i):\n#         return self.items[i]\n# s = Stack(['a', 'b', 'c'])\n# print(s[0])\n# print(s[-1])\n",
+  "starterCode": "# 定义 Stack 类：在 __init__ 里保存 items 列表\n# __getitem__ 把下标访问转发给内部列表\n# 实例化 s 之后打印 s[0] 和 s[-1]\n\n",
   "solution": "class Stack:\n    def __init__(self, items):\n        self.items = items\n\n    def __getitem__(self, i):\n        return self.items[i]\n\ns = Stack(['a', 'b', 'c'])\nprint(s[0])\nprint(s[-1])",
   "grading": {
     "stdoutEquals": "a\nc\n",

@@ -2,7 +2,7 @@
   "id": "01-for-iterate",
   "title": "用 for 把 list 累加",
   "prompt": "已经给了你一个 list：\n\n```python\nnumbers = [1, 2, 3, 4, 5]\n```\n\n请用 `for` 循环把 `numbers` 里的所有元素加起来，放进变量 `total`，然后 `print(total)`。\n\n输出应该是：\n```\n15\n```",
-  "starterCode": "numbers = [1, 2, 3, 4, 5]\ntotal = 0\n# for n in numbers:\n#     total = total + n\n# print(total)\n",
+  "starterCode": "numbers = [1, 2, 3, 4, 5]\n# 先把 total 初始化为 0，再用 for 循环把每个元素累加进去\n# 循环结束后打印 total\n",
   "solution": "numbers = [1, 2, 3, 4, 5]\ntotal = 0\nfor n in numbers:\n    total = total + n\nprint(total)",
   "grading": {
     "varsEqual": { "total": 15 },

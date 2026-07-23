@@ -2,7 +2,7 @@
   "id": "04-args",
   "title": "*args：可变参数",
   "prompt": "请定义函数 `total(*nums)`，把传入的所有数字加起来返回。\n\n然后：\n1. 调用 `total(1, 2, 3)` 赋给 `a`\n2. 调用 `total(1, 2, 3, 4, 5, 6)` 赋给 `b`\n3. `print(a)` `print(b)`\n\n输出应该是：\n```\n6\n21\n```",
-  "starterCode": "# def total(*nums):\n#     ...\n# a = total(1, 2, 3)\n# b = total(1, 2, 3, 4, 5, 6)\n# print(a)\n# print(b)\n",
+  "starterCode": "# 用 *nums 定义 total 函数，把传入的所有数字累加后返回\n# 按题目要求调用两次，赋给 a、b 并分别打印\n",
   "solution": "def total(*nums):\n    s = 0\n    for n in nums:\n        s = s + n\n    return s\n\na = total(1, 2, 3)\nb = total(1, 2, 3, 4, 5, 6)\nprint(a)\nprint(b)",
   "grading": {
     "varsEqual": { "a": 6, "b": 21 },

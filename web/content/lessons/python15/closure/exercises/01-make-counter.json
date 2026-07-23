@@ -2,7 +2,7 @@
   "id": "01-make-counter",
   "title": "用闭包实现计数器",
   "prompt": "请定义一个函数 `make_counter()`：\n\n- 内部维护一个 `count = 0`\n- 返回一个内层函数 `counter()`，每次调用 `counter()` 时让 `count` 加 1 并返回新值（记得用 `nonlocal`）\n\n然后：\n\n1. `c = make_counter()`\n2. 连续调用 3 次 `c()`，每次都 `print` 它的返回值\n\n输出应该是：\n```\n1\n2\n3\n```",
-  "starterCode": "# def make_counter():\n#     count = 0\n#     def counter():\n#         nonlocal count\n#         count = count + 1\n#         return count\n#     return counter\n#\n# c = make_counter()\n# print(c())\n# print(c())\n# print(c())\n",
+  "starterCode": "# 定义 make_counter()：内部 count = 0，返回内层函数 counter\n# counter 每次调用让 count 加 1 并返回新值（记得用 nonlocal）\n# 再用 make_counter() 生成 c，连续调用 3 次并逐次打印返回值\n\n",
   "solution": "def make_counter():\n    count = 0\n    def counter():\n        nonlocal count\n        count = count + 1\n        return count\n    return counter\n\nc = make_counter()\nprint(c())\nprint(c())\nprint(c())",
   "grading": {
     "stdoutEquals": "1\n2\n3\n",

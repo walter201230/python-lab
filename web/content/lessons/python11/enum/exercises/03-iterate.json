@@ -2,7 +2,7 @@
   "id": "03-iterate",
   "title": "遍历 Enum 的所有成员",
   "prompt": "定义同样的 `Color` 枚举（`RED=1` / `GREEN=2` / `BLUE=3`），然后用 `for` 循环遍历它，**按定义顺序** 依次打印每个成员的 `.name`。\n\n输出应该是：\n```\nRED\nGREEN\nBLUE\n```\n\n> 提示：`for c in Color:` 就能拿到每个成员，再用 `c.name` 取它的名字。",
-  "starterCode": "# from enum import Enum\n#\n# class Color(Enum):\n#     RED = 1\n#     GREEN = 2\n#     BLUE = 3\n#\n# for c in Color:\n#     print(c.name)\n",
+  "starterCode": "# 定义同样的 Color 枚举\n# 用 for 循环遍历 Color，按定义顺序打印每个成员的 name\n\n",
   "solution": "from enum import Enum\n\nclass Color(Enum):\n    RED = 1\n    GREEN = 2\n    BLUE = 3\n\nfor c in Color:\n    print(c.name)",
   "grading": {
     "stdoutEquals": "RED\nGREEN\nBLUE\n",

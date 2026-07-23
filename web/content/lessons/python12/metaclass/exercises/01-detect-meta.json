@@ -2,7 +2,7 @@
   "id": "01-detect-meta",
   "title": "类的类是什么？",
   "prompt": "请定义一个最普通的类 `Foo`（里面写 `pass` 即可）。\n\n然后用 `type()` 检查 `Foo` 的类型，再用 `is` 判断它是不是 `type`，按下面的格式打印两行：\n\n```\n<class 'type'>\nTrue\n```\n\n提示：第一行是 `print(type(Foo))`，第二行是 `print(type(Foo) is type)`。",
-  "starterCode": "# class Foo:\n#     pass\n# print(type(Foo))\n# print(type(Foo) is type)\n",
+  "starterCode": "# 定义一个最简单的类 Foo（类体写 pass）\n# 用 type() 打印 Foo 的类型\n# 再打印 type(Foo) is type 的判断结果\n\n",
   "solution": "class Foo:\n    pass\n\nprint(type(Foo))\nprint(type(Foo) is type)",
   "grading": {
     "stdoutEquals": "<class 'type'>\nTrue\n",

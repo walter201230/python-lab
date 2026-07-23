@@ -2,7 +2,7 @@
   "id": "02-eq",
   "title": "用 __eq__ 自定义相等",
   "prompt": "请定义类 `Money`：\n\n- `__init__` 接收 `amount`，保存到 `self.amount`\n- `__eq__` 比较两个 `Money` 对象的 `amount` 是否相等；如果对方不是 `Money`（比如 `Money(100) == 100`），应该返回 `False` 而不是报错\n\n然后创建：\n\n```python\na = Money(100)\nb = Money(100)\nc = Money(50)\n```\n\n并依次执行：\n\n```python\nprint(a == b)\nprint(a == c)\n```\n\n输出应该是：\n```\nTrue\nFalse\n```",
-  "starterCode": "# class Money:\n#     def __init__(self, amount):\n#         self.amount = amount\n#     def __eq__(self, other):\n#         return isinstance(other, Money) and self.amount == other.amount\n# a = Money(100)\n# b = Money(100)\n# c = Money(50)\n# print(a == b)\n# print(a == c)\n",
+  "starterCode": "# 定义 Money 类：在 __init__ 里保存 amount\n# __eq__ 里先用 isinstance 确认对方也是 Money，再比较两者的 amount\n# 创建 a、b、c 三个对象，依次打印 a == b 和 a == c\n\n",
   "solution": "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __eq__(self, other):\n        return isinstance(other, Money) and self.amount == other.amount\n\na = Money(100)\nb = Money(100)\nc = Money(50)\nprint(a == b)\nprint(a == c)",
   "grading": {
     "stdoutEquals": "True\nFalse\n",

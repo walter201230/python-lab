@@ -2,7 +2,7 @@
   "id": "01-name-suffix-stem",
   "title": "提取路径的 name / suffix / stem",
   "prompt": "请：\n\n1. 从 `pathlib` 导入 `Path`\n2. 创建路径对象 `p = Path('/tmp/data/foo.txt')`\n3. 依次 print 它的 `.name`、`.suffix`、`.stem`\n\n输出应该是：\n```\nfoo.txt\n.txt\nfoo\n```\n\n注意：`print(p.name)` 输出的是 `foo.txt`，**不是** `'foo.txt'`——直接打印不带引号。",
-  "starterCode": "# from pathlib import Path\n\n# p = Path('/tmp/data/foo.txt')\n# print(p.name)\n# print(p.suffix)\n# print(p.stem)\n",
+  "starterCode": "# 从 pathlib 导入 Path，创建指向 /tmp/data/foo.txt 的路径对象\n# 依次打印它的 .name、.suffix、.stem\n\n",
   "solution": "from pathlib import Path\n\np = Path('/tmp/data/foo.txt')\nprint(p.name)\nprint(p.suffix)\nprint(p.stem)",
   "grading": {
     "stdoutEquals": "foo.txt\n.txt\nfoo\n",
