@@ -31,7 +31,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </span>
             </Link>
             <nav className="flex items-center gap-4 text-sm sm:gap-5">
-              <Link href="/" className="text-slate-300 transition hover:text-slate-100">课程</Link>
+              <a
+                href="https://coding.stormzhang.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-300 transition hover:text-slate-100"
+              >
+                AI 编程指南
+              </a>
               <a
                 href="https://github.com/walter201230/Python"
                 target="_blank"

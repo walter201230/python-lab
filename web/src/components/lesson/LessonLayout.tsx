@@ -190,6 +190,18 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
           <CompletionBanner title={meta.title} nextChapter={nextChapter} />
         )}
 
+        <p className="mt-8 text-center text-sm leading-relaxed text-slate-400">
+          推荐一个，全网最全最友好的中文 AI 编程指南：{' '}
+          <a
+            href="https://coding.stormzhang.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-emerald-400 transition hover:text-emerald-300"
+          >
+            coding.stormzhang.ai
+          </a>
+        </p>
+
         <LessonBottomNav
           prevChapter={prevChapter}
           nextChapter={nextChapter}
