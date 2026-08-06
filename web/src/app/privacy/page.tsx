@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '隐私政策 — 小白学 Python',
-  description: '小白学 Python（learn-py.org）的隐私政策：本地存储、Cookie 与 Google AdSense 广告说明。',
+  description: '小白学 Python（learn-py.org）的隐私政策：本地存储、Cookie、Google Analytics 统计与 Google AdSense 广告说明。',
 };
 
 export default function PrivacyPage() {
@@ -42,6 +42,20 @@ export default function PrivacyPage() {
           Google 广告技术政策
         </a>
         。
+      </p>
+      <p className="mb-4">
+        本站使用 Google Analytics（GA4）统计访问情况，用于了解哪些课程更受欢迎、据此改进内容。它会通过 Cookie 或类似技术收集你访问的页面路径、来源渠道、设备与浏览器类型、大致地域等信息，不收集姓名、邮箱等能直接识别你身份的信息，也不会读取你保存在本地的学习进度与代码。如果你不希望被统计，可以安装
+        {' '}
+        <a
+          href="https://tools.google.com/dlpage/gaoptout"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-emerald-400 transition hover:text-emerald-300"
+        >
+          Google Analytics 停用插件
+        </a>
+        {' '}
+        ，它对本站及其他使用 Google Analytics 的网站同时生效。
       </p>
       <p className="mb-4">
         本站的 Python 运行环境（Pyodide）与部分静态资源通过公共 CDN 加载，CDN 服务商可能会记录常规访问日志（如 IP 地址、User-Agent）用于服务运维。
