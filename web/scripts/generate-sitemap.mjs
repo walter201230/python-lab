@@ -30,7 +30,15 @@ async function walk(dir) {
 const files = await walk(OUT_DIR);
 const today = new Date().toISOString().split('T')[0];
 
-const urls = files
+// 规范版本收敛：闯关页受渐进解锁影响、静态产物只含前半章，其 canonical 指向同章阅读页。
+// sitemap 只列规范版本——凡是自身目录下带 read/index.html 的页面（即闯关页）都不列出，
+// 由产物结构自然推出规则，新增章节零维护。
+const allFiles = new Set(files);
+const canonicalFiles = files.filter(
+  (f) => !allFiles.has(join(dirname(f), 'read', 'index.html')),
+);
+
+const urls = canonicalFiles
   .map((f) => relative(OUT_DIR, f))
   .map((rel) => (rel === 'index.html' ? '/' : '/' + rel.replace(/index\.html$/, '')))
   .sort();

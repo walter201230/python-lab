@@ -8,6 +8,9 @@ const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  // 站点绝对基址：canonical、OG 等 URL 型字段据此从相对路径解析成绝对地址。
+  // 域名须与 scripts/generate-sitemap.mjs 的 SITE_URL 保持一致。
+  metadataBase: new URL('https://learn-py.org'),
   title: '小白学 Python — 浏览器里就能跑',
   description: '零基础友好的 Python 在线学习站。代码在浏览器里跑（Pyodide），自动判分，做对一题解锁下一题。',
 };

@@ -106,8 +106,12 @@ function ChapterCard({ chapter, stat }: { chapter: Chapter; stat?: ChapterStat }
   const available = chapter.status === 'available';
   const firstLesson = chapter.lessons[0];
   const href = available && firstLesson ? `/lessons/${chapter.slug}/${firstLesson.id}` : null;
+  const readHref =
+    available && firstLesson ? `/lessons/${chapter.slug}/${firstLesson.id}/read/` : null;
 
-  const card = (
+  // 整卡可点（主链接铺满卡片）+「先通读」独立入口叠在上层：
+  // Link 不能嵌套 Link，所以主链接改用覆盖层而非包裹整个 article。
+  return (
     <article
       className={
         'group relative flex h-full flex-col overflow-hidden rounded-xl border bg-slate-900/60 p-6 backdrop-blur-sm transition ' +
@@ -116,6 +120,13 @@ function ChapterCard({ chapter, stat }: { chapter: Chapter; stat?: ChapterStat }
           : 'cursor-not-allowed border-slate-800/60 opacity-50')
       }
     >
+      {href && (
+        <Link
+          href={href}
+          className="absolute inset-0 z-0"
+          aria-label={`${chapter.title} — 进入闯关模式`}
+        />
+      )}
       <div className="mb-3 flex items-center justify-between">
         <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-xs font-medium text-emerald-300">
           {String(chapter.number).padStart(2, '0')}
@@ -160,13 +171,21 @@ function ChapterCard({ chapter, stat }: { chapter: Chapter; stat?: ChapterStat }
         {available && stat && (
           <ChapterProgress lessonId={stat.lessonId} totalExercises={stat.totalExercises} />
         )}
+        {readHref && (
+          <div className="relative z-10 mt-3 flex justify-end">
+            <Link
+              href={readHref}
+              className="focus-ring rounded text-xs text-slate-400 underline decoration-slate-700 decoration-1 underline-offset-4 transition hover:text-emerald-300 hover:decoration-emerald-500/60"
+            >
+              先通读 →
+            </Link>
+          </div>
+        )}
       </div>
       {available && (
         <div className="gradient-tech-green absolute bottom-0 left-0 h-1 w-full origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
       )}
     </article>
   );
-
-  return href ? <Link href={href} className="block h-full">{card}</Link> : card;
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import { usePyodide } from '@/lib/usePyodide';
 import { useProgress } from '@/store/progress';
 import { ExerciseCard } from './ExerciseCard';
@@ -138,6 +139,14 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
               <span className="text-emerald-400">{meta.estimatedMinutes}</span> 分钟
             </p>
           )}
+          <p className="mt-2 text-sm">
+            <Link
+              href={`/lessons/${meta.chapter}/${meta.id}/read/`}
+              className="focus-ring rounded text-slate-400 underline decoration-slate-700 decoration-1 underline-offset-4 transition hover:text-emerald-300 hover:decoration-emerald-500/60"
+            >
+              完整通读本章 →
+            </Link>
+          </p>
         </header>
 
         {visibleBlocks.map((block) => {

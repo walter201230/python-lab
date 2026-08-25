@@ -32,6 +32,9 @@ export async function generateMetadata({
   return {
     title: `${data.meta.title} — ${SITE_NAME}`,
     description,
+    // 闯关页与阅读页内容同源，但闯关页受渐进解锁影响、静态产物只含前半章，
+    // 因此规范版本指向内容完整的阅读页（design.md D2：方向不可反）。
+    alternates: { canonical: `/lessons/${chapter}/${lesson}/read/` },
     openGraph: {
       title: `${data.meta.title} — ${SITE_NAME}`,
       description,
