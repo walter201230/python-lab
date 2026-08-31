@@ -6,7 +6,7 @@ export default function LessonLoading() {
   return (
     <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] animate-pulse bg-canvas">
       {/* sticky bar 占位 */}
-      <div className="sticky top-[57px] z-30 border-b border-line/80 bg-canvas/85 backdrop-blur-md">
+      <div className="sticky top-[55px] z-30 border-b border-line/80 bg-canvas">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             <div className="h-4 w-32 rounded bg-raised" />
