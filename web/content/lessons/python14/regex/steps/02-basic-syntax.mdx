@@ -82,6 +82,8 @@ print(re.findall('[a-z]{4,7}', a))
 默认量词是**贪婪**的——能多吃就多吃：
 
 ```python
+import re
+
 print(re.findall('[a-z]{4,7}', 'android'))
 # ['android']  ← 一次吃满 7 个
 ```
@@ -89,6 +91,8 @@ print(re.findall('[a-z]{4,7}', 'android'))
 在量词后面加 `?` 变成**非贪婪**——能少吃就少吃：
 
 ```python
+import re
+
 print(re.findall('[a-z]{4,7}?', 'android'))
 # ['andr']     ← 只吃 4 个就回头
 ```

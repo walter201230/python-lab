@@ -29,6 +29,9 @@ Employee(name='小明', dept='设计部', salary=15000)
 有没有注意到，跟函数参数一个道理——「带默认值的字段」必须放在「不带默认值的字段」后面。下面这种写法，Python 会直接拍死：
 
 ```python
+from dataclasses import dataclass
+
+
 @dataclass
 class BadOrder:
     qty: int = 1
@@ -46,6 +49,9 @@ TypeError: non-default argument 'name' follows default argument
 那如果默认值是一个「可变对象」呢？比如默认值是个空列表：
 
 ```python
+from dataclasses import dataclass
+
+
 @dataclass
 class Team:
     name: str

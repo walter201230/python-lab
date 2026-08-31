@@ -49,6 +49,8 @@ app.punch - WARNING - 迟到了
 写错误日志最容易踩的坑——只 `logger.error('xxx')` 不带异常信息：
 
 ```python
+import logging
+
 try:
     1 / 0
 except Exception as e:
@@ -58,6 +60,8 @@ except Exception as e:
 正确写法是 `logger.exception()`，它会自动把当前 traceback 带进去：
 
 ```python
+import logging
+
 try:
     1 / 0
 except Exception as e:
