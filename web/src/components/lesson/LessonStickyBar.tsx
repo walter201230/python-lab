@@ -27,13 +27,13 @@ export function LessonStickyBar({
   if (exercises.length === 0) return null;
 
   return (
-    <div className="sticky top-[57px] z-30 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md">
+    <div className="sticky top-[57px] z-30 border-b border-line/80 bg-canvas/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 text-sm">
-          <span className="hidden truncate font-semibold text-slate-100 sm:block">
+          <span className="hidden truncate font-semibold text-fg sm:block">
             {title}
           </span>
-          <span className="whitespace-nowrap rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-xs font-medium text-emerald-300">
+          <span className="whitespace-nowrap rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-xs font-medium text-accent-strong">
             {completedCount} / {exercises.length}
           </span>
         </div>
@@ -53,10 +53,10 @@ export function LessonStickyBar({
                 className={
                   'inline-flex h-10 w-10 items-center justify-center rounded-lg text-sm font-semibold transition focus-ring sm:h-9 sm:w-9 ' +
                   (completed
-                    ? 'sticky-dot-pop border border-emerald-500/40 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                    ? 'sticky-dot-pop border border-emerald-500/40 bg-emerald-500/20 text-accent-strong hover:bg-emerald-500/30'
                     : unlocked
-                      ? 'bg-slate-800 text-slate-100 hover:bg-slate-700'
-                      : 'pointer-events-none cursor-not-allowed bg-slate-900 text-slate-500')
+                      ? 'bg-raised text-fg hover:bg-raised-hover'
+                      : 'pointer-events-none cursor-not-allowed bg-surface text-fg-subtle')
                 }
               >
                 {completed ? '✓' : i + 1}

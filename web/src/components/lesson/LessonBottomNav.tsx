@@ -27,7 +27,7 @@ export function LessonBottomNav({
   return (
     <nav
       aria-label="章节导航"
-      className="mt-12 border-t border-slate-800 pt-8"
+      className="mt-12 border-t border-line pt-8"
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {prevChapter ? (
@@ -36,7 +36,7 @@ export function LessonBottomNav({
           <div aria-hidden />
         )}
 
-        <div className="hidden items-center justify-center text-center text-xs text-slate-400 sm:flex">
+        <div className="hidden items-center justify-center text-center text-xs text-fg-subtle sm:flex">
           <span className="truncate">{currentChapterTitle}</span>
         </div>
 
@@ -66,14 +66,14 @@ function NavCard({
     <Link
       href={href}
       className={
-        'group flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3 transition hover:border-emerald-500/40 hover:bg-slate-900 focus-ring ' +
+        'group flex flex-col gap-1 rounded-xl border border-line bg-surface/50 px-4 py-3 transition hover:border-emerald-500/40 hover:bg-surface focus-ring ' +
         (isNext ? 'text-right sm:col-start-3' : 'sm:col-start-1')
       }
     >
-      <span className="text-xs text-slate-400">
+      <span className="text-xs text-fg-subtle">
         {isNext ? '下一章 →' : '← 上一章'}
       </span>
-      <span className="truncate text-sm font-medium text-slate-200 group-hover:text-emerald-300">
+      <span className="truncate text-sm font-medium text-fg-body group-hover:text-accent-strong">
         {String(chapter.number).padStart(2, '0')} · {chapter.title}
       </span>
     </Link>

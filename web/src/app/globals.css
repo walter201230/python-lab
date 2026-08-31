@@ -1,35 +1,188 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* 浅色逃生舱：极少数无法用 token 表达的地方（如半透明绿在白底上过淡）用 light: 前缀 */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+/* ============================================================
+ * 主题 token
+ *
+ * 深色是默认，定义在 :root；浅色只覆盖同名变量，切换靠 <html data-theme="light">。
+ *
+ * 命名按「角色」而非色阶：同一个 slate-800 在站内既做芯片底色（bg-）又做卡片描边
+ * （border-），两者在浅色下要走相反方向的值，所以不存在 1:1 的色阶映射表。
+ * 全部取值已实测两套主题下的 WCAG 对比度，信息性文字均 ≥ 4.5:1。
+ * ============================================================ */
+
 :root {
-  --background: #020617;          /* slate-950 */
-  --foreground: #f1f5f9;          /* slate-100 */
-  --tech-green-from: #34d399;     /* emerald-400 */
-  --tech-green-via: #2dd4bf;      /* teal-400 */
-  --tech-green-to: #22d3ee;       /* cyan-400 */
+  color-scheme: dark;
+
+  /* 画布层：canvas 页面底 < surface 卡片 < raised 芯片/输入框；code 是卡片内代码块 */
+  --canvas: oklch(12.9% 0.042 264.695);  /* slate-950 */
+  --surface: oklch(20.8% 0.042 265.755);  /* slate-900 */
+  --raised: oklch(27.9% 0.041 260.031);  /* slate-800 */
+  --raised-hover: oklch(37.2% 0.044 257.287);  /* slate-700 */
+  --code: oklch(12.9% 0.042 264.695);  /* slate-950 */
+
+  /* 文字层 */
+  --fg: oklch(96.8% 0.007 247.896);  /* slate-100 */
+  --fg-body: oklch(92.9% 0.013 255.508);  /* slate-200 */
+  --fg-muted: oklch(86.9% 0.022 252.894);  /* slate-300 */
+  --fg-subtle: oklch(70.4% 0.04 256.788);  /* slate-400 */
+  --fg-faint: oklch(37.2% 0.044 257.287);  /* slate-700 */            /* 「·」分隔符与下划线装饰，非信息性，按 WCAG 豁免 */
+  --fg-disabled: oklch(44.6% 0.043 257.281);  /* slate-600 */         /* 未解锁/禁用项，WCAG 对禁用控件豁免 */
+
+  /* 描边层 */
+  --line: oklch(27.9% 0.041 260.031);  /* slate-800 */
+  --line-strong: oklch(37.2% 0.044 257.287);  /* slate-700 */
+  --line-emphasis: oklch(44.6% 0.043 257.281);  /* slate-600 */
+
+  /* 品牌绿。accent/accent-strong 是「绿色文字」，浅色下必须换深阶；
+     accent-solid/on-accent 是「实心绿按钮及其文字」，填充色不是文字、
+     无需对页面达标，两套主题同值以保住品牌辨识度。 */
+  --accent: oklch(76.5% 0.177 163.223);  /* emerald-400 */              /* emerald-400，基准绿色文字 */
+  --accent-strong: oklch(84.5% 0.143 164.978);  /* emerald-300 */       /* emerald-300，强调 */
+  --accent-stronger: oklch(90.5% 0.093 164.15);  /* emerald-200 */     /* emerald-200，最高强调 */
+  --accent-faint: oklch(50.8% 0.118 165.612);  /* emerald-700 */
+  --accent-solid: oklch(76.5% 0.177 163.223);  /* emerald-400 */
+  --on-accent: oklch(12.9% 0.042 264.695);  /* slate-950 */
+  --on-accent-soft: oklch(20.8% 0.042 265.755);  /* slate-900 */      /* 绿按钮上的次级文字，两主题同值 */
+
+  /* 正文内的行内代码与链接（青系，与品牌绿区分） */
+  --link: #5eead4;
+  --link-hover: #99f6e4;
+  --code-inline-fg: #5eead4;
+  --code-inline-bg: rgba(45, 212, 191, 0.12);
+  --code-inline-border: rgba(45, 212, 191, 0.18);
+  --code-block-border: rgba(52, 211, 153, 0.15);
+  --quote-border: oklch(69.6% 0.17 162.48 / 0.4);  /* emerald-500/40 */
+
+  /* 状态色（三/二级强调，与 accent 同构） */
+  --danger: oklch(71.2% 0.194 13.428);  /* rose-400 */
+  --danger-strong: oklch(81% 0.117 11.638);  /* rose-300 */
+  --danger-stronger: oklch(89.2% 0.058 10.001);  /* rose-200 */
+  --warn: oklch(82.8% 0.189 84.429);  /* amber-400 */
+  --warn-strong: oklch(87.9% 0.169 91.605);  /* amber-300 */
+
+  /* 渐变与装饰 */
+  --tech-green-from: oklch(76.5% 0.177 163.223);  /* emerald-400 */
+  --tech-green-via: oklch(77.7% 0.152 181.912);  /* teal-400 */
+  --tech-green-to: oklch(78.9% 0.154 211.53);  /* cyan-400 */
+  /* 文字渐变专用。与填充用的 --tech-green-* 分开：填充色不是文字、两主题同值，
+     而渐变文字在浅色下必须换深阶，否则白底上读不出来。 */
+  --tech-text-from: var(--tech-green-from);
+  --tech-text-via: var(--tech-green-via);
+  --tech-text-to: var(--tech-green-to);
+  --shimmer-highlight: #ecfeff;
+  --shine: rgba(255, 255, 255, 0.85);
+  --grid-line: rgba(52, 211, 153, 0.04);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* canvas 与 surface 的关系相对深色是反的：卡片（白）浮在微灰页面之上。
+     若照搬「白页面 + slate-50 卡片」，站内 7 处 bg-surface/60 会渲染成 #fcfdfd，
+     与白底无法区分、卡片全靠描边支撑。 */
+  --canvas: oklch(98.4% 0.003 247.858);  /* slate-50 */
+  --surface: #fff;  /* white */
+  --raised: oklch(96.8% 0.007 247.896);  /* slate-100 */
+  --raised-hover: oklch(92.9% 0.013 255.508);  /* slate-200 */
+  --code: oklch(96.8% 0.007 247.896);  /* slate-100 */
+
+  --fg: oklch(20.8% 0.042 265.755);  /* slate-900 */
+  --fg-body: oklch(27.9% 0.041 260.031);  /* slate-800 */
+  --fg-muted: oklch(44.6% 0.043 257.281);  /* slate-600 */
+  --fg-subtle: oklch(55.4% 0.046 257.417);  /* slate-500 */
+  --fg-faint: oklch(86.9% 0.022 252.894);  /* slate-300 */
+  --fg-disabled: oklch(70.4% 0.04 256.788);  /* slate-400 */
+
+  --line: oklch(92.9% 0.013 255.508);  /* slate-200 */
+  --line-strong: oklch(86.9% 0.022 252.894);  /* slate-300 */
+  --line-emphasis: oklch(70.4% 0.04 256.788);  /* slate-400 */
+
+  /* emerald-400 在白底仅 1.92:1，emerald-600 也只有 3.77:1，必须到 700 才达 AA */
+  --accent: oklch(50.8% 0.118 165.612);  /* emerald-700 */
+  --accent-strong: oklch(43.2% 0.095 166.913);  /* emerald-800 */
+  --accent-stronger: oklch(37.8% 0.077 168.94);  /* emerald-900 */
+  --accent-faint: oklch(90.5% 0.093 164.15);  /* emerald-200 */
+
+  --link: #0f766e;
+  --link-hover: #115e59;
+  --code-inline-fg: #0f766e;
+  --code-inline-bg: rgba(13, 148, 136, 0.10);
+  --code-inline-border: rgba(13, 148, 136, 0.22);
+  --code-block-border: rgba(5, 150, 105, 0.22);
+  --quote-border: oklch(69.6% 0.17 162.48 / 0.45);  /* emerald-500/45，白底上略提 */
+
+  --danger: oklch(51.4% 0.222 16.935);  /* rose-700 */
+  --danger-strong: oklch(45.5% 0.188 13.697);  /* rose-800 */
+  --danger-stronger: oklch(41% 0.159 10.272);  /* rose-900 */
+  --warn: oklch(55.5% 0.163 48.998);  /* amber-700 */
+  --warn-strong: oklch(47.3% 0.137 46.201);  /* amber-800 */
+
+  /* 高光在浅色下必须反向取深色：最亮的绿候选（teal-400）对白底仅 1.78:1，
+     扫过时文字会整段消失。改用深青作「暗纹光泽」。 */
+  /* 填充用的 --tech-green-* 不覆盖：按钮/进度条保持亮绿，与 accent-solid 同理 */
+  --tech-text-from: oklch(50.8% 0.118 165.612);   /* emerald-700 */
+  --tech-text-via: oklch(51.1% 0.096 186.391);    /* teal-700 */
+  --tech-text-to: oklch(52% 0.105 223.128);       /* cyan-700 */
+  --shimmer-highlight: #134e4a;
+  --shine: rgba(2, 6, 23, 0.3);
+  --grid-line: rgba(15, 118, 110, 0.07);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-raised-hover: var(--raised-hover);
+  --color-code: var(--code);
+
+  --color-fg: var(--fg);
+  --color-fg-body: var(--fg-body);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-faint: var(--fg-faint);
+  --color-fg-disabled: var(--fg-disabled);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-line-emphasis: var(--line-emphasis);
+
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-stronger: var(--accent-stronger);
+  --color-accent-faint: var(--accent-faint);
+  --color-accent-solid: var(--accent-solid);
+  --color-on-accent: var(--on-accent);
+  --color-on-accent-soft: var(--on-accent-soft);
+  --color-link: var(--link);
+
+  --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
+  --color-danger-stronger: var(--danger-stronger);
+  --color-warn: var(--warn);
+  --color-warn-strong: var(--warn-strong);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 html {
-  background: var(--background);
+  background: var(--canvas);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--canvas);
+  color: var(--fg);
 }
 
 /* 科技网格背景（subtle，不抢主体内容） */
 .bg-tech-grid {
   background-image:
-    linear-gradient(rgba(52, 211, 153, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(52, 211, 153, 0.04) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 48px 48px;
   background-position: -1px -1px;
 }
@@ -47,9 +200,9 @@ body {
 .gradient-tech-green-text {
   background: linear-gradient(
     135deg,
-    var(--tech-green-from) 0%,
-    var(--tech-green-via) 50%,
-    var(--tech-green-to) 100%
+    var(--tech-text-from) 0%,
+    var(--tech-text-via) 50%,
+    var(--tech-text-to) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -64,11 +217,11 @@ body {
 .gradient-text-shimmer {
   background-image: linear-gradient(
     90deg,
-    var(--tech-green-from) 0%,
-    var(--tech-green-via) 25%,
-    #ecfeff 50%,
-    var(--tech-green-via) 75%,
-    var(--tech-green-from) 100%
+    var(--tech-text-from) 0%,
+    var(--tech-text-via) 25%,
+    var(--shimmer-highlight) 50%,
+    var(--tech-text-via) 75%,
+    var(--tech-text-from) 100%
   );
   background-size: 300% 100%;
   -webkit-background-clip: text;
@@ -92,9 +245,9 @@ body {
   position: relative;
   background: linear-gradient(
     135deg,
-    var(--tech-green-from) 0%,
-    var(--tech-green-via) 50%,
-    var(--tech-green-to) 100%
+    var(--tech-text-from) 0%,
+    var(--tech-text-via) 50%,
+    var(--tech-text-to) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -108,7 +261,7 @@ body {
   background: linear-gradient(
     100deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.85) 50%,
+    var(--shine) 50%,
     transparent 70%
   );
   background-size: 220% 100%;
@@ -138,48 +291,73 @@ body {
   box-shadow: 0 0 24px rgba(52, 211, 153, 0.18);
 }
 
-/* 深色 prose 内嵌 code 微调 */
-.prose-invert code:not(pre code) {
-  background: rgba(45, 212, 191, 0.12);
-  color: #5eead4;
+/* ============================================================
+ * prose（@tailwindcss/typography）
+ *
+ * 把插件的 --tw-prose-* 变量绑到主题 token，两套主题自动跟随，
+ * 组件里不再需要 prose-invert，也不再需要逐项写 prose-p:text-xxx。
+ * 未分层的规则优先于插件放在 components 层的规则，故无需 !important。
+ * ============================================================ */
+.prose {
+  --tw-prose-body: var(--fg-body);
+  --tw-prose-headings: var(--fg);
+  --tw-prose-lead: var(--fg-muted);
+  --tw-prose-links: var(--link);
+  --tw-prose-bold: var(--accent-strong);
+  --tw-prose-counters: var(--fg-subtle);
+  --tw-prose-bullets: var(--line-emphasis);
+  --tw-prose-hr: var(--line);
+  --tw-prose-quotes: var(--fg-body);
+  --tw-prose-quote-borders: var(--quote-border);
+  --tw-prose-captions: var(--fg-subtle);
+  --tw-prose-code: var(--accent-strong);
+  --tw-prose-pre-code: var(--fg-body);
+  --tw-prose-pre-bg: var(--code);
+  --tw-prose-th-borders: var(--line-strong);
+  --tw-prose-td-borders: var(--line);
+}
+
+/* 行内代码：插件默认样式偏弱，这里统一成带底色的胶囊 */
+.prose code:not(pre code) {
+  background: var(--code-inline-bg);
+  color: var(--code-inline-fg);
   padding: 0.125rem 0.4rem;
   border-radius: 0.25rem;
   font-weight: 500;
-  border: 1px solid rgba(45, 212, 191, 0.18);
+  border: 1px solid var(--code-inline-border);
 }
 
-.prose-invert code:not(pre code)::before,
-.prose-invert code:not(pre code)::after {
+.prose code:not(pre code)::before,
+.prose code:not(pre code)::after {
   content: none;
 }
 
-.prose-invert pre {
-  background: #020617;
-  border: 1px solid rgba(52, 211, 153, 0.15);
+.prose pre {
+  background: var(--code);
+  border: 1px solid var(--code-block-border);
 }
 
-/* 链接色（深色背景上） */
-.prose-invert a {
-  color: #5eead4;
+.prose a {
+  color: var(--link);
 }
 
-.prose-invert a:hover {
-  color: #99f6e4;
+.prose a:hover {
+  color: var(--link-hover);
 }
 
 /* ============================================================
  * 通用 utility
  * ============================================================ */
 
-/* 焦点环：emerald-300 双圈，深色背景 offset 到 slate-950 */
+/* 焦点环：外圈 accent-strong，内圈用 canvas 做 offset，两套主题自动跟随 */
 .focus-ring {
   outline: none;
 }
 .focus-ring:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 2px #020617,
-    0 0 0 4px #6ee7b7;
+    0 0 0 2px var(--canvas),
+    0 0 0 4px var(--accent-strong);
   border-radius: inherit;
 }
 

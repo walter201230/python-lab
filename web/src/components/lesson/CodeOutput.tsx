@@ -26,9 +26,9 @@ export function CodeOutput({ stdout, stderr, error, variant = 'panel', maxHeight
 
   if (variant === 'card') {
     return (
-      <div className="border-t border-slate-800 bg-slate-950 px-4 py-2.5 font-mono text-xs">
-        <div className="mb-1 text-[10px] uppercase tracking-wider text-slate-500">输出</div>
-        {hasContent ? <Lines stdout={stdout} stderr={stderr} error={error} /> : <span className="text-slate-400">（无输出）</span>}
+      <div className="border-t border-line bg-code px-4 py-2.5 font-mono text-xs">
+        <div className="mb-1 text-[10px] uppercase tracking-wider text-fg-subtle">输出</div>
+        {hasContent ? <Lines stdout={stdout} stderr={stderr} error={error} /> : <span className="text-fg-subtle">（无输出）</span>}
       </div>
     );
   }
@@ -36,7 +36,7 @@ export function CodeOutput({ stdout, stderr, error, variant = 'panel', maxHeight
   if (!hasContent) return null;
   return (
     <div
-      className="overflow-y-auto border-t border-slate-800 bg-slate-950 px-4 py-3 font-mono text-xs"
+      className="overflow-y-auto border-t border-line bg-code px-4 py-3 font-mono text-xs"
       style={{ maxHeight }}
     >
       <Lines stdout={stdout} stderr={stderr} error={error} />
@@ -47,9 +47,9 @@ export function CodeOutput({ stdout, stderr, error, variant = 'panel', maxHeight
 function Lines({ stdout, stderr, error }: Pick<CodeOutputProps, 'stdout' | 'stderr' | 'error'>) {
   return (
     <>
-      {stdout && <pre className="whitespace-pre-wrap text-emerald-300">{stdout}</pre>}
-      {stderr && <pre className="whitespace-pre-wrap text-amber-400">{stderr}</pre>}
-      {error && <pre className="whitespace-pre-wrap text-rose-400">{error}</pre>}
+      {stdout && <pre className="whitespace-pre-wrap text-accent-strong">{stdout}</pre>}
+      {stderr && <pre className="whitespace-pre-wrap text-warn">{stderr}</pre>}
+      {error && <pre className="whitespace-pre-wrap text-danger">{error}</pre>}
     </>
   );
 }

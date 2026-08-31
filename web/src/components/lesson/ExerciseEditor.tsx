@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useTheme } from '@/lib/useTheme';
 
 // issue #303 同因：@monaco-editor/react 默认从 cdn.jsdelivr.net 加载 monaco 本体，
 // CDN 不可达的网络环境下编辑器渲染不出来。改从同源 /monaco/vs 加载
@@ -38,6 +39,7 @@ export function ExerciseEditor({
   completed,
 }: ExerciseEditorProps) {
   const [fullscreen, setFullscreen] = useState(false);
+  const { theme } = useTheme();
 
   // Esc 退出全屏 + body 锁滚动
   useEffect(() => {
@@ -60,7 +62,7 @@ export function ExerciseEditor({
       defaultLanguage="python"
       value={code}
       onChange={(v) => onChange(v ?? '')}
-      theme="vs-dark"
+      theme={theme === "light" ? "vs" : "vs-dark"}
       options={{
         fontSize: 14,
         minimap: { enabled: fullscreen },
@@ -73,15 +75,15 @@ export function ExerciseEditor({
   );
 
   const toolbar = (
-    <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2.5">
+    <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
       <div className="flex items-center gap-2">
         <span className="inline-block h-2.5 w-2.5 rounded-full bg-rose-500/80" aria-hidden />
         <span className="inline-block h-2.5 w-2.5 rounded-full bg-amber-500/80" aria-hidden />
         <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500/80" aria-hidden />
-        <span className="ml-2 font-mono text-xs text-slate-400">main.py</span>
+        <span className="ml-2 font-mono text-xs text-fg-subtle">main.py</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-fg-subtle">
           {!unlocked ? '🔒 未解锁' : completed ? '✓ 已通过（只读）' : '可编辑'}
         </span>
         {unlocked && (
@@ -90,7 +92,7 @@ export function ExerciseEditor({
             onClick={() => setFullscreen((v) => !v)}
             aria-label={fullscreen ? '退出全屏' : '全屏编辑'}
             title={fullscreen ? '退出全屏 (Esc)' : '全屏编辑'}
-            className="rounded-md border border-slate-700 bg-slate-800/60 px-2 py-1 text-xs text-slate-300 transition hover:border-emerald-500/40 hover:text-emerald-300 focus-ring"
+            className="rounded-md border border-line-strong bg-raised/60 px-2 py-1 text-xs text-fg-muted transition hover:border-emerald-500/40 hover:text-accent-strong focus-ring"
           >
             {fullscreen ? '⤓ 退出' : '⛶ 全屏'}
           </button>
@@ -101,7 +103,7 @@ export function ExerciseEditor({
 
   if (fullscreen) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-slate-950">
+      <div className="fixed inset-0 z-50 flex flex-col bg-canvas">
         {toolbar}
         <div className="flex-1">{editor}</div>
       </div>

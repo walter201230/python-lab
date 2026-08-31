@@ -44,16 +44,55 @@
 
 ### D2 token 词汇表按「角色」而非「色阶」划分
 
-四组，共约 18 个 token：
+**必须按角色而非色阶建 token**：同一个 `slate-800` 在站内既是 `bg-slate-800`（16 处，芯片/徽章底）又是 `border-slate-800`（17 处，卡片描边），两者在浅色下要走**相反方向**的值。所以不存在 1:1 的色阶映射表，244 处必须逐处判角色——这也是本次无法用 `sed` 批量替换的根本原因。
+
+18 个 token，全部值已实测对比度（见下表「判定」列）：
 
 | 组 | token | 深色 | 浅色 |
 |---|---|---|---|
-| 画布 | `canvas` / `surface` / `surface-raised` | `#020617` / `slate-900/60` / `slate-800` | `#ffffff` / `slate-50` / `slate-100` |
-| 文字 | `text` / `text-muted` / `text-subtle` | `slate-100` / `slate-300` / `slate-400` | `slate-900` / `slate-600` / `slate-500` |
-| 边框 | `border` / `border-strong` / `border-subtle` | `slate-800` / `slate-700` / `slate-800/60` | `slate-200` / `slate-300` / `slate-200/70` |
-| 强调 | `accent` / `accent-strong` / `accent-surface` / `on-accent` | `emerald-400` / `emerald-300` / `emerald-500/10` | `emerald-700` / `emerald-800` / `emerald-500/10` |
+| 画布 | `canvas` | `#020617` | `#f8fafc` |
+| | `surface` | `#0f172a` slate-900 | `#ffffff` |
+| | `surface-raised` | `#1e293b` slate-800 | `#f1f5f9` slate-100 |
+| | `code-surface` | `#020617` | `#f1f5f9` |
+| 文字 | `text` | `#f1f5f9` | `#0f172a` |
+| | `text-body` | `#e2e8f0` | `#1e293b` |
+| | `text-muted` | `#cbd5e1` | `#475569` |
+| | `text-subtle` | `#94a3b8` | `#64748b` |
+| | `text-faint` | `#334155` | `#cbd5e1` |
+| 边框 | `border` | `#1e293b` | `#e2e8f0` |
+| | `border-strong` | `#334155` | `#cbd5e1` |
+| | `border-emphasis` | `#475569` | `#94a3b8` |
+| 强调 | `accent` | `#34d399` emerald-400 | `#047857` emerald-700 |
+| | `accent-strong` | `#6ee7b7` emerald-300 | `#065f46` emerald-800 |
+| | `accent-solid` | `#34d399` | `#34d399`（同值） |
+| | `on-accent` | `#020617` | `#020617`（同值） |
+| 状态 | `danger` | `#fb7185` | `#be123c` |
+| | `warn` | `#fbbf24` | `#b45309` |
 
-**`on-accent` 是必需的、也是最容易踩的坑**：现有 `text-slate-950`（5 处）是绿色按钮上的深色文字，两套主题都必须保持深色。若无脑把中性色全部翻转，浅色下会变成白字压在亮绿底上，直接不可读。这类「不随主题翻转」的颜色必须单独立 token。
+实测对比度（深色 canvas / 深色 surface / 浅色 canvas / 浅色 surface，全部 ≥ AA 4.5:1）：
+
+| token | 深/canvas | 深/surface | 浅/canvas | 浅/surface |
+|---|---|---|---|---|
+| `text` | 18.41 | 16.30 | 17.06 | 17.85 |
+| `text-body` | 16.36 | 14.48 | 13.98 | 14.63 |
+| `text-muted` | 13.59 | 12.02 | 7.24 | 7.58 |
+| `text-subtle` | 7.87 | 6.96 | **4.55** | 4.76 |
+| `accent` | 10.49 | 9.29 | 5.24 | **5.48** |
+| `accent-strong` | 13.23 | 11.71 | 7.34 | 7.68 |
+| `danger` | 7.50 | 6.63 | 6.01 | 6.29 |
+| `warn` | 12.08 | 10.69 | **4.80** | 5.02 |
+
+`text-faint`（深 1.95:1 / 浅 1.42:1）是 `·` 分隔符与下划线装饰专用，非信息性内容，按 WCAG 豁免。
+
+**实施中确认的三处修正（相对本节初稿）：**
+
+**① 浅色下 canvas 与 surface 的关系要反过来。** 初稿写 canvas `#ffffff` / surface `slate-50`。但站内有 7 处 `bg-slate-900/60`——半透明卡片。浅色若沿用「白底 + slate-50 卡片 @60%」，卡片实际渲染成 `#fcfdfd`，与白底无法区分，卡片全靠描边支撑、页面发飘。改为 **canvas `#f8fafc` / surface `#ffffff`**：卡片浮在微灰页面之上，`/60` 等透明度修饰仍然读得出层次，深浅两套主题的层级语义也保持一致。
+
+**② `bg-slate-950` 承担了两个相反的角色，必须拆成两个 token。** 它既是页面底色（`canvas`），又是**卡片内代码块**的底色（`RunnableCodeBlock` 的 `bg-slate-950/80`）——在深色下代码块比卡片更暗，在浅色下则要比白卡片更亮一档。同一个源色阶、相反的浅色目标值，故新增 `code-surface`（浅色 `#f1f5f9`）。
+
+**③ 实心绿按钮的填充色两套主题同值，不做深浅切换。** 填充色不是文字，无需对页面达到 4.5:1；需要达标的是**压在它上面的文字对填充色**——`#020617` on `#34d399` 实测 **10.49:1**。故 `accent-solid` 与 `on-accent` 都是主题无关的常量，浅色下按钮保持亮绿，品牌辨识度不损失。
+
+**`on-accent` 是最容易踩的坑**：现有 `text-slate-950`（5 处）正是绿按钮上的深色文字。若无脑把中性色全部翻转，浅色下会变成白字压亮绿底，直接不可读。这类「不随主题翻转」的颜色必须单独立 token。
 
 ### D3 浅色下品牌绿必须换深阶（实测对比度）
 
@@ -90,6 +129,8 @@
 `@tailwindcss/typography` 的配色走 `--tw-prose-body`、`--tw-prose-headings` 等变量。在 `globals.css` 里把这些变量绑到 D2 的 token，组件里 7 处 `prose-invert` 及其后跟的 `prose-p:text-slate-200`、`prose-code:text-emerald-300` 等修饰全部删除。
 
 **副产品**：`StepCard.tsx` 与 `ReadStepCard.tsx` 里那串完全重复的长 prose 类名会一起消失，两者的排版一致性从「靠人肉同步类名」变成「靠同一组变量」。
+
+**实施中发现的例外**：`prose-strong:` 与 `prose-code:` 两个修饰**不能**删。typography 插件带有 `:where(blockquote strong) { color: inherit }` 一类规则，原先靠这两个工具类的优先级压过它；仅靠 `--tw-prose-bold` / `--tw-prose-code` 变量时，blockquote 内的 `strong`/`code` 会退回继承引用块颜色，绿色丢失（回归比对在 `python6/functions` 抓到 5 处）。故这两个修饰予以保留，其余（`prose-p:`、`prose-headings:`、`prose-li:`、`prose-blockquote:` 的着色部分）仍全部删除。
 
 ### D7 Monaco 直接传动态 `theme` prop
 

@@ -41,12 +41,12 @@ export function StepCard({ content, index, totalSteps, state, pyStatus, run }: S
       id={`step-${index}`}
       style={{ scrollMarginTop: STICKY_BAR_SCROLL_OFFSET }}
       className={
-        'mt-6 rounded-2xl border bg-slate-900/60 p-6 backdrop-blur-sm transition-all sm:p-8 ' +
+        'mt-6 rounded-2xl border bg-surface/60 p-6 backdrop-blur-sm transition-all sm:p-8 ' +
         (state === 'current'
           ? 'border-emerald-500/35 shadow-xl shadow-emerald-500/10'
           : state === 'read'
-            ? 'border-slate-800 shadow-md shadow-emerald-500/5 opacity-85'
-            : 'border-slate-800 shadow-md shadow-emerald-500/5')
+            ? 'border-line shadow-md shadow-emerald-500/5 opacity-85'
+            : 'border-line shadow-md shadow-emerald-500/5')
       }
       aria-label={`教学步骤 ${index + 1}`}
     >
@@ -54,28 +54,28 @@ export function StepCard({ content, index, totalSteps, state, pyStatus, run }: S
         className={
           'mb-4 inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-xs font-medium transition ' +
           (state === 'current'
-            ? 'border-emerald-500/35 bg-emerald-500/12 text-emerald-300'
+            ? 'border-emerald-500/35 bg-emerald-500/12 text-accent-strong'
             : state === 'read'
-              ? 'border-slate-700/70 bg-slate-800/40 text-slate-400'
-              : 'border-emerald-500/20 bg-emerald-500/8 text-emerald-400')
+              ? 'border-line-strong/70 bg-raised/40 text-fg-subtle'
+              : 'border-emerald-500/20 bg-emerald-500/8 text-accent')
         }
       >
         <span
           className={
             'inline-block h-1.5 w-1.5 rounded-full ' +
             (state === 'current'
-              ? 'animate-pulse bg-emerald-400'
+              ? 'animate-pulse bg-accent-solid'
               : state === 'read'
-                ? 'bg-slate-500'
-                : 'bg-emerald-400')
+                ? 'bg-fg-subtle'
+                : 'bg-accent-solid')
           }
         />
         <span className="font-mono">
           教学 {String(index + 1).padStart(2, '0')} / {String(totalSteps).padStart(2, '0')}
         </span>
-        {state === 'read' && <span className="text-slate-500">· 已读</span>}
+        {state === 'read' && <span className="text-fg-subtle">· 已读</span>}
       </div>
-      <article className="prose prose-invert max-w-none prose-headings:mt-0 prose-headings:text-slate-100 prose-p:text-slate-200 prose-strong:text-emerald-300 prose-blockquote:border-emerald-500/40 prose-blockquote:text-slate-200 prose-li:text-slate-200 prose-code:text-emerald-300">
+      <article className="prose max-w-none prose-headings:mt-0 prose-strong:text-accent-strong prose-code:text-accent-strong">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
           {content}
         </ReactMarkdown>

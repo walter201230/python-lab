@@ -25,9 +25,9 @@ export function HomeStats({
   if (done === 0) return null;
 
   return (
-    <span className="text-sm text-slate-400">
+    <span className="text-sm text-fg-subtle">
       已学完{' '}
-      <span className="font-semibold text-emerald-400">{done}</span>
+      <span className="font-semibold text-accent">{done}</span>
       {' / '}
       {total} 章
     </span>

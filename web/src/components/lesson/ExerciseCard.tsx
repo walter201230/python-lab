@@ -118,12 +118,12 @@ export function ExerciseCard({
       data-exercise-actionable={!editorReadOnly && !running}
       style={{ scrollMarginTop: STICKY_BAR_SCROLL_OFFSET }}
       className={
-        'mt-6 overflow-hidden rounded-2xl border bg-slate-900/60 shadow-xl backdrop-blur-sm transition ' +
+        'mt-6 overflow-hidden rounded-2xl border bg-surface/60 shadow-xl backdrop-blur-sm transition ' +
         (isCompleted
           ? 'border-emerald-500/40 shadow-emerald-500/15'
           : isUnlocked
-            ? 'border-slate-800 shadow-emerald-500/5'
-            : 'border-slate-800/60 opacity-70 shadow-none')
+            ? 'border-line shadow-emerald-500/5'
+            : 'border-line/60 opacity-70 shadow-none')
       }
       aria-label={`练习 ${index + 1}: ${ex.title}`}
     >
@@ -136,7 +136,7 @@ export function ExerciseCard({
         isCompleted={isCompleted}
       />
 
-      <div className="bg-slate-900">
+      <div className="bg-surface">
         <ExerciseEditor
           code={code}
           onChange={setCode}

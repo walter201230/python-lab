@@ -20,24 +20,24 @@ export function CompletionBanner({ title, nextChapter }: CompletionBannerProps) 
       <div className="mb-3 text-4xl" aria-hidden>
         🎉
       </div>
-      <h2 className="mb-2 text-2xl font-bold text-slate-100">
+      <h2 className="mb-2 text-2xl font-bold text-fg">
         「{title}」学完了！
       </h2>
-      <p className="mx-auto mb-6 max-w-md text-sm leading-relaxed text-slate-300">
+      <p className="mx-auto mb-6 max-w-md text-sm leading-relaxed text-fg-muted">
         很好，继续保持。每一章学完都是进步。
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         {nextHref && nextChapter && (
           <Link
             href={nextHref}
-            className="gradient-tech-green inline-flex items-center gap-1.5 rounded-lg px-6 py-2.5 text-sm font-semibold text-slate-950 shadow shadow-emerald-500/40 transition hover:scale-105 hover:opacity-95 focus-ring"
+            className="gradient-tech-green inline-flex items-center gap-1.5 rounded-lg px-6 py-2.5 text-sm font-semibold text-on-accent shadow shadow-emerald-500/40 transition hover:scale-105 hover:opacity-95 focus-ring"
           >
             继续学：{nextChapter.title} →
           </Link>
         )}
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-5 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-600 hover:bg-slate-800 focus-ring"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong bg-raised/60 px-5 py-2.5 text-sm font-medium text-fg-body transition hover:border-line-emphasis hover:bg-raised focus-ring"
         >
           返回课程目录
         </Link>

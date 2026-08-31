@@ -40,12 +40,12 @@ export function SmartHeroCta({ chapters, stats, fallbackHref }: SmartHeroCtaProp
   return (
     <Link
       href={target.href}
-      className="gradient-tech-green group inline-flex items-center gap-2 rounded-lg px-8 py-4 text-base font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:scale-[1.03] hover:shadow-xl hover:shadow-emerald-500/40 focus-ring"
+      className="gradient-tech-green group inline-flex items-center gap-2 rounded-lg px-8 py-4 text-base font-semibold text-on-accent shadow-lg shadow-emerald-500/30 transition hover:scale-[1.03] hover:shadow-xl hover:shadow-emerald-500/40 focus-ring"
     >
       <span className="flex flex-col items-start leading-tight">
         <span>{target.label}</span>
         {target.sublabel && (
-          <span className="text-xs font-normal text-slate-900/75">{target.sublabel}</span>
+          <span className="text-xs font-normal text-on-accent-soft/75">{target.sublabel}</span>
         )}
       </span>
       <span

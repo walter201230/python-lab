@@ -17,7 +17,7 @@ export function GradingResult({ pass, msg }: GradingResultProps) {
       role="status"
       aria-live="polite"
       className={
-        'border-t-2 p-5 ' + (pass ? 'border-emerald-400 bg-emerald-500/15' : 'border-rose-400 bg-rose-500/15')
+        'border-t-2 p-5 ' + (pass ? 'border-emerald-400 bg-emerald-500/15' : 'border-danger bg-rose-500/15')
       }
     >
       <div className="mb-1.5 flex items-center gap-2 font-semibold">
@@ -25,22 +25,22 @@ export function GradingResult({ pass, msg }: GradingResultProps) {
           <>
             <span
               aria-hidden
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/30 text-base text-emerald-200 grading-pop"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/30 text-base text-accent-stronger grading-pop"
             >
               ✓
             </span>
-            <span className="text-emerald-200">通过！</span>
+            <span className="text-accent-stronger">通过！</span>
           </>
         ) : (
           <>
-            <span aria-hidden className="text-rose-300">
+            <span aria-hidden className="text-danger-strong">
               ✗
             </span>
-            <span className="text-rose-200">未通过</span>
+            <span className="text-danger-stronger">未通过</span>
           </>
         )}
       </div>
-      <div className="prose prose-invert prose-sm max-w-none prose-p:text-slate-100">
+      <div className="prose prose-sm max-w-none prose-p:text-fg">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg}</ReactMarkdown>
       </div>
     </div>

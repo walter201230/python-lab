@@ -57,14 +57,14 @@ function ProgressBar({ label, pct, finished }: ProgressBarProps) {
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between text-xs">
-        <span className={finished ? 'font-medium text-emerald-300' : 'text-slate-400'}>
+        <span className={finished ? 'font-medium text-accent-strong' : 'text-fg-subtle'}>
           {label}
         </span>
-        <span className={'font-mono ' + (finished ? 'text-emerald-300' : 'text-slate-400')}>
+        <span className={'font-mono ' + (finished ? 'text-accent-strong' : 'text-fg-subtle')}>
           {pct}%
         </span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+      <div className="h-1.5 overflow-hidden rounded-full bg-raised">
         <div
           className="gradient-tech-green h-full rounded-full transition-[width] duration-500 ease-out"
           style={{ width: `${pct}%` }}

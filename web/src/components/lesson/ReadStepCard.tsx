@@ -38,16 +38,16 @@ export function ReadStepCard({
   return (
     <section
       id={`step-${index}`}
-      className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-md shadow-emerald-500/5 backdrop-blur-sm sm:p-8"
+      className="mt-6 rounded-2xl border border-line bg-surface/60 p-6 shadow-md shadow-emerald-500/5 backdrop-blur-sm sm:p-8"
       aria-label={`教学步骤 ${index + 1}`}
     >
-      <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-1 text-xs font-medium text-emerald-400">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+      <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-1 text-xs font-medium text-accent">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent-solid" />
         <span className="font-mono">
           教学 {String(index + 1).padStart(2, '0')} / {String(totalSteps).padStart(2, '0')}
         </span>
       </div>
-      <article className="prose prose-invert max-w-none prose-headings:mt-0 prose-headings:text-slate-100 prose-p:text-slate-200 prose-strong:text-emerald-300 prose-blockquote:border-emerald-500/40 prose-blockquote:text-slate-200 prose-li:text-slate-200 prose-code:text-emerald-300">
+      <article className="prose max-w-none prose-headings:mt-0 prose-strong:text-accent-strong prose-code:text-accent-strong">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
           {content}
         </ReactMarkdown>
@@ -59,19 +59,19 @@ export function ReadStepCard({
 /** 静态 python 代码块：外观对齐 RunnableCodeBlock，但把交互按钮换成回闯关页的链接。 */
 function StaticCodeBlock({ code, practiceHref }: { code: string; practiceHref: string }) {
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-slate-700/60 bg-slate-950/80">
-      <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/60 px-3 py-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+    <div className="not-prose my-4 overflow-hidden rounded-lg border border-line-strong/60 bg-code/80">
+      <div className="flex items-center justify-between border-b border-line bg-surface/60 px-3 py-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
           python
         </span>
         <a
           href={practiceHref}
-          className="rounded px-2 py-0.5 text-xs font-medium text-emerald-300 transition hover:bg-emerald-500/15 focus-ring"
+          className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 focus-ring"
         >
           到闯关页运行这段 →
         </a>
       </div>
-      <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-emerald-200">
+      <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-accent-stronger">
         <code>{code}</code>
       </pre>
     </div>

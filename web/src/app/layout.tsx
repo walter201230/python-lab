@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
 import { Toast } from '@/components/Toast';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { THEME_INIT_SCRIPT } from '@/lib/useTheme';
 import './globals.css';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -18,11 +20,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        {/* 反闪色：必须同步执行在样式表生效之前，不能放进 React 组件。
+            这里只手写 <script>，<title>/<meta> 一律交给 Metadata API。 */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body
-        className="flex min-h-full flex-col bg-slate-950 text-slate-100"
+        className="flex min-h-full flex-col bg-canvas text-fg"
         suppressHydrationWarning
       >
-        <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+        <header className="sticky top-0 z-40 border-b border-line/80 bg-canvas/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
             <Link href="/" className="font-semibold" aria-label="小白学 Python — 首页">
               <span
@@ -38,7 +45,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 href="https://coding.stormzhang.ai/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-300 transition hover:text-slate-100"
+                className="text-fg-muted transition hover:text-fg"
               >
                 AI 编程指南
               </a>
@@ -46,23 +53,24 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 href="https://github.com/walter201230/Python"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden text-slate-300 transition hover:text-slate-100 sm:block"
+                className="hidden text-fg-muted transition hover:text-fg sm:block"
               >
                 GitHub
               </a>
+              <ThemeToggle />
             </nav>
           </div>
         </header>
         <main className="flex flex-1 flex-col">{children}</main>
-        <footer className="border-t border-slate-800/60 bg-slate-950">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-slate-400 sm:flex-row">
-            <span>© {new Date().getFullYear()} 小白学 Python · 基于 <a href="https://github.com/walter201230/Python" target="_blank" rel="noopener noreferrer" className="transition hover:text-slate-200">walter201230/Python</a> 教程</span>
+        <footer className="border-t border-line/60 bg-canvas">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-fg-subtle sm:flex-row">
+            <span>© {new Date().getFullYear()} 小白学 Python · 基于 <a href="https://github.com/walter201230/Python" target="_blank" rel="noopener noreferrer" className="transition hover:text-fg-body">walter201230/Python</a> 教程</span>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              <Link href="/" className="transition hover:text-slate-200">课程目录</Link>
-              <Link href="/about" className="transition hover:text-slate-200">关于本站</Link>
-              <Link href="/contact" className="transition hover:text-slate-200">联系方式</Link>
-              <Link href="/privacy" className="transition hover:text-slate-200">隐私政策</Link>
-              <a href="https://github.com/walter201230/Python" target="_blank" rel="noopener noreferrer" className="transition hover:text-slate-200">GitHub</a>
+              <Link href="/" className="transition hover:text-fg-body">课程目录</Link>
+              <Link href="/about" className="transition hover:text-fg-body">关于本站</Link>
+              <Link href="/contact" className="transition hover:text-fg-body">联系方式</Link>
+              <Link href="/privacy" className="transition hover:text-fg-body">隐私政策</Link>
+              <a href="https://github.com/walter201230/Python" target="_blank" rel="noopener noreferrer" className="transition hover:text-fg-body">GitHub</a>
             </div>
           </div>
         </footer>

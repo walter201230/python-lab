@@ -48,35 +48,35 @@ export function ShortcutHint() {
   return (
     <div
       role="status"
-      className="pointer-events-auto fixed bottom-5 left-5 z-40 max-w-xs rounded-xl border border-emerald-500/30 bg-slate-900/95 p-4 text-xs shadow-xl shadow-emerald-500/10 backdrop-blur-md"
+      className="pointer-events-auto fixed bottom-5 left-5 z-40 max-w-xs rounded-xl border border-emerald-500/30 bg-surface/95 p-4 text-xs shadow-xl shadow-emerald-500/10 backdrop-blur-md"
     >
       <div className="mb-2 flex items-center justify-between">
-        <span className="font-semibold text-emerald-300">小提示 · 快捷键</span>
+        <span className="font-semibold text-accent-strong">小提示 · 快捷键</span>
         <button
           type="button"
           onClick={dismiss}
           aria-label="关闭"
-          className="text-slate-400 transition hover:text-slate-100"
+          className="text-fg-subtle transition hover:text-fg"
         >
           ✕
         </button>
       </div>
-      <ul className="space-y-1.5 text-slate-200">
+      <ul className="space-y-1.5 text-fg-body">
         <li className="flex items-center justify-between gap-3">
           <span>运行代码</span>
-          <kbd className="rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+          <kbd className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-fg-muted">
             ⌘/Ctrl + Enter
           </kbd>
         </li>
         <li className="flex items-center justify-between gap-3">
           <span>检查答案</span>
-          <kbd className="rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+          <kbd className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-fg-muted">
             ⌘ + Shift + Enter
           </kbd>
         </li>
         <li className="flex items-center justify-between gap-3">
           <span>退出全屏编辑</span>
-          <kbd className="rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+          <kbd className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-fg-muted">
             Esc
           </kbd>
         </li>

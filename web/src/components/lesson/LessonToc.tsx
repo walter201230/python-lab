@@ -44,11 +44,11 @@ export function LessonToc({ blocks, progress, lessonTitle }: LessonTocProps) {
       aria-label="本章目录"
       className="sticky top-[120px] max-h-[calc(100vh-140px)] w-56 overflow-y-auto pl-6"
     >
-      <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-fg-subtle">
         本章目录
       </div>
-      <p className="mb-4 truncate text-sm font-medium text-slate-200">{lessonTitle}</p>
-      <ol className="space-y-1 border-l border-slate-800">
+      <p className="mb-4 truncate text-sm font-medium text-fg-body">{lessonTitle}</p>
+      <ol className="space-y-1 border-l border-line">
         {blocks.map((b) => {
           if (b.kind === 'step') {
             const id = `step-${b.stepIndex}`;
@@ -100,12 +100,12 @@ interface TocItemProps {
 
 function TocItem({ href, active, kind, index, label, unlocked = true, completed }: TocItemProps) {
   const baseColor = !unlocked
-    ? 'text-slate-600'
+    ? 'text-fg-disabled'
     : completed
-      ? 'text-emerald-400'
+      ? 'text-accent'
       : active
-        ? 'text-slate-100'
-        : 'text-slate-300 hover:text-slate-100';
+        ? 'text-fg'
+        : 'text-fg-muted hover:text-fg';
 
   const content = (
     <>
@@ -113,7 +113,7 @@ function TocItem({ href, active, kind, index, label, unlocked = true, completed 
         aria-hidden
         className={
           'absolute -left-px top-0 h-full w-0.5 transition ' +
-          (active ? 'bg-emerald-400' : 'bg-transparent')
+          (active ? 'bg-accent-solid' : 'bg-transparent')
         }
       />
       <span className="font-mono text-[10px] uppercase tracking-wider opacity-60">

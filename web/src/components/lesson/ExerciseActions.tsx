@@ -31,7 +31,7 @@ export function ExerciseActions({
   const submitDisabled = !pyReady || running || editorReadOnly;
 
   return (
-    <div className="flex items-center justify-between gap-3 border-t border-slate-800 px-4 py-3">
+    <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-3">
       <Button
         variant="ghost"
         size="sm"

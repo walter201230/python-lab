@@ -34,15 +34,15 @@ export function ExerciseHints({ hints }: ExerciseHintsProps) {
         type="button"
         onClick={() => setLevel((l) => Math.min(hints.length, l + 1))}
         disabled={level >= hints.length}
-        className="text-xs font-medium text-emerald-300 underline underline-offset-2 transition hover:text-emerald-200 disabled:text-slate-500 disabled:no-underline focus-ring rounded"
+        className="text-xs font-medium text-accent-strong underline underline-offset-2 transition hover:text-accent-stronger disabled:text-fg-subtle disabled:no-underline focus-ring rounded"
       >
         💡 提示（{level} / {hints.length}）
       </button>
       {level > 0 && (
-        <ol className="mt-2 list-decimal space-y-2 pl-5 text-xs text-slate-200 marker:text-emerald-400/70">
+        <ol className="mt-2 list-decimal space-y-2 pl-5 text-xs text-fg-body marker:text-accent/70">
           {hints.slice(0, level).map((h, i) => (
             <li key={i}>
-              <div className="prose prose-invert prose-xs max-w-none prose-p:my-0 prose-p:text-slate-200 prose-pre:my-1.5 prose-pre:bg-slate-950 prose-pre:border prose-pre:border-emerald-500/15 prose-code:text-emerald-300">
+              <div className="prose prose-xs max-w-none prose-p:my-0 prose-pre:my-1.5 prose-pre:border prose-pre:border-emerald-500/15 prose-code:text-accent-strong">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{hintToMarkdown(h)}</ReactMarkdown>
               </div>
             </li>

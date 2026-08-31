@@ -45,16 +45,16 @@ export function RunnableCodeBlock({ code, pyStatus, run }: RunnableCodeBlockProp
   };
 
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-slate-700/60 bg-slate-950/80">
-      <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/60 px-3 py-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+    <div className="not-prose my-4 overflow-hidden rounded-lg border border-line-strong/60 bg-code/80">
+      <div className="flex items-center justify-between border-b border-line bg-surface/60 px-3 py-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
           python
         </span>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={handleCopy}
-            className="rounded px-2 py-0.5 text-xs text-slate-400 transition hover:bg-slate-800 hover:text-slate-200 focus-ring"
+            className="rounded px-2 py-0.5 text-xs text-fg-subtle transition hover:bg-raised hover:text-fg-body focus-ring"
           >
             {copied ? '已复制' : '复制'}
           </button>
@@ -62,14 +62,14 @@ export function RunnableCodeBlock({ code, pyStatus, run }: RunnableCodeBlockProp
             type="button"
             onClick={handleRun}
             disabled={!canRun}
-            className="rounded px-2 py-0.5 text-xs font-medium text-emerald-300 transition hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-40 focus-ring"
+            className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-40 focus-ring"
             title={pyStatus === 'ready' ? '在浏览器里跑这段代码' : 'Python 环境未就绪'}
           >
             {running ? '运行中…' : '▶ 试运行'}
           </button>
         </div>
       </div>
-      <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-emerald-200">
+      <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-accent-stronger">
         <code>{code}</code>
       </pre>
       {output && (

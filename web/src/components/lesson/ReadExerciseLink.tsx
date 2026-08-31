@@ -24,13 +24,13 @@ export function ReadExerciseLink({
   return (
     <Link
       href={href}
-      className="focus-ring mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-4 transition hover:border-emerald-500/40 hover:bg-slate-900/70"
+      className="focus-ring mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-line bg-surface/40 px-6 py-4 transition hover:border-emerald-500/40 hover:bg-surface/70"
     >
-      <span className="rounded-md border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-1 font-mono text-xs font-medium text-emerald-400">
+      <span className="rounded-md border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-1 font-mono text-xs font-medium text-accent">
         练习 {index + 1} / {totalExercises}
       </span>
-      <span className="font-medium text-slate-200">{title}</span>
-      <span className="ml-auto text-sm text-emerald-300">去闯关页做这题 →</span>
+      <span className="font-medium text-fg-body">{title}</span>
+      <span className="ml-auto text-sm text-accent-strong">去闯关页做这题 →</span>
     </Link>
   );
 }

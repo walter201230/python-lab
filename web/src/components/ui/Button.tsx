@@ -18,13 +18,13 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'cla
 const VARIANT_CLASS: Record<Variant, string> = {
   // 主操作：主题渐变绿
   primary:
-    'gradient-tech-green text-slate-950 font-semibold shadow shadow-emerald-500/40 hover:opacity-95',
+    'gradient-tech-green text-on-accent font-semibold shadow shadow-emerald-500/40 hover:opacity-95',
   // 次操作：slate 边框 + 浅底
   secondary:
-    'border border-slate-700 bg-slate-800 text-slate-100 font-medium hover:bg-slate-700',
+    'border border-line-strong bg-raised text-fg font-medium hover:bg-raised-hover',
   // 文字按钮：透明 + 下划线
   ghost:
-    'text-slate-300 underline underline-offset-2 hover:text-slate-100 disabled:no-underline',
+    'text-fg-muted underline underline-offset-2 hover:text-fg disabled:no-underline',
 };
 
 const SIZE_CLASS: Record<Size, string> = {

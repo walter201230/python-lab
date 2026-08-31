@@ -15,27 +15,27 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
   const totalSteps = blocks.filter((b) => b.kind === 'step').length;
 
   return (
-    <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] bg-slate-950">
+    <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] bg-canvas">
       <div className="mx-auto max-w-[59rem] px-4 sm:px-6">
         <article className="py-8 sm:py-10">
           <header className="mb-2">
-            <h1 className="text-3xl font-bold text-slate-100 sm:text-4xl">{meta.title}</h1>
-            <p className="mt-1.5 text-sm text-slate-400">
-              完整讲解 · <span className="text-emerald-400">{totalSteps}</span> 段教学
+            <h1 className="text-3xl font-bold text-fg sm:text-4xl">{meta.title}</h1>
+            <p className="mt-1.5 text-sm text-fg-subtle">
+              完整讲解 · <span className="text-accent">{totalSteps}</span> 段教学
               {exercises.length > 0 && (
                 <>
-                  <span className="mx-2 text-slate-700">·</span>
-                  配 <span className="text-emerald-400">{exercises.length}</span> 道练习题
+                  <span className="mx-2 text-fg-faint">·</span>
+                  配 <span className="text-accent">{exercises.length}</span> 道练习题
                 </>
               )}
-              <span className="mx-2 text-slate-700">·</span>
-              预计 <span className="text-emerald-400">{meta.estimatedMinutes}</span> 分钟
+              <span className="mx-2 text-fg-faint">·</span>
+              预计 <span className="text-accent">{meta.estimatedMinutes}</span> 分钟
             </p>
-            <p className="mt-3 text-sm text-slate-400">
+            <p className="mt-3 text-sm text-fg-subtle">
               本页是本章的通读版，可直接读完全部讲解。想动手写代码、跑判分，去{' '}
               <Link
                 href={practiceHref}
-                className="focus-ring rounded font-medium text-emerald-400 underline decoration-emerald-500/40 underline-offset-4 transition hover:text-emerald-300"
+                className="focus-ring rounded font-medium text-accent underline decoration-emerald-500/40 underline-offset-4 transition hover:text-accent-strong"
               >
                 闯关模式
               </Link>
@@ -67,12 +67,12 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
           })}
 
           <div className="mt-10 rounded-2xl border border-emerald-500/25 bg-emerald-500/8 px-6 py-6 text-center">
-            <p className="text-slate-200">
+            <p className="text-fg-body">
               读完了？{exercises.length > 0 ? '动手练一遍才算真会。' : '继续下一章吧。'}
             </p>
             <Link
               href={practiceHref}
-              className="focus-ring mt-3 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/15 px-5 py-2.5 font-medium text-emerald-200 transition hover:bg-emerald-500/25"
+              className="focus-ring mt-3 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/15 px-5 py-2.5 font-medium text-accent-stronger transition hover:bg-emerald-500/25"
             >
               去闯关模式练习 →
             </Link>

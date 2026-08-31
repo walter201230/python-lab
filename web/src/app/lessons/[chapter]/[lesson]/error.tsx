@@ -21,29 +21,29 @@ export default function LessonError({
   }, [error]);
 
   return (
-    <div className="bg-tech-grid relative flex min-h-[calc(100vh-57px)] items-center justify-center bg-slate-950 px-4 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-slate-900/80 p-8 text-center backdrop-blur-md">
+    <div className="bg-tech-grid relative flex min-h-[calc(100vh-57px)] items-center justify-center bg-canvas px-4 py-16">
+      <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-surface/80 p-8 text-center backdrop-blur-md">
         <div className="mb-4 text-5xl" aria-hidden>
           ⚠️
         </div>
-        <h1 className="mb-2 text-xl font-bold text-slate-100">这一节加载出错了</h1>
-        <p className="mb-6 text-sm leading-relaxed text-slate-300">
+        <h1 className="mb-2 text-xl font-bold text-fg">这一节加载出错了</h1>
+        <p className="mb-6 text-sm leading-relaxed text-fg-muted">
           可能是网络抖动或这节内容暂时损坏。可以重试，或者先去其他章节学习。
         </p>
         {error.digest && (
-          <p className="mb-6 font-mono text-[10px] text-slate-500">错误代码：{error.digest}</p>
+          <p className="mb-6 font-mono text-[10px] text-fg-subtle">错误代码：{error.digest}</p>
         )}
         <div className="flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
             onClick={reset}
-            className="gradient-tech-green inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-slate-950 shadow shadow-emerald-500/40 transition hover:opacity-95"
+            className="gradient-tech-green inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-on-accent shadow shadow-emerald-500/40 transition hover:opacity-95"
           >
             重试
           </button>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-5 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-600 hover:bg-slate-800"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong bg-raised/60 px-5 py-2.5 text-sm font-medium text-fg-body transition hover:border-line-emphasis hover:bg-raised"
           >
             返回课程目录
           </Link>

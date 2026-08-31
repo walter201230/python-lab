@@ -23,8 +23,8 @@ export function PyodideToast({ status }: { status: PyodideStatus }) {
         'pointer-events-none fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-xs font-medium shadow-xl backdrop-blur-md transition-all duration-500 ' +
         (isReady ? 'translate-y-2 opacity-0 ' : 'translate-y-0 opacity-100 ') +
         (isError
-          ? 'border-rose-500/40 bg-rose-500/15 text-rose-200 shadow-rose-500/20'
-          : 'border-emerald-500/30 bg-slate-900/90 text-emerald-200 shadow-emerald-500/10')
+          ? 'border-rose-500/40 bg-rose-500/15 text-danger-stronger shadow-rose-500/20'
+          : 'border-emerald-500/30 bg-surface/90 text-accent-stronger shadow-emerald-500/10')
       }
     >
       {isError ? (
@@ -34,7 +34,7 @@ export function PyodideToast({ status }: { status: PyodideStatus }) {
           <button
             type="button"
             onClick={() => resetPyodideWorker()}
-            className="focus-ring pointer-events-auto rounded-md border border-rose-400/40 px-2 py-0.5 text-rose-100 transition hover:bg-rose-500/20"
+            className="focus-ring pointer-events-auto rounded-md border border-danger/40 px-2 py-0.5 text-danger-stronger transition hover:bg-rose-500/20"
           >
             重试
           </button>

@@ -106,7 +106,7 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
   }, [exercises]);
 
   return (
-    <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] bg-slate-950">
+    <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] bg-canvas">
       <PyodideToast status={pyStatus} />
       <Confetti key={confettiKey} trigger={confettiKey > 0} />
       <ShortcutHint />
@@ -123,26 +123,26 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
       <div className="relative mx-auto max-w-[59rem] px-4 sm:px-6">
       <article className="min-w-0 py-8 sm:py-10">
         <header className="mb-2">
-          <h1 className="text-3xl font-bold text-slate-100 sm:text-4xl">{meta.title}</h1>
+          <h1 className="text-3xl font-bold text-fg sm:text-4xl">{meta.title}</h1>
           {exercises.length > 0 && (
-            <p className="mt-1.5 text-sm text-slate-400">
-              <span className="text-emerald-400">{exercises.length}</span> 道练习题
-              <span className="mx-2 text-slate-700">·</span>
-              预计 <span className="text-emerald-400">{meta.estimatedMinutes}</span> 分钟
-              <span className="mx-2 text-slate-700">·</span>
+            <p className="mt-1.5 text-sm text-fg-subtle">
+              <span className="text-accent">{exercises.length}</span> 道练习题
+              <span className="mx-2 text-fg-faint">·</span>
+              预计 <span className="text-accent">{meta.estimatedMinutes}</span> 分钟
+              <span className="mx-2 text-fg-faint">·</span>
               做对一题解锁下一段
             </p>
           )}
           {exercises.length === 0 && (
-            <p className="mt-1.5 text-sm text-slate-400">
+            <p className="mt-1.5 text-sm text-fg-subtle">
               本章为概念阅读 · 预计{' '}
-              <span className="text-emerald-400">{meta.estimatedMinutes}</span> 分钟
+              <span className="text-accent">{meta.estimatedMinutes}</span> 分钟
             </p>
           )}
           <p className="mt-2 text-sm">
             <Link
               href={`/lessons/${meta.chapter}/${meta.id}/read/`}
-              className="focus-ring rounded text-slate-400 underline decoration-slate-700 decoration-1 underline-offset-4 transition hover:text-emerald-300 hover:decoration-emerald-500/60"
+              className="focus-ring rounded text-fg-subtle underline decoration-fg-faint decoration-1 underline-offset-4 transition hover:text-accent-strong hover:decoration-emerald-500/60"
             >
               完整通读本章 →
             </Link>
@@ -184,12 +184,12 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
         })}
 
         {!allCompleted && exercises.length > 0 && (
-          <div className="mt-6 flex items-center justify-center gap-2 py-4 text-sm text-slate-400">
+          <div className="mt-6 flex items-center justify-center gap-2 py-4 text-sm text-fg-subtle">
             <span className="text-base" aria-hidden>
               🔒
             </span>
             做对当前题解锁下一段 ·
-            <span className="text-emerald-400">{completedCount}</span>
+            <span className="text-accent">{completedCount}</span>
             <span aria-hidden>/</span>
             <span>{exercises.length}</span>
           </div>
@@ -199,13 +199,13 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
           <CompletionBanner title={meta.title} nextChapter={nextChapter} />
         )}
 
-        <p className="mt-8 text-center text-sm leading-relaxed text-slate-400">
+        <p className="mt-8 text-center text-sm leading-relaxed text-fg-subtle">
           推荐一个，全网最全最友好的中文 AI 编程指南：{' '}
           <a
             href="https://coding.stormzhang.ai/"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-emerald-400 transition hover:text-emerald-300"
+            className="font-medium text-accent transition hover:text-accent-strong"
           >
             coding.stormzhang.ai
           </a>
