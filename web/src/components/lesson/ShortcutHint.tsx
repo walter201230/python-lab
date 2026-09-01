@@ -74,12 +74,6 @@ export function ShortcutHint() {
             ⌘ + Shift + Enter
           </kbd>
         </li>
-        <li className="flex items-center justify-between gap-3">
-          <span>退出全屏编辑</span>
-          <kbd className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-fg-muted">
-            Esc
-          </kbd>
-        </li>
       </ul>
     </div>
   );

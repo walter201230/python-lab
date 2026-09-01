@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from '@/lib/useTheme';
 
@@ -28,7 +27,6 @@ interface ExerciseEditorProps {
  * 练习题代码编辑器（Monaco 包装）。
  *
  * - 小屏默认 240px（h-60），桌面 340px——避免在 iPhone 上吃掉一半视口
- * - "⛶ 全屏" 按钮：进入覆盖整个 viewport 的全屏编辑模式（Esc 退出）
  * - 编辑器顶部 macOS 风格三色圆点 + main.py 文件名 + 状态标签
  */
 export function ExerciseEditor({
@@ -38,23 +36,7 @@ export function ExerciseEditor({
   unlocked,
   completed,
 }: ExerciseEditorProps) {
-  const [fullscreen, setFullscreen] = useState(false);
   const { theme } = useTheme();
-
-  // Esc 退出全屏 + body 锁滚动
-  useEffect(() => {
-    if (!fullscreen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setFullscreen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [fullscreen]);
 
   const editor = (
     <MonacoEditor
@@ -65,7 +47,7 @@ export function ExerciseEditor({
       theme={theme === "light" ? "vs" : "vs-dark"}
       options={{
         fontSize: 14,
-        minimap: { enabled: fullscreen },
+        minimap: { enabled: false },
         scrollBeyondLastLine: false,
         padding: { top: 12, bottom: 12 },
         lineNumbersMinChars: 3,
@@ -86,29 +68,9 @@ export function ExerciseEditor({
         <span className="text-xs text-fg-subtle">
           {!unlocked ? '🔒 未解锁' : completed ? '✓ 已通过（只读）' : '可编辑'}
         </span>
-        {unlocked && (
-          <button
-            type="button"
-            onClick={() => setFullscreen((v) => !v)}
-            aria-label={fullscreen ? '退出全屏' : '全屏编辑'}
-            title={fullscreen ? '退出全屏 (Esc)' : '全屏编辑'}
-            className="rounded-md border border-line-strong bg-raised/60 px-2 py-1 text-xs text-fg-muted transition hover:border-emerald-500/40 hover:text-accent-strong focus-ring"
-          >
-            {fullscreen ? '⤓ 退出' : '⛶ 全屏'}
-          </button>
-        )}
       </div>
     </div>
   );
-
-  if (fullscreen) {
-    return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-canvas">
-        {toolbar}
-        <div className="flex-1">{editor}</div>
-      </div>
-    );
-  }
 
   return (
     <>
