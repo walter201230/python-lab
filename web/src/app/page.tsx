@@ -4,6 +4,7 @@ import { getChapterStats, type ChapterStat } from '@/lib/chapterStats';
 import { ChapterProgress } from '@/components/ChapterProgress';
 import { HomeStats } from '@/components/HomeStats';
 import { SmartHeroCta } from '@/components/SmartHeroCta';
+import { HeroTerminal } from '@/components/HeroTerminal';
 import { PyodideBootstrap } from '@/components/PyodideBootstrap';
 
 export default async function HomePage() {
@@ -23,43 +24,28 @@ export default async function HomePage() {
         <div className="absolute inset-y-0 right-0 -z-10 w-1/2 bg-[radial-gradient(ellipse_at_right,rgba(34,211,238,0.12),transparent_60%)]" />
 
         <div className="mx-auto max-w-6xl px-4 py-24 md:py-36">
-          <h1 className="gradient-text-shimmer mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            学 Python，从零到能用
-          </h1>
-          <p className="mb-10 text-base leading-relaxed text-fg-body sm:text-lg md:whitespace-nowrap md:text-xl">
-            在浏览器里写代码，一题一题练。代码当场跑、判分秒回，做对一题解锁下一题。
-          </p>
-          {/* 数据背书 */}
-          <div className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-fg-subtle">
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden>⭐</span>
-              <span className="font-semibold text-fg">25k+</span>
-              <span>GitHub Star</span>
-            </span>
-            <span className="text-fg-faint" aria-hidden>·</span>
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden>🍴</span>
-              <span className="font-semibold text-fg">5.4k+</span>
-              <span>Fork</span>
-            </span>
-            <span className="text-fg-faint" aria-hidden>·</span>
-            <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden>📚</span>
-              <span className="font-semibold text-fg">29 章</span>
-              <span>免费</span>
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-            <SmartHeroCta chapters={CHAPTERS} stats={stats} fallbackHref={startHref} />
-            <a
-              href="https://github.com/walter201230/Python"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted underline decoration-fg-faint decoration-1 underline-offset-4 transition hover:text-fg hover:decoration-emerald-500/60 focus-ring"
-            >
-              查看原教程 GitHub
-              <span aria-hidden className="text-xs">↗</span>
-            </a>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <h1 className="gradient-text-shimmer mb-6 text-4xl font-bold leading-tight sm:text-5xl lg:text-5xl xl:text-6xl">
+                小白学 Python
+              </h1>
+              <p className="mb-10 text-base leading-relaxed text-fg-body sm:text-lg md:text-xl">
+                浏览器里写代码，代码当场跑、判分秒回，<span className="whitespace-nowrap">做对一题解锁下一题。</span>
+              </p>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+                <SmartHeroCta chapters={CHAPTERS} stats={stats} fallbackHref={startHref} />
+                <a
+                  href="https://github.com/walter201230/Python"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted underline decoration-fg-faint decoration-1 underline-offset-4 transition hover:text-fg hover:decoration-emerald-500/60 focus-ring"
+                >
+                  查看原教程 GitHub
+                  <span aria-hidden className="text-xs">↗</span>
+                </a>
+              </div>
+            </div>
+            <HeroTerminal />
           </div>
         </div>
       </section>
