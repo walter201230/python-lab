@@ -27,7 +27,7 @@ export function LessonStickyBar({
   if (exercises.length === 0) return null;
 
   return (
-    <div className="sticky top-[55px] z-30 border-b border-line/80 bg-canvas">
+    <div className="sticky top-header z-30 border-b border-line/80 bg-canvas">
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 text-sm">
           <span className="hidden truncate font-semibold text-fg sm:block">

@@ -132,6 +132,22 @@
   --grid-line: rgba(15, 118, 110, 0.07);
 }
 
+/* 顶栏高度：唯一真相源，配 h-header / top-header 使用。
+ *
+ * 必须定义在 @theme 里而不是 :root——写在 :root 会被 Tailwind 的自定义属性
+ * tree-shaking 删掉（同块的 --canvas 等能留下，是因为被下面的 @theme inline
+ * 引用了），产物里只剩 top: var(--header-h) 而没有变量定义，sticky 会直接
+ * 退化成 top: auto 而失效。
+ *
+ * 这个数字以前被抄在 7 个地方（55px / 57px 两种写法），顶栏内容一改就对不上，
+ * sticky bar 与顶栏之间露出几像素裸缝、正文从缝里穿过去（2026-08-31 犯了两次：
+ * 57→实际 55，55→实际 53）。改顶栏高度只改这里。
+ *
+ * 注意它锁死 <header> 高度，顶栏内容高度别超过它。 */
+@theme {
+  --spacing-header: 53px;
+}
+
 @theme inline {
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);

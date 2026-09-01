@@ -15,7 +15,7 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
   const totalSteps = blocks.filter((b) => b.kind === 'step').length;
 
   return (
-    <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] bg-canvas">
+    <div className="bg-tech-grid relative min-h-[calc(100vh-var(--spacing-header))] bg-canvas">
       <div className="mx-auto max-w-[59rem] px-4 sm:px-6">
         <article className="py-8 sm:py-10">
           <header className="mb-2">

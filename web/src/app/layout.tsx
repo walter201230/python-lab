@@ -29,7 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         className="flex min-h-full flex-col bg-canvas text-fg"
         suppressHydrationWarning
       >
-        <header className="sticky top-0 z-40 border-b border-line/80 bg-canvas">
+        <header className="sticky top-0 z-40 h-header border-b border-line/80 bg-canvas">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
             <Link href="/" className="font-semibold" aria-label="小白学 Python — 首页">
               <span

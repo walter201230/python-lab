@@ -106,7 +106,7 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
   }, [exercises]);
 
   return (
-    <div className="bg-tech-grid relative min-h-[calc(100vh-57px)] bg-canvas">
+    <div className="bg-tech-grid relative min-h-[calc(100vh-var(--spacing-header))] bg-canvas">
       <PyodideToast status={pyStatus} />
       <Confetti key={confettiKey} trigger={confettiKey > 0} />
       <ShortcutHint />

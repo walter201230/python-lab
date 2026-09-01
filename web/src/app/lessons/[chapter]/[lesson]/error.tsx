@@ -21,7 +21,7 @@ export default function LessonError({
   }, [error]);
 
   return (
-    <div className="bg-tech-grid relative flex min-h-[calc(100vh-57px)] items-center justify-center bg-canvas px-4 py-16">
+    <div className="bg-tech-grid relative flex min-h-[calc(100vh-var(--spacing-header))] items-center justify-center bg-canvas px-4 py-16">
       <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-surface/80 p-8 text-center backdrop-blur-md">
         <div className="mb-4 text-5xl" aria-hidden>
           ⚠️
