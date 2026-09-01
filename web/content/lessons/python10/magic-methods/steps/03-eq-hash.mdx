@@ -88,7 +88,7 @@ print(n1 < n2)   # True
 
 如果想让对象既可比较又可哈希，要手动加上 `__hash__`：
 
-```python
+```python no-run
 class Money:
     def __init__(self, amount):
         self.amount = amount

@@ -29,7 +29,7 @@ divide(10, 0)
 
 不一样。区别在于「捕获范围」：
 
-```python
+```python no-run
 def divide(a, b):
     try:
         result = a / b
@@ -78,7 +78,7 @@ safe_divide(10, 0)
 
 想想平时写代码：打开文件、连数据库、申请资源……这些操作完事儿都得「关闭」「释放」。如果中间出错了直接跳走，资源就泄露了。`finally` 就是用来确保「**无论如何这段清理代码都得跑**」的。
 
-```python
+```python no-run
 def read_first_line(path):
     f = open(path, 'r')
     try:
@@ -92,7 +92,7 @@ def read_first_line(path):
 
 ## 完整四件套的顺序
 
-```python
+```python no-run
 try:
     # 可能出错的代码
     pass

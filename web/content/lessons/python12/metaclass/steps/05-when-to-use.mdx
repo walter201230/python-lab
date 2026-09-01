@@ -13,7 +13,7 @@
 
 最经典的例子是 Django ORM：
 
-```python
+```python no-run
 class Person(models.Model):
     name = models.CharField(max_length=30)
     age = models.IntegerField()
@@ -21,7 +21,7 @@ class Person(models.Model):
 
 用起来：
 
-```python
+```python no-run
 guy = Person(name='bob', age=35)
 print(guy.age)   # 直接是 int 35，不是 IntegerField 对象
 ```

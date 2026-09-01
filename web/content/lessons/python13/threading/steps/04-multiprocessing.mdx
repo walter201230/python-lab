@@ -18,7 +18,7 @@ Python 提供了非常好用的多进程包 `multiprocessing`，只需要定义�
 
 下面是一个创建函数并将其作为多个进程的例子：
 
-```python
+```python no-run
 import multiprocessing
 import time
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
 也可以把进程创建成一个类，当进程 p 调用 `start()` 时，自动调用 `run()` 方法：
 
-```python
+```python no-run
 import multiprocessing
 import time
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
 没有加 `daemon` 属性的例子：
 
-```python
+```python no-run
 import multiprocessing
 import time
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
 进程 p 添加 `daemon` 属性之后：
 
-```python
+```python no-run
 import multiprocessing
 import time
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
 如果想要让子进程执行完该怎么做？可以用 `join` 方法。`join` 方法的主要作用是：阻塞当前进程，直到调用 `join` 方法的那个进程执行完，再继续执行当前进程。
 
-```python
+```python no-run
 import multiprocessing
 import time
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
 当然不用，可以使用进程池批量创建子进程：
 
-```python
+```python no-run
 from multiprocessing import Pool
 import os
 import time
@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
 请注意输出结果，子进程 0、1、2、3 是立刻执行的，而子进程 4 要等待前面某个子进程完成后才执行。这是因为 `Pool(4)` 限制最多同时执行 4 个进程。如果改成：
 
-```python
+```python no-run
 p = Pool(5)
 ```
 
@@ -201,7 +201,7 @@ p = Pool(5)
 
 以 Queue 为例，在父进程中创建两个子进程，一个往 Queue 里写数据，一个从 Queue 里读数据：
 
-```python
+```python no-run
 from multiprocessing import Process, Queue
 import os
 import time

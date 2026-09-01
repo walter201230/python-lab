@@ -4,7 +4,7 @@
 
 我们先来看一个需求：水哥手上有两份联系人字典，需要把它们合并成一份。
 
-```python
+```python no-run
 old_contacts = {'一点水': '131456780001', '两点水': '131456780002'}
 new_contacts = {'三点水': '131456780003', '两点水': '131456780099'}
 ```
@@ -13,13 +13,13 @@ new_contacts = {'三点水': '131456780003', '两点水': '131456780099'}
 
 在 Python 3.9 之前，常见的写法是这样：
 
-```python
+```python no-run
 merged = {**old_contacts, **new_contacts}
 ```
 
 这种 `**` 解包写法没毛病，但是不够直观。Python 3.9 之后，可以直接用 `|`：
 
-```python
+```python no-run
 merged = old_contacts | new_contacts
 print(merged)
 ```
@@ -34,7 +34,7 @@ print(merged)
 
 如果你不想生成新字典，而是直接「在原字典上」合并新内容，那就用 `|=`：
 
-```python
+```python no-run
 old_contacts |= new_contacts
 print(old_contacts)
 ```

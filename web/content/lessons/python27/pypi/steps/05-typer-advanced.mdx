@@ -6,7 +6,7 @@
 
 要是想让它变成可选，加一个默认值即可：
 
-```python
+```python no-run
 def hello(name: str = "World"):
     print(f"Hi {name}")
 ```
@@ -25,7 +25,7 @@ python hello.py --name 两点水  # 输出 Hi 两点水
 
 短选项也很容易加，用 `typer.Option`：
 
-```python
+```python no-run
 import typer
 
 
@@ -57,7 +57,7 @@ python hello.py --name 两点水
 
 写到 typer 函数签名里——
 
-```python
+```python no-run
 def watermark(
     input: Path,                 # 位置参数：必填
     output: Path,                # 位置参数：必填
@@ -85,7 +85,7 @@ my-tool input.jpg output.jpg --text "两点水版权所有" --opacity 0.8 --verb
 
 先看 prompt，它问用户一个问题然后拿到答案：
 
-```python
+```python no-run
 import typer
 
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
 `confirm` 是「问 yes/no」：
 
-```python
+```python no-run
 import typer
 
 
@@ -145,7 +145,7 @@ confirm 默认是「不」（用户直接回车 = no），加 `default=True` 改
 
 typer 提供了两种退出方式——
 
-```python
+```python no-run
 import typer
 
 
@@ -170,7 +170,7 @@ def deploy(env: str):
 
 typer 内置了简单的彩色输出，叫 `typer.echo` 和 `typer.secho`：
 
-```python
+```python no-run
 import typer
 
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
 
 typer 支持子 app 嵌套：
 
-```python
+```python no-run
 import typer
 
 app = typer.Typer()

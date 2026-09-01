@@ -6,7 +6,7 @@
 
 变量装的是「东西」——用名词：
 
-```python
+```python no-run
 user_name = '张三'
 total_price = 100
 order_list = []
@@ -14,7 +14,7 @@ order_list = []
 
 函数做的是「动作」——用动词或动词短语：
 
-```python
+```python no-run
 def get_user(uid): ...
 def calculate_total(items): ...
 def send_email(to, body): ...
@@ -22,14 +22,14 @@ def send_email(to, body): ...
 
 反例（让读者皱眉）：
 
-```python
+```python no-run
 def user(uid): ...        # 这是函数还是属性？
 def data(items): ...       # 处理 data？还是返回 data？
 ```
 
 ## 2、布尔值用 `is_` / `has_` / `can_` 开头
 
-```python
+```python no-run
 is_active = True       # 一眼看出是布尔
 has_permission = False
 can_edit = True
@@ -37,14 +37,14 @@ can_edit = True
 
 反例：
 
-```python
+```python no-run
 active = True          # active 是状态值还是布尔？要去看赋值才知道
 permission = False     # 这是权限对象还是 True/False？
 ```
 
 ## 3、避免无意义的缩写
 
-```python
+```python no-run
 # 不好
 def calc(u, p):
     return u * p

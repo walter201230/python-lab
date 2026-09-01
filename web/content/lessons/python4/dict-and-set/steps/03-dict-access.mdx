@@ -18,7 +18,7 @@ print(name['两点水'])
 
 > ⚠️ **注意**：如果字典中没有这个键，直接 `dict[key]` 会**报错**（`KeyError`）。如果不确定 key 是否存在，更安全的写法是 `dict.get(key)`——找不到时返回 `None`，不报错。
 
-```python
+```python no-run
 name.get('六点水')   # None，不会报错
 name['六点水']       # KeyError！
 ```

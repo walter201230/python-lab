@@ -170,13 +170,13 @@ line-ending = "auto"
 
 有些时候你确实想让 ruff 闭嘴。比如某行代码里 `eval()` 用得有充分理由，但 S307 会告警。这时候可以加 `# noqa` 注释：
 
-```python
+```python no-run
 result = eval(user_input)  # noqa: S307
 ```
 
 `# noqa: S307` 表示「这行代码忽略 S307 这条规则」。多条规则用逗号隔开：
 
-```python
+```python no-run
 result = eval(user_input)  # noqa: S307, S102
 ```
 
@@ -192,7 +192,7 @@ ruff 除了搬运别家规则，也自己原创了一些规则，前缀是 `RUF`
 
 代码里出现「看着是英文字母但其实是希腊字母、全角字符」这种字符，会触发 RUF001。比如：
 
-```python
+```python no-run
 result = data["nаme"]  # 这里的 а 是西里尔字母 а，不是英文 a
 ```
 
@@ -200,13 +200,13 @@ result = data["nаme"]  # 这里的 а 是西里尔字母 а，不是英文 a
 
 ### RUF005：用解包代替 list 拼接
 
-```python
+```python no-run
 new_list = [1, 2, 3] + list(other)
 ```
 
 ruff 建议改成：
 
-```python
+```python no-run
 new_list = [1, 2, 3, *other]
 ```
 
@@ -214,21 +214,21 @@ new_list = [1, 2, 3, *other]
 
 ### RUF013：隐式 Optional 类型
 
-```python
+```python no-run
 def greet(name: str = None):
     print(f"Hello, {name}")
 ```
 
 这个写法很常见，但其实有问题——`name` 默认是 None，但类型注解写的是 `str`，前后不一致。ruff 会建议改成：
 
-```python
+```python no-run
 def greet(name: str | None = None):
     print(f"Hello, {name}")
 ```
 
 ### RUF100：未使用的 noqa
 
-```python
+```python no-run
 x = 1  # noqa: F401
 ```
 

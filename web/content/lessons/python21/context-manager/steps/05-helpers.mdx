@@ -6,7 +6,7 @@
 
 有时候我们就是想忽略某个无关紧要的错误，老办法是：
 
-```python
+```python no-run
 try:
     do_something()
 except SomeError:
@@ -15,7 +15,7 @@ except SomeError:
 
 写多了很啰嗦。`suppress` 让它变一行：
 
-```python
+```python no-run
 from contextlib import suppress
 
 with suppress(FileNotFoundError):

@@ -2,14 +2,14 @@
 
 回到最开始那段「让人懵」的代码：
 
-```python
+```python no-run
 def calc(x, y, op):
     ...
 ```
 
 加上类型注解之后：
 
-```python
+```python no-run
 def calc(x: int, y: int, op: str) -> int:
     ...
 ```
@@ -20,7 +20,7 @@ def calc(x: int, y: int, op: str) -> int:
 
 记住这个口诀：「**参数加冒号，返回加箭头**」。
 
-```python
+```python no-run
 def add(a: int, b: int) -> int:
     return a + b
 
@@ -35,7 +35,7 @@ def log(message: str) -> None:    # 没有返回值就写 None
 
 调用时：
 
-```python
+```python no-run
 print(add(3, 5))
 print(greet('张三'))
 log('打卡成功')
@@ -85,7 +85,7 @@ print(add('hello', 'world'))   # 居然能跑！输出 'helloworld'
 
 光写 `list` 不够——「列表里装的啥」还是不知道。Python 3.9+ 可以这么写：
 
-```python
+```python no-run
 def total(nums: list[int]) -> int:
     return sum(nums)
 
@@ -101,7 +101,7 @@ def name_to_age(data: dict[str, int]) -> int:
 
 用 `X | None`（Python 3.10+）：
 
-```python
+```python no-run
 def find_user(uid: int) -> str | None:
     db = {1: '张三', 2: '李四'}
     return db.get(uid)    # 找不到时 .get() 返回 None

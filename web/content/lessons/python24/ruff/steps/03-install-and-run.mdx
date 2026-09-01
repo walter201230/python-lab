@@ -99,14 +99,14 @@ print(sys.version)
 
 ### E711：和 None 比较应该用 is
 
-```python
+```python no-run
 if x == None:
     print("x 是 None")
 ```
 
 修复后：
 
-```python
+```python no-run
 if x is None:
     print("x 是 None")
 ```
@@ -115,7 +115,7 @@ if x is None:
 
 ### C408：不必要的 list/dict/tuple 调用
 
-```python
+```python no-run
 empty = list()
 d = dict()
 t = tuple()
@@ -123,7 +123,7 @@ t = tuple()
 
 修复后：
 
-```python
+```python no-run
 empty = []
 d = {}
 t = ()
@@ -133,7 +133,7 @@ t = ()
 
 ### UP006：用新版类型注解
 
-```python
+```python no-run
 from typing import List, Dict
 
 def foo(x: List[int]) -> Dict[str, int]:
@@ -142,7 +142,7 @@ def foo(x: List[int]) -> Dict[str, int]:
 
 修复后（`target-version = "py39"` 以上）：
 
-```python
+```python no-run
 def foo(x: list[int]) -> dict[str, int]:
     pass
 ```
@@ -151,7 +151,7 @@ Python 3.9+ 已经支持直接用 `list[int]` 写类型注解，不用再从 `ty
 
 ### UP008：用 super() 不要带参数
 
-```python
+```python no-run
 class Foo(Bar):
     def __init__(self):
         super(Foo, self).__init__()
@@ -159,7 +159,7 @@ class Foo(Bar):
 
 修复后：
 
-```python
+```python no-run
 class Foo(Bar):
     def __init__(self):
         super().__init__()
@@ -169,7 +169,7 @@ Python 3 里 `super()` 不传参数就够了，老 Python 2 风格的 `super(Foo
 
 ### I001：import 排序
 
-```python
+```python no-run
 import sys
 from my_project import utils
 import os
@@ -178,7 +178,7 @@ import requests
 
 修复后：
 
-```python
+```python no-run
 import os
 import sys
 
@@ -211,14 +211,14 @@ ruff check --fix --unsafe-fixes .
 
 格式化前：
 
-```python
+```python no-run
 def foo(a,b,c, d ):
     return  {  'name':a,'age':b,'list':[1,2,3]  }
 ```
 
 `ruff format .` 之后：
 
-```python
+```python no-run
 def foo(a, b, c, d):
     return {"name": a, "age": b, "list": [1, 2, 3]}
 ```

@@ -8,6 +8,8 @@ interface RunnableCodeBlockProps {
   code: string;
   pyStatus: PyodideStatus;
   run: (code: string, opts?: RunOptions) => Promise<RunResult>;
+  /** false 时只渲染代码与「复制」，不给「试运行」——见下方注释里的 no-run。 */
+  runnable?: boolean;
 }
 
 /**
@@ -17,8 +19,13 @@ interface RunnableCodeBlockProps {
  *   讲解里出现的代码片段，让用户当场跑一下能极大提高学习体验
  *   （Pyodide 已经在浏览器跑，零成本）。
  *   仅展示型——不参与解锁判分，与练习题严格分离。
+ *
+ *   并非每个 python 块都该给「试运行」：伪代码（`if 条件成立:`）、只定义不调用因而
+ *   没有输出的片段、依赖前文变量的半截代码、以及 Pyodide 跑不了的东西（pytest、
+ *   起线程、multiprocessing）点了只会得到报错或空白。这类块在 mdx 里标成
+ *   ```python no-run，由 StepCard 传 runnable={false} 进来，只保留代码与「复制」。
  */
-export function RunnableCodeBlock({ code, pyStatus, run }: RunnableCodeBlockProps) {
+export function RunnableCodeBlock({ code, pyStatus, run, runnable = true }: RunnableCodeBlockProps) {
   const [output, setOutput] = useState<{ stdout: string; stderr: string; error?: string } | null>(
     null,
   );
@@ -58,15 +65,17 @@ export function RunnableCodeBlock({ code, pyStatus, run }: RunnableCodeBlockProp
           >
             {copied ? '已复制' : '复制'}
           </button>
-          <button
-            type="button"
-            onClick={handleRun}
-            disabled={!canRun}
-            className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-40 focus-ring"
-            title={pyStatus === 'ready' ? '在浏览器里跑这段代码' : 'Python 环境未就绪'}
-          >
-            {running ? '运行中…' : '▶ 试运行'}
-          </button>
+          {runnable && (
+            <button
+              type="button"
+              onClick={handleRun}
+              disabled={!canRun}
+              className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-40 focus-ring"
+              title={pyStatus === 'ready' ? '在浏览器里跑这段代码' : 'Python 环境未就绪'}
+            >
+              {running ? '运行中…' : '▶ 试运行'}
+            </button>
+          )}
         </div>
       </div>
       <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-accent-stronger">

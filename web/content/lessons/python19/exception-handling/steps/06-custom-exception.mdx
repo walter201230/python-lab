@@ -2,7 +2,7 @@
 
 刚才那个 `ConfigError` 看到了吧？自定义异常类其实就一行：
 
-```python
+```python no-run
 class ConfigError(Exception):
     pass
 ```
@@ -19,7 +19,7 @@ class ConfigError(Exception):
 
 如果用内置异常：
 
-```python
+```python no-run
 def punch(user, time, ip):
     if time < 9:
         raise ValueError('未到上班时间')

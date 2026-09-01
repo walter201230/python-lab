@@ -11,7 +11,7 @@ uv add --dev pytest
 
 写一个最普通的 Python 文件 `mymath.py`：
 
-```python
+```python no-run
 def add(a, b):
     return a + b
 
@@ -24,7 +24,7 @@ def divide(a, b):
 
 然后写一个测试文件 `test_mymath.py`：
 
-```python
+```python no-run
 from mymath import add, divide
 
 
@@ -85,7 +85,7 @@ pytest 直接告诉你：第几行的断言炸了、左边是 6、右边是 5、
 
 按理说 `assert` 这个东西很「弱」——它失败的时候只能抛 AssertionError，啥提示都没有。Python 内置的 assert 出错时是这样的：
 
-```python
+```python no-run
 >>> x = 6
 >>> assert x == 5
 Traceback (most recent call last):
@@ -101,7 +101,7 @@ AssertionError
 
 复杂一点的断言也照样有详细信息：
 
-```python
+```python no-run
 def test_list_equal():
     a = [1, 2, 3, 4, 5]
     b = [1, 2, 3, 4, 6]
@@ -122,7 +122,7 @@ E         At index 4 diff: 5 != 6
 
 几种常见的断言：
 
-```python
+```python no-run
 # 相等
 assert x == 5
 assert name == "两点水"
@@ -225,7 +225,7 @@ test_mymath.py::test_divide PASSED
 
 pytest 提供了 `pytest.raises` 上下文管理器：
 
-```python
+```python no-run
 import pytest
 
 
@@ -238,7 +238,7 @@ def test_divide_by_zero():
 
 如果各位还想顺便检查异常的内容（比如错误信息）：
 
-```python
+```python no-run
 def test_divide_by_zero_message():
     with pytest.raises(ValueError, match="除数不能为 0"):
         divide(10, 0)
@@ -248,7 +248,7 @@ def test_divide_by_zero_message():
 
 或者拿到异常对象本身做更精细的断言：
 
-```python
+```python no-run
 def test_divide_by_zero_detail():
     with pytest.raises(ValueError) as exc_info:
         divide(10, 0)

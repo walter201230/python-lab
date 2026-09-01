@@ -26,10 +26,17 @@ interface StepCardProps {
  */
 export function StepCard({ content, index, totalSteps, state, pyStatus, run }: StepCardProps) {
   const components: Components = {
-    pre({ children }) {
+    pre({ children, node }) {
       const code = extractCodeFromPre(children);
       if (code && code.lang === 'python') {
-        return <RunnableCodeBlock code={code.text} pyStatus={pyStatus} run={run} />;
+        return (
+          <RunnableCodeBlock
+            code={code.text}
+            pyStatus={pyStatus}
+            run={run}
+            runnable={!hasNoRunMeta(node)}
+          />
+        );
       }
       // 非 python 代码块（或检测失败）：保留默认渲染
       return <pre>{children}</pre>;
@@ -82,6 +89,21 @@ export function StepCard({ content, index, totalSteps, state, pyStatus, run }: S
       </article>
     </section>
   );
+}
+
+/**
+ * 代码块是否标了 ```python no-run（不给「试运行」按钮）。
+ *
+ * mdast-util-to-hast 把 ``` 围栏语言后面的 meta 挂在 <code> 元素的 data.meta 上
+ * （见 node_modules/mdast-util-to-hast/lib/handlers/code.js），className 里只有
+ * language-python，所以 meta 必须从 hast 节点取，不能从 className 正则里拿。
+ */
+function hasNoRunMeta(node: unknown): boolean {
+  const pre = node as
+    | { children?: Array<{ tagName?: string; data?: { meta?: string } }> }
+    | undefined;
+  const codeNode = pre?.children?.find((c) => c.tagName === 'code');
+  return /\bno-run\b/.test(codeNode?.data?.meta ?? '');
 }
 
 /**

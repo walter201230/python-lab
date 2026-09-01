@@ -4,7 +4,7 @@
 
 最常见的写法是 **继承 `Enum` 类**：
 
-```python
+```python no-run
 from enum import Enum
 
 class Color(Enum):
@@ -17,7 +17,7 @@ class Color(Enum):
 
 ## 2、访问成员
 
-```python
+```python no-run
 print(Color.RED)         # Color.RED        ← 默认 repr
 print(Color.RED.name)    # 'RED'            ← 成员名
 print(Color.RED.value)   # 1                ← 对应的值
@@ -32,7 +32,7 @@ print(Color.RED.value)   # 1                ← 对应的值
 
 `Enum` 是可迭代的：
 
-```python
+```python no-run
 for c in Color:
     print(c.name, c.value)
 ```
@@ -47,7 +47,7 @@ BLUE 3
 
 也可以用 `__members__` 拿到一个 **有序映射**（包含别名）：
 
-```python
+```python no-run
 for name, member in Color.__members__.items():
     print(name, '->', member, '->', member.value)
 ```

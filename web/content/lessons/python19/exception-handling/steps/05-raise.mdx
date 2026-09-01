@@ -29,7 +29,7 @@ except ValueError as e:
 
 想想看：
 
-```python
+```python no-run
 def set_age(age):
     if age < 0:
         return None      # 不好的写法
@@ -44,7 +44,7 @@ def set_age(age):
 
 再来看一个稍微高级的场景。假设有这么一个函数：
 
-```python
+```python no-run
 def load_config(path):
     with open(path, 'r') as f:
         return f.read()
@@ -54,7 +54,7 @@ def load_config(path):
 
 「异常链」给出了答案：
 
-```python
+```python no-run
 class ConfigError(Exception):
     pass
 

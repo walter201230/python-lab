@@ -18,7 +18,7 @@
 
 ## 写法：继承 `type`，重写 `__new__`
 
-```python
+```python no-run
 class AnimalMeta(type):
     def __new__(mcs, name, bases, attrs):
         # mcs   = 元类自身（AnimalMeta）
@@ -37,7 +37,7 @@ class AnimalMeta(type):
 
 Python 3 里指定元类的语法是在 `class` 头部加 `metaclass=` 关键字参数：
 
-```python
+```python no-run
 class Dog(metaclass=AnimalMeta):
     pass
 

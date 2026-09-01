@@ -10,7 +10,7 @@
 
 如果按「最朴素」的写法：
 
-```python
+```python no-run
 def test_user_create():
     db = create_test_db()
     db.connect()
@@ -38,7 +38,7 @@ def test_user_delete():
 
 pytest 的解决办法叫 fixture。它把「准备工作」抽成一个带 `@pytest.fixture` 装饰器的函数：
 
-```python
+```python no-run
 import pytest
 
 
@@ -76,7 +76,7 @@ def test_user_delete(db):
 
 **只准备、不清理**：直接 `return`，省掉 `yield`。
 
-```python
+```python no-run
 @pytest.fixture
 def sample_user():
     return User(name="walter", age=28)
@@ -88,7 +88,7 @@ def test_greet(sample_user):
 
 **fixture 之间可以互相依赖**。比如 `db` 依赖 `config`：
 
-```python
+```python no-run
 @pytest.fixture
 def config():
     return {"host": "localhost", "port": 5432}
@@ -122,7 +122,7 @@ pytest 的答案是 fixture 的 `scope` 参数。它有四档：
 
 举个例子，把数据库连接设成 `session` 级别：
 
-```python
+```python no-run
 @pytest.fixture(scope="session")
 def db():
     conn = create_test_db()
@@ -140,7 +140,7 @@ def db():
 
 举个混合用法：
 
-```python
+```python no-run
 @pytest.fixture(scope="session")
 def db_connection():
     """整个 session 共用一个连接，建一次就够。"""
@@ -174,7 +174,7 @@ def test_create_user(db):
 
 pytest 的 `tmp_path` fixture 直接给你一个临时目录，跑完测试自动清理。
 
-```python
+```python no-run
 def test_write_and_read(tmp_path):
     file = tmp_path / "hello.txt"
     file.write_text("两点水", encoding="utf-8")
@@ -193,7 +193,7 @@ def test_write_and_read(tmp_path):
 
 `monkeypatch` fixture 就是干这个的。它能临时改东西，测试结束自动还原。
 
-```python
+```python no-run
 def test_with_env(monkeypatch):
     monkeypatch.setenv("API_KEY", "test-key-123")
     assert get_api_key() == "test-key-123"
@@ -226,7 +226,7 @@ def test_chdir(monkeypatch, tmp_path):
 
 测试一段会 print 的代码，怎么验证它打印对了？`capsys` 就是干这个的。
 
-```python
+```python no-run
 def greet(name):
     print(f"Hello, {name}!")
 
@@ -263,7 +263,7 @@ tests/
 
 `tests/conftest.py`：
 
-```python
+```python no-run
 import pytest
 
 
@@ -283,7 +283,7 @@ def sample_user(db):
 
 `tests/test_user.py`：
 
-```python
+```python no-run
 def test_get_user(db, sample_user):
     # 直接用，不用 import
     assert db.get_user(sample_user.id).name == "walter"

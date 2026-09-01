@@ -2,7 +2,7 @@
 
 各位先来看一段代码，猜猜哪里有坑：
 
-```python
+```python no-run
 f = open('/tmp/diary.txt', 'w')
 f.write('今天打卡迟到了三分钟。')
 f.close()
@@ -16,7 +16,7 @@ f.close()
 
 那怎么办？老办法当然是 `try/finally`：
 
-```python
+```python no-run
 f = open('/tmp/diary.txt', 'w')
 try:
     f.write('今天打卡迟到了三分钟。')
@@ -26,7 +26,7 @@ finally:
 
 但这样很啰嗦。Python 早就提供了一个语法糖：
 
-```python
+```python no-run
 with open('/tmp/diary.txt', 'w') as f:
     f.write('今天打卡迟到了三分钟。')
 ```
