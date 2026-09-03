@@ -1,5 +1,7 @@
 'use client';
 
+import { isInformativeError } from '@/lib/grader';
+
 interface CodeOutputProps {
   stdout?: string;
   stderr?: string;
@@ -45,11 +47,16 @@ export function CodeOutput({ stdout, stderr, error, variant = 'panel', maxHeight
 }
 
 function Lines({ stdout, stderr, error }: Pick<CodeOutputProps, 'stdout' | 'stderr' | 'error'>) {
+  // 浏览器里 Pyodide 的 PythonError.message 只有类名，完整 traceback 走 stderr（见
+  // grader 的 describeError）。那种情况下 error 单独一行只会在 traceback 下面重复一个
+  // 没信息量的「PythonError」，是噪音，不渲染。超时、「Pyodide 未就绪」这类自造提示
+  // 不是光秃秃的类名，照常显示；stderr 为空时也照常显示，避免什么都不剩。
+  const showError = !!error && (isInformativeError(error.trim()) || !stderr);
   return (
     <>
       {stdout && <pre className="whitespace-pre-wrap text-accent-strong">{stdout}</pre>}
       {stderr && <pre className="whitespace-pre-wrap text-warn">{stderr}</pre>}
-      {error && <pre className="whitespace-pre-wrap text-danger">{error}</pre>}
+      {showError && <pre className="whitespace-pre-wrap text-danger">{error}</pre>}
     </>
   );
 }

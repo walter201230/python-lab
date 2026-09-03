@@ -147,9 +147,9 @@ function normalizeQuotes(s: string): string {
  */
 function describeError(error: string, stderr: string): string {
   const fromError = lastMeaningfulLine(error);
-  if (isInformative(fromError)) return withHint(fromError);
+  if (isInformativeError(fromError)) return withHint(fromError);
   const fromStderr = lastMeaningfulLine(stderr);
-  if (isInformative(fromStderr)) return withHint(fromStderr);
+  if (isInformativeError(fromStderr)) return withHint(fromStderr);
   return fromError || fromStderr || '未知错误';
 }
 
@@ -161,8 +161,12 @@ function lastMeaningfulLine(s: string): string {
   return lines.length ? lines[lines.length - 1] : '';
 }
 
-/** 光秃秃的类名（PythonError / Error）没有信息量，带冒号说明后面跟着真正的描述。 */
-function isInformative(line: string): boolean {
+/**
+ * 光秃秃的类名（PythonError / Error）没有信息量，带冒号说明后面跟着真正的描述。
+ * CodeOutput 也用它决定要不要单独渲染 error 那一行（见该组件注释）。
+ * 注意超时、「Pyodide 未就绪」等中文提示都不匹配此模式，会被判为有信息量。
+ */
+export function isInformativeError(line: string): boolean {
   return line !== '' && !/^[A-Za-z]*Error$/.test(line);
 }
 
