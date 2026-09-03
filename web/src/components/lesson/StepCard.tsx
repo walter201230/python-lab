@@ -3,6 +3,7 @@
 import { Children, isValidElement, type ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { headingComponents } from '@/lib/markdownHeadings';
 import { STICKY_BAR_SCROLL_OFFSET } from '@/lib/layoutConstants';
 import { RunnableCodeBlock } from './RunnableCodeBlock';
 import type { PyodideStatus, RunOptions, RunResult } from '@/lib/usePyodide';
@@ -26,6 +27,7 @@ interface StepCardProps {
  */
 export function StepCard({ content, index, totalSteps, state, pyStatus, run }: StepCardProps) {
   const components: Components = {
+    ...headingComponents,
     pre({ children, node }) {
       const code = extractCodeFromPre(children);
       if (code && code.lang === 'python') {

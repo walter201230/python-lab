@@ -1,6 +1,7 @@
 import { Children, isValidElement, type ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { headingComponents } from '@/lib/markdownHeadings';
 
 interface ReadStepCardProps {
   content: string;
@@ -26,6 +27,7 @@ export function ReadStepCard({
   practiceHref,
 }: ReadStepCardProps) {
   const components: Components = {
+    ...headingComponents,
     pre({ children }) {
       const code = extractCodeFromPre(children);
       if (code && code.lang === 'python') {
