@@ -36,8 +36,9 @@ export function ensurePyodideWorker(): Worker {
 
   setState('loading', null);
   // ?v=N：worker.js 无内容哈希、有 HTTP 缓存。消息协议或加载行为变更（v2 加 runId 回传、
-  // v3 Pyodide 改同源加载）时递增版本号，保证新页面 JS 一定拿到配套的新 worker。
-  const w = new Worker('/pyodide.worker.js?v=3');
+  // v3 Pyodide 改同源加载、v4 补 __tzset_js 的 locale 崩溃）时递增版本号，保证新页面 JS
+  // 一定拿到配套的新 worker。
+  const w = new Worker('/pyodide.worker.js?v=4');
   workerInstance = w;
 
   w.addEventListener('message', (e: MessageEvent) => {

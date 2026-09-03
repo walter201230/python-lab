@@ -7,6 +7,29 @@
 // 部分网络环境（尤其大陆）打得开网站却拉不到 CDN → 「Python 环境加载失败」。
 const PYODIDE_URL = new URL('/pyodide/', self.location.href).href;
 
+// issue #303（第二个根因，与上面的 CDN 问题无关）：Pyodide 底层 Emscripten 的 __tzset_js
+// 这样取时区缩写——
+//   date.toLocaleTimeString(undefined, { hour12: false, timeZoneName: 'short' }).split(' ')[1]
+// 它假设「时间和时区名之间有一个半角空格、时区名在第 2 段」，而这只对 en-US 成立：
+//   en-US       "00:00:00 PST"    → "PST"    ✅
+//   zh-CN       "GMT-8 0:00:00"   → "0:00:00" ← time.tzname 一直是垃圾值，只是不崩
+//   zh-Hant-MO  "00:00:00 [PST]"  → "[PST]"
+//   zh-Hans-MO  "GMT-800:00:00"   → undefined ← stringToUTF8(undefined) 直接抛
+// 最后一种（Edge 开启「共享操作系统区域格式」时 locale 会解析成 zh-Hans-MO）会让
+// loadPyodide 在初始化阶段就抛 TypeError，Pyodide 永远 ready 不了 → 整站不可用，
+// 且是硬失败，重试按钮也救不回来。
+// 修法：这个调用的唯一用途是填 C 的 tzname[]（即 Python 的 time.tzname），本就该是英文
+// 缩写，所以把它固定到 en-US。只拦 Emscripten 那一种调用签名（locales 省略 + 带
+// timeZoneName），用户代码或其他库自己传 locale 的调用不受影响。必须在 loadPyodide 之前
+// 打，因为 tzset 发生在模块初始化期间。
+const __origToLocaleTimeString = Date.prototype.toLocaleTimeString;
+Date.prototype.toLocaleTimeString = function (locales, options) {
+  if (locales === undefined && options && options.timeZoneName) {
+    return __origToLocaleTimeString.call(this, 'en-US', options);
+  }
+  return __origToLocaleTimeString.call(this, locales, options);
+};
+
 importScripts(`${PYODIDE_URL}pyodide.js`);
 
 // issue #289/#290：Pyodide 沙箱是单线程，浏览器事件循环始终在运行，用户代码里的
