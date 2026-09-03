@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { LoadedLesson } from '@/lib/loadLesson';
-import { ReadExerciseLink } from './ReadExerciseLink';
+import { ReadExerciseCard } from './ReadExerciseCard';
 import { ReadStepCard } from './ReadStepCard';
 
 /**
@@ -56,9 +56,9 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
               );
             }
             return (
-              <ReadExerciseLink
+              <ReadExerciseCard
                 key={`ex-${block.exercise.id}`}
-                title={block.exercise.title}
+                exercise={block.exercise}
                 index={block.exerciseIndex}
                 totalExercises={exercises.length}
                 href={`${practiceHref}#exercise-${block.exercise.id}`}
