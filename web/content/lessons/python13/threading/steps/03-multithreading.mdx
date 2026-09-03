@@ -206,20 +206,21 @@ producer.start()
 from queue import Queue
 from threading import Thread
 
-isRead = True
-
 
 def write(q):
     # 写数据进程
     for value in ['两点水', '三点水', '四点水']:
         print(f'写进 Queue 的值为：{value}')
         q.put(value)
+    q.put(None)  # 写完放一个结束标记
 
 
 def read(q):
     # 读取数据进程
-    while isRead:
+    while True:
         value = q.get(True)
+        if value is None:  # 读到结束标记就退出
+            break
         print(f'从 Queue 读取的值为：{value}')
 
 
