@@ -48,9 +48,7 @@ export function grade(actual: ActualResult, rules: GradingRules): GradeOutcome {
     return { pass: false, msg: '执行超时（5 秒），可能写了死循环——检查 while/for 退出条件' };
   }
   if (actual.error) {
-    // Pyodide 的 PythonError.message 是完整 traceback 且以 \n 结尾——不 trim 的话
-    // 取最后一行恒为空串，「代码报错：」后面就没内容了
-    return { pass: false, msg: `代码报错：${actual.error.trim().split('\n').slice(-1)[0]}` };
+    return { pass: false, msg: `代码报错：${describeError(actual.error, actual.stderr)}` };
   }
 
   // 1. stdoutEquals
@@ -135,6 +133,49 @@ function normalizeQuotes(s: string): string {
   return s
     .replace(/[“”＂]/g, '"') // “ ” ＂ → "
     .replace(/[‘’＇]/g, "'"); // ‘ ’ ＇ → '
+}
+
+/**
+ * 从报错里挑出对用户真正有用的那一行。
+ *
+ * 坑：Pyodide 的 PythonError 在浏览器和 Node 下形态不同——Node 里 `e.message` 是
+ * 完整 traceback（末行就是 `NameError: ...`），**浏览器里 `e.message` 只有类名
+ * `"PythonError"`**，真 traceback 走的是 sys.stderr。worker 回传的 error 取自
+ * e.message，所以线上所有报错都塌成「代码报错：PythonError」，用户拿不到任何线索。
+ * 这也是它一直没被发现的原因：本地 Node 侧验证永远是对的。
+ * 修法：error 末行没信息量时回落到 stderr 末行，两种形态都能拿到真实报错。
+ */
+function describeError(error: string, stderr: string): string {
+  const fromError = lastMeaningfulLine(error);
+  if (isInformative(fromError)) return withHint(fromError);
+  const fromStderr = lastMeaningfulLine(stderr);
+  if (isInformative(fromStderr)) return withHint(fromStderr);
+  return fromError || fromStderr || '未知错误';
+}
+
+function lastMeaningfulLine(s: string): string {
+  const lines = (s ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return lines.length ? lines[lines.length - 1] : '';
+}
+
+/** 光秃秃的类名（PythonError / Error）没有信息量，带冒号说明后面跟着真正的描述。 */
+function isInformative(line: string): boolean {
+  return line !== '' && !/^[A-Za-z]*Error$/.test(line);
+}
+
+/**
+ * 全角弯引号是中文用户最高频的踩坑（issue #293）：肉眼几乎和直引号一样，
+ * Python 却直接 SyntaxError。原始报错是英文的 `invalid character '“' (U+201C)`，
+ * 新手看不懂，这里补一句中文点破。
+ */
+function withHint(line: string): string {
+  if (/invalid character '[“”‘’＂＇]'|U\+201[89CD]|U\+FF0[27]/.test(line)) {
+    return `${line}\n\n提示：代码里用了全角引号（“ ” ‘ ’），Python 只认英文直引号 " 和 '。中文输入法会自动替换，把它们改回来就好。`;
+  }
+  return line;
 }
 
 // 常见易混字符的友好名字，用于把隐形差异点出来
