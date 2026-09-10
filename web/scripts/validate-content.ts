@@ -14,7 +14,7 @@ import type { Exercise, LessonMeta, ValidationError } from '../src/types/content
 const CONTENT_ROOT = join(process.cwd(), 'content', 'lessons');
 
 const REQUIRED_LESSON_FIELDS: (keyof LessonMeta)[] = [
-  'id', 'title', 'chapter', 'order', 'estimatedMinutes', 'blocks',
+  'id', 'title', 'description', 'chapter', 'order', 'estimatedMinutes', 'blocks',
 ];
 
 const REQUIRED_EXERCISE_FIELDS: (keyof Exercise)[] = [
@@ -52,6 +52,15 @@ function validateLesson(lessonDir: string, errors: ValidationError[]): number {
         message: `缺少必填字段：${field}`,
       });
     }
+  }
+
+  if (lesson.description !== undefined && (
+    typeof lesson.description !== 'string' || !lesson.description.trim()
+  )) {
+    errors.push({
+      file: relative(CONTENT_ROOT, lessonJsonPath),
+      message: 'description 必须是非空的课程摘要字符串',
+    });
   }
 
   const stepsDir = join(lessonDir, 'steps');

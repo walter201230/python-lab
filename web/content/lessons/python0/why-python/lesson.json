@@ -1,6 +1,7 @@
 {
   "id": "why-python",
   "title": "为什么学 Python",
+  "description": "为什么选择 Python 作为入门语言？本章从学习门槛与实际应用出发，介绍 Python 易读易学、生态丰富的特点，说明它在人工智能、数据处理和日常开发中的用途。帮助零基础读者了解语言优势，在开始写代码之前建立整体认识。",
   "chapter": "python0",
   "order": 1,
   "estimatedMinutes": 5,

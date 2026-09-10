@@ -1,6 +1,7 @@
 {
   "id": "whats-next",
   "title": "学完之后",
+  "description": "完成 Python 基础课程后，了解数据与人工智能、Web 后端、自动化脚本三个后续学习方向。结合常用工具与起步项目，认识数据分析、接口开发、文件备份和命令行应用的实践路径，梳理需要补充的共同技能，根据兴趣选择下一个小项目。",
   "chapter": "python28",
   "order": 1,
   "estimatedMinutes": 12,

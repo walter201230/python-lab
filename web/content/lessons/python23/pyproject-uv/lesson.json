@@ -1,6 +1,7 @@
 {
   "id": "pyproject-uv",
   "title": "pyproject.toml + uv",
+  "description": "了解 Python 项目的配置与依赖管理，学习 pyproject.toml 的主要字段和 uv 日常命令。沿着创建项目、添加依赖、运行代码、同步环境和保存锁文件的流程，认识虚拟环境与版本约束，理解如何让不同开发环境使用一致的依赖。",
   "chapter": "python23",
   "order": 1,
   "estimatedMinutes": 20,

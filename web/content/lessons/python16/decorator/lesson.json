@@ -1,6 +1,7 @@
 {
   "id": "decorator",
   "title": "装饰器",
+  "description": "从给函数增加日志的需求出发学习 Python 装饰器，理解函数包装与 @ 语法的关系，掌握参数转发、返回值处理和带参数装饰器的写法。结合调用计数示例认识闭包，并学习用 wraps 保留函数元信息，在不修改原函数实现的情况下扩展功能。",
   "chapter": "python16",
   "order": 1,
   "estimatedMinutes": 30,

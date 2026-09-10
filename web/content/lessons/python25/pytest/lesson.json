@@ -1,6 +1,7 @@
 {
   "id": "pytest",
   "title": "pytest：测试框架",
+  "description": "从第一个测试函数开始学习 Python pytest，掌握断言、测试发现、异常检查、fixture 和参数化用法。结合临时目录、输出捕获、标记与覆盖率示例，理解如何组织测试数据、定位失败原因并隔离用例，为本地项目建立测试流程。",
   "chapter": "python25",
   "order": 1,
   "estimatedMinutes": 22,

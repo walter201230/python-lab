@@ -1,6 +1,7 @@
 {
   "id": "exception-handling",
   "title": "异常处理",
+  "description": "学习 Python 异常处理流程，掌握捕获错误、分支处理、资源清理与主动抛出异常的基本用法，理解 try、except 和 finally 的执行顺序。通过除零、类型转换和分数校验示例，认识异常对象、异常链与自定义异常，让程序错误更容易定位。",
   "chapter": "python19",
   "order": 1,
   "estimatedMinutes": 40,

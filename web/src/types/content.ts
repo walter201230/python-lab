@@ -19,6 +19,8 @@ export interface LessonMeta {
   id: string;
   /** 显示标题 */
   title: string;
+  /** 搜索摘要中的课程介绍；页面按阅读或练习模式补充说明，不作为正文展示 */
+  description: string;
   /** 所属章节 slug，如 "python2" */
   chapter: string;
   /** 章节内排序，整数 */

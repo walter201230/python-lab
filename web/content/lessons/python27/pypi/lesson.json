@@ -1,6 +1,7 @@
 {
   "id": "pypi",
   "title": "打包发布到 PyPI",
+  "description": "了解 Python 工具从本地项目到发布安装的流程，学习源码目录、项目元数据、构建产物与版本号的组织方式。结合测试仓库与 PyPI 发布步骤，认识说明文档与许可证的作用，再通过命令行示例理解参数、子命令及安装后的入口。",
   "chapter": "python27",
   "order": 1,
   "estimatedMinutes": 25,

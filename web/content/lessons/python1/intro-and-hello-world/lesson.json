@@ -1,6 +1,7 @@
 {
   "id": "intro-and-hello-world",
   "title": "Python 安装与第一个程序",
+  "description": "从零认识 Python，了解这门语言的特点、优点与局限，学习本地安装后如何确认环境可用。通过 Hello World 程序认识 print 函数，观察文字与引号的写法，并亲手尝试修改输出内容，理解代码、运行结果和报错之间的关系。",
   "chapter": "python1",
   "order": 1,
   "estimatedMinutes": 15,

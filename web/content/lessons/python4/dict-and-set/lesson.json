@@ -1,6 +1,7 @@
 {
   "id": "dict-and-set",
   "title": "Dict 与 Set",
+  "description": "学习 Python 字典和集合的创建与使用，掌握键值访问、新增修改、删除、字典合并及集合去重。通过交集等集合运算与常用方法示例，理解字典的键值关系、集合的唯一性和适用场景，比较它们与列表的区别，逐步学会为查找、去重和数据整理选择合适的容器。",
   "chapter": "python4",
   "order": 1,
   "estimatedMinutes": 30,

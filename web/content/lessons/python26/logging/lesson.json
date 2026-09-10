@@ -1,6 +1,7 @@
 {
   "id": "logging",
   "title": "日志 logging",
+  "description": "学习 Python logging 标准库，将 print 调试改为分级日志。认识五种日志级别、基础配置与消息格式，理解日志筛选和命名 logger 的作用，结合示例记录模块行为与异常堆栈，了解重复配置的注意事项，让程序运行更容易观察和排查。",
   "chapter": "python26",
   "order": 1,
   "estimatedMinutes": 30,

@@ -24,10 +24,11 @@ export async function generateMetadata({
   }
 
   const exerciseCount = data.exercises.length;
-  const description =
+  const description = data.meta.description + (
     exerciseCount > 0
-      ? `${data.meta.title} · ${exerciseCount} 道渐进练习题，预计 ${data.meta.estimatedMinutes} 分钟。在浏览器里写 Python，自动判分，做对一题解锁下一题。`
-      : `${data.meta.title} · 概念阅读章节，预计 ${data.meta.estimatedMinutes} 分钟。`;
+      ? `配有 ${exerciseCount} 道在线练习，可在浏览器运行代码并自动判分，做对一题解锁下一段。`
+      : '本章为概念阅读，无需提交练习代码。结合示例梳理知识要点，为后续学习和本地实践做好准备。'
+  );
 
   return {
     title: `${data.meta.title} — ${SITE_NAME}`,

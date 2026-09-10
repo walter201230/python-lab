@@ -1,6 +1,7 @@
 {
   "id": "async",
   "title": "async / await",
+  "description": "学习 Python async/await 的用法，理解协程函数、等待与事件循环的关系。通过模拟等待，对比顺序 await 和 gather 并发执行的过程，识别忘记等待与阻塞调用等常见问题，了解异步适合哪些任务，避免把并发误认为自动加速计算。",
   "chapter": "python22",
   "order": 1,
   "estimatedMinutes": 35,

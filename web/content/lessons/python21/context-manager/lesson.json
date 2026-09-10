@@ -1,6 +1,7 @@
 {
   "id": "context-manager",
   "title": "上下文管理器（with）",
+  "description": "理解 Python with 语句背后的上下文管理协议，学习进入和退出方法如何完成资源准备与清理。通过自定义管理器与生成器示例，认识 yield、异常处理和 finally 的作用，再了解 contextlib 工具，减少资源管理中的重复代码。",
   "chapter": "python21",
   "order": 1,
   "estimatedMinutes": 30,

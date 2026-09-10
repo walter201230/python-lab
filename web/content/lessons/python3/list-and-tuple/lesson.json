@@ -1,6 +1,7 @@
 {
   "id": "list-and-tuple",
   "title": "List 与 Tuple",
+  "description": "系统学习 Python 列表与元组的创建、索引、切片和常用操作，掌握列表元素的修改、追加与删除，理解可变和不可变容器的区别。通过拼接、长度计算、类型转换及单元素元组示例，辨认容易写错的逗号和下标用法，学会根据数据是否需要变化选择合适的序列类型。",
   "chapter": "python3",
   "order": 1,
   "estimatedMinutes": 30,

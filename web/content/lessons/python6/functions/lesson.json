@@ -1,6 +1,7 @@
 {
   "id": "functions",
   "title": "函数",
+  "description": "学习 Python 函数的定义、调用、返回值和参数传递，理解为什么要把重复逻辑封装成函数。通过默认参数、关键字参数、可变参数与多个返回值的示例，掌握函数接口的写法，再结合 lambda 和排序场景认识匿名函数，让代码更容易复用。",
   "chapter": "python6",
   "order": 1,
   "estimatedMinutes": 30,

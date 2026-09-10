@@ -23,13 +23,14 @@ export async function generateMetadata({
     return { title: `课程未找到 — ${SITE_NAME}` };
   }
 
-  // 标题与 description 偏「教程正文」语义，与闯关页的「练习/闯关」语义区分开，
-  // 让搜索结果更贴近通读意图。description 优先取章节自身的描述而非模板句。
-  const chapterMeta = CHAPTERS.find((ch) => ch.slug === chapter);
+  // 共用课程摘要，补充通读页提供的内容；不承诺在阅读页运行代码或判分。
   const title = `${data.meta.title} 完整讲解 — ${SITE_NAME}`;
-  const description = chapterMeta
-    ? `${chapterMeta.description} 本页是完整教程正文，${data.meta.title}的全部讲解一次读完。`
-    : `${data.meta.title}的完整教程正文，全部讲解一次读完。`;
+  const exerciseCount = data.exercises.length;
+  const description = data.meta.description + (
+    exerciseCount > 0
+      ? `本页可完整阅读全部讲解、示例与 ${exerciseCount} 道练习的题面和提示，适合系统学习与复习。`
+      : '本页集中展示全部讲解与示例，可按顺序通读，也可随时查阅，适合学习前预习和课后复习。'
+  );
 
   return {
     title,

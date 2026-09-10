@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   // 域名须与 scripts/generate-sitemap.mjs 的 SITE_URL 保持一致。
   metadataBase: new URL('https://learn-py.org'),
   title: '小白学 Python — 浏览器里就能跑',
-  description: '零基础友好的 Python 在线学习站。代码在浏览器里跑（Pyodide），自动判分，做对一题解锁下一题。',
+  description: '小白学 Python 是面向零基础的免费中文 Python 在线教程，提供 29 章讲解和 100 道练习，覆盖变量、容器、函数、面向对象、装饰器、异步编程及现代项目工具。无需安装环境或注册账号，在浏览器中编写代码、查看结果并自动判分，做对一题解锁下一段；也可通过完整阅读页系统通读，学习进度保存在当前浏览器。',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

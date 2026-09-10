@@ -1,6 +1,7 @@
 {
   "id": "metaclass",
   "title": "元类",
+  "description": "理解 Python 中类也是对象，认识 type 的类型查询与动态创建类两种用法。通过给类增加属性的示例，学习自定义元类如何参与类的创建，了解创建方法的参数与调用时机，区分实例创建和类创建，认识元类适用场景及应优先选择简单实现的原因。",
   "chapter": "python12",
   "order": 1,
   "estimatedMinutes": 30,

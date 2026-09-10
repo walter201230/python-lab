@@ -1,6 +1,7 @@
 {
   "id": "magic-methods",
   "title": "魔法方法",
+  "description": "学习 Python 魔法方法，理解对象如何参与打印、比较、取长度、下标访问和加法运算。通过自定义容器与向量加法示例，掌握 __str__、__eq__ 等方法的基本用法，认识对象协议与内置操作的联系，让自己的类具备符合预期的行为。",
   "chapter": "python10",
   "order": 1,
   "estimatedMinutes": 35,

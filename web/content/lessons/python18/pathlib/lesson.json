@@ -1,6 +1,7 @@
 {
   "id": "pathlib",
   "title": "pathlib：现代化路径处理",
+  "description": "学习 Python pathlib 的路径操作，用 Path 表达文件与目录，理解路径拼接和父目录访问。结合示例提取文件名、主干与扩展名，比较它与字符串路径处理的区别，认识多后缀文件的特点，并了解文件读写、目录遍历等本地操作的入口与边界。",
   "chapter": "python18",
   "order": 1,
   "estimatedMinutes": 30,

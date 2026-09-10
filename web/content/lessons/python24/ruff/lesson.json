@@ -1,6 +1,7 @@
 {
   "id": "ruff",
   "title": "ruff：一站式代码检查",
+  "description": "学习用 Ruff 检查和格式化 Python 代码，认识常用规则、导入排序、自动修复与不安全修复的区别。结合项目配置、忽略注释和报错示例，了解如何设置目标版本、排除目录及规则范围，并将检查接入编辑器、提交检查和持续集成流程。",
   "chapter": "python24",
   "order": 1,
   "estimatedMinutes": 18,

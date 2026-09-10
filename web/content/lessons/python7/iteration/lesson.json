@@ -1,6 +1,7 @@
 {
   "id": "iteration",
   "title": "迭代",
+  "description": "认识 Python 的迭代器与生成器，理解 for 循环如何逐个获取元素，以及 next 与 yield 的作用。通过列表推导式、条件过滤和斐波那契示例观察执行过程，并学习 zip 等遍历工具，选择清晰的数据遍历方式，理解按需生成的特点。",
   "chapter": "python7",
   "order": 1,
   "estimatedMinutes": 35,

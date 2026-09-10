@@ -1,6 +1,7 @@
 {
   "id": "data-types-and-variables",
   "title": "基本数据类型与变量",
+  "description": "学习 Python 的字符串、整数、浮点数、布尔值和空值，理解变量的创建、赋值与指向关系。结合 print 输出、基础算术运算、类型转换和字符编码示例，掌握 f-string 插值及常用格式写法，把数据、计算与文本输出连接起来。",
   "chapter": "python2",
   "order": 1,
   "estimatedMinutes": 35,

@@ -1,6 +1,7 @@
 {
   "id": "dataclass",
   "title": "dataclass",
+  "description": "学习 Python dataclass 如何减少数据类的重复代码，理解字段类型注解、默认值与自动生成方法的关系。通过坐标类等示例掌握默认值工厂的用法，避开可变默认值问题，认识不可变实例、字段比较及初始化后处理，合理组织需要保存和比较的数据。",
   "chapter": "python20",
   "order": 1,
   "estimatedMinutes": 35,
