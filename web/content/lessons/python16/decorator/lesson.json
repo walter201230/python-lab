@@ -12,6 +12,7 @@
     { "kind": "step", "file": "03-with-args.mdx" },
     { "kind": "exercise", "file": "02-uppercase.json" },
     { "kind": "step", "file": "04-decorator-with-args.mdx" },
-    { "kind": "exercise", "file": "03-count-calls.json" }
+    { "kind": "exercise", "file": "03-count-calls.json" },
+    { "kind": "step", "file": "05-original-and-practice.mdx" }
   ]
 }

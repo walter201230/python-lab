@@ -12,6 +12,7 @@
     { "kind": "step", "file": "03-nonlocal.mdx" },
     { "kind": "exercise", "file": "01-make-counter.json" },
     { "kind": "step", "file": "04-use-cases.mdx" },
-    { "kind": "exercise", "file": "03-study-time.json" }
+    { "kind": "exercise", "file": "03-study-time.json" },
+    { "kind": "step", "file": "05-original-and-practice.mdx" }
   ]
 }

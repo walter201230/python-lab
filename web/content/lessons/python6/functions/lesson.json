@@ -15,6 +15,7 @@
     { "kind": "exercise", "file": "03-default-arg.json" },
     { "kind": "exercise", "file": "04-args.json" },
     { "kind": "step", "file": "05-lambda.mdx" },
-    { "kind": "exercise", "file": "05-lambda.json" }
+    { "kind": "exercise", "file": "05-lambda.json" },
+    { "kind": "step", "file": "06-original-and-practice.mdx" }
   ]
 }

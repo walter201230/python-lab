@@ -1,0 +1,245 @@
+# 闭包原文与补充练习
+
+> 以下保留原教程的详细讲解，随后是本轮新增的「补充讲解与自练」。原文中的示例日期和对象地址取决于运行环境；传参类比、闭包与装饰器的解释边界见后面的补充说明。
+
+网络上介绍 Python 闭包的文章已经很多了，本文将通过解决一个需求问题来了解闭包。
+
+
+这个需求是这样的，我们需要一直记录自己的学习时间，以分钟为单位。就好比我学习了 2 分钟，就返回 2 ，然后隔了一阵子，我学习了 10 分钟，那么就返回 12 ，像这样把学习时间一直累加下去。
+
+
+面对这个需求，我们一般都会创建一个全局变量来记录时间，然后用一个方法来新增每次的学习时间，通常都会写成下面这个形式：
+
+<!-- skip-ci -->
+```Python
+time = 0
+
+def insert_time(min):
+    time = time + min
+    return  time
+
+print(insert_time(2))
+print(insert_time(10))
+```
+
+认真想一下，会不会有什么问题呢？
+
+其实，这个在 Python 里面是会报错的。会报如下错误：
+
+```
+UnboundLocalError: local variable 'time' referenced before assignment
+```
+
+那是因为，在 Python 中，如果一个函数使用了和全局变量相同的名字且改变了该变量的值，那么该变量就会变成局部变量，那么就会造成在函数中我们没有进行定义就引用了，所以会报该错误。
+
+如果确实要引用全局变量，并在函数中对它进行修改，该怎么做呢？
+
+我们可以使用 `global` 关键字,具体修改如下：
+
+```Python
+time = 0
+
+
+def insert_time(min):
+    global  time
+    time = time + min
+    return  time
+
+print(insert_time(2))
+print(insert_time(10))
+```
+
+输出结果如下：
+
+```
+2
+12
+```
+
+可是啊，这里使用了全局变量，我们在开发中能尽量避免使用全局变量的就尽量避免使用。因为不同模块，不同函数都可以自由的访问全局变量，可能会造成全局变量的不可预知性。比如程序员甲修改了全局变量 `time` 的值，然后程序员乙同时也对 `time` 进行了修改，如果其中有错误，这种错误是很难发现和更正的。
+
+
+全局变量降低了函数或模块之间的通用性，不同的函数或模块都要依赖于全局变量。同样，全局变量降低了代码的可读性，阅读者可能并不知道调用的某个变量是全局变量。
+
+那有没有更好的方法呢？
+
+这时候我们使用闭包来解决一下，先直接看代码：
+
+```python
+time = 0
+
+
+def study_time(time):
+    def insert_time(min):
+        nonlocal  time
+        time = time + min
+        return time
+
+    return insert_time
+
+
+f = study_time(time)
+print(f(2))
+print(time)
+print(f(10))
+print(time)
+```
+
+输出结果如下:
+
+```
+2
+0
+12
+0
+```
+
+这里最直接的表现就是全局变量 `time` 至此至终都没有修改过,这里还是用了 `nonlocal` 关键字,表示在函数或其他作用域中使用外层(非全局)变量。那么上面那段代码具体的运行流程是怎样的。我们可以看下下图：
+
+```python
+time = 0
+
+
+def study_time(time):
+    def insert_time(min):                # 在函数内部再定义一个函数，在函数内部实现时间相加的逻辑，最后返回最终的时间值
+        nonlocal time
+        time = time + min
+        return time
+
+    return insert_time                   # 外层的函数 study_time 返回的是 insert_time 函数，因为在 Python 中，函数也是对象，所以可以直接返回函数
+
+
+f = study_time(time)                     # 调用 study_time 函数，返回的是 insert_time 函数，那么 f 其实就是相当于 insert_time 对象了
+print(f(2))
+print(time)
+print(f(10))                             # 相当于调用 insert_time(10)
+print(time)
+```
+
+
+这种内部函数的局部作用域中可以访问外部函数局部作用域中变量的行为，我们称为： 闭包。更加直接的表达方式就是，当某个函数被当成对象返回时，夹带了外部变量，就形成了一个闭包。k
+
+
+闭包避免了使用全局变量，此外，闭包允许将函数与其所操作的某些数据（环境）关连起来。而且使用闭包，可以使代码变得更加的优雅。而且下一篇讲到的装饰器，也是基于闭包实现的。
+
+
+到这里，就会有一个问题了，你说它是闭包就是闭包了？有没有什么办法来验证一下这个函数就是闭包呢？
+
+
+有的，所有函数都有一个 ` __closure__` 属性，如果函数是闭包的话，那么它返回的是一个由 cell 组成的元组对象。cell 对象的 cell_contents 属性就是存储在闭包中的变量。
+
+我们打印出来体验一下：
+
+```Python
+time = 0
+
+
+def study_time(time):
+    def insert_time(min):
+        nonlocal  time
+        time = time + min
+        return time
+
+    return insert_time
+
+
+f = study_time(time)
+print(f.__closure__)
+print(f(2))
+print(time)
+print(f.__closure__[0].cell_contents)
+print(f(10))
+print(time)
+print(f.__closure__[0].cell_contents)
+```
+
+打印的结果为：
+
+```
+(<cell at 0x0000000000410C48: int object at 0x000000001D6AB420>,)
+2
+0
+2
+12
+0
+12
+```
+
+从打印结果可见，传进来的值一直存储在闭包的 cell_contents 中,因此，这也就是闭包的最大特点，可以将父函数的变量与其内部定义的函数绑定。就算生成闭包的父函数已经释放了，闭包仍然存在。
+
+闭包的过程其实好比类（父函数）生成实例（闭包），不同的是父函数只在调用时执行，执行完毕后其环境就会释放，而类则在文件执行时创建，一般程序执行完毕后作用域才释放，因此对一些需要重用的功能且不足以定义为类的行为，使用闭包会比使用类占用更少的资源，且更轻巧灵活。
+
+
+
+<!-- content-enhancement-2026-10-22:start -->
+
+## 补充讲解与自练
+
+> 本节为本轮新增补充，前面的原文、例子和输出保留不动。
+
+### 两个人记录学习时间，会不会混在一起
+
+前面我们一直在记录一份学习时间。那如果一个人学 Python，另一个人读书，都用同一个 `study_time`，记录会不会混在一起？
+
+各位先猜一下，下面四次打印会得到什么结果：
+
+```python
+def study_time(time):
+    def insert_time(minutes):
+        nonlocal time
+        time = time + minutes
+        return time
+
+    return insert_time
+
+
+python_time = study_time(0)
+reading_time = study_time(0)
+same_record = python_time
+
+print(python_time(2))
+print(same_record(10))
+print(reading_time(5))
+print(python_time(0))
+```
+
+输出：
+
+```text
+2
+12
+5
+12
+```
+
+我们按调用顺序来看：
+
+1. `study_time(0)` 调用了两次，每次都建立了各自的 `time`，并返回一个使用这份变量的内部函数。
+2. `same_record = python_time` 只是让另一个名字指向已经得到的那个函数，没有再次调用 `study_time`，也没有新建记录。
+3. `python_time(2)` 把第一份记录加到 `2`，`same_record(10)` 接着把同一份记录加到 `12`。
+4. `reading_time(5)` 修改第二份记录，所以它得到的是 `5`。
+5. 最后给第一份记录加 `0`，它仍然是 `12`。
+
+同一个外层函数可以生成多份独立记录；同一个内部函数也可以被多个名字引用。这两件事分清楚，就不容易把「生成一个闭包」和「调用已有闭包」混在一起了。
+
+这里也给前面的定义补充一个边界：关键在于内部函数引用了外层函数的变量，把内部函数返回只是这个例子让外面继续使用它的办法，不是形成闭包必须执行的步骤。可以对照 [官方术语表中的闭包变量](https://docs.python.org/3.13/glossary.html#term-closure-variable) 理解。
+
+### 返回函数和调用函数，差的就是那对括号
+
+再看前面的 `return insert_time`，这里没有括号，是把函数本身交给调用方。得到它以后，我们才用 `python_time(2)` 这样的写法记录一次学习。
+
+如果换成 `return insert_time(2)` 呢？那就是在外层函数里立刻调用一次 `insert_time`，然后把这一次算出来的数字返回。调用方拿到数字后，再写 `python_time(2)` 就不行了，因为数字不能当函数调用。
+
+另外，`nonlocal` 对应的是这里的重新赋值：`time = time + minutes`。它不是内部函数每访问一个外层变量都必须写的声明。只是读取外层变量时不需要它；如果操作的是外层列表，单纯调用列表的 `append()` 也不是给变量重新赋值。遇到不确定的情况，可以先问自己：这一行是在让名称指向别处，还是在修改原有对象？
+
+### 自己改一份带初始值的记录
+
+这次不从 `0` 开始。请建立两份记录：`python_time = study_time(30)` 和 `reading_time = study_time(10)`。
+
+依次记录 Python 学习 `5` 分钟、读书 `2` 分钟、Python 学习 `3` 分钟，应该依次得到 `35`、`12`、`38`。再创建 `another_name = python_time`，通过它增加 `2` 分钟，第一份记录应该变成 `40`。
+
+先在纸上或笔记里写出每一步改的是哪一份记录，再改代码验证。如果结果不同，先检查自己有没有不小心重新调用 `study_time`，从头建立了一份记录。
+
+前面原文打印了 `__closure__` 中的地址，自己运行时不必与示例地址相同。要观察的是被保留的变量及其变化。原文中闭包和类的轻重比较，也需要结合具体写法和实际测量；它不是所有闭包都比所有类省资源的保证。当前这个需求只需要保存一份累计时间，所以用闭包就能把问题表达清楚。
+
+<!-- content-enhancement-2026-10-22:end -->
