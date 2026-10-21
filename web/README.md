@@ -35,6 +35,10 @@ content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises
 
 当前静态站无需配置 JWT、SQLite 或其他环境变量。预览导出产物时，在构建后执行 `python3 -m http.server 3000 --bind 127.0.0.1 --directory out`，访问 `http://127.0.0.1:3000/`；该预览命令需要本机 Python 3。静态导出不使用 `next start`。
 
+## 练习快捷键
+
+闯关页支持 `⌘/Ctrl + Enter` 运行、`⌘/Ctrl + Shift + Enter` 检查答案。快捷键优先操作焦点所在的题；焦点在题号／目录链接时操作该链接指向的题，其他位置则操作视口内可见部分最大的题。编辑器中不会触发默认插行；当前题已通过、正在运行或环境未就绪时不执行，也不转而运行其他题。
+
 ## 发布前检查
 
 `pnpm build` 的 prebuild 会先运行 `pnpm check`；测试、内容与课程目录校验、类型检查或 lint 有任一错误即停止，Cloudflare 的现有构建命令也会经过这些检查。`pnpm typecheck` 调用 `next typegen` 生成 `.next/types`，正在运行其他会话的开发服务器时应在隔离副本执行。
