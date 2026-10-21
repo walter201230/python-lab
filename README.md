@@ -20,10 +20,12 @@
 
 | 仓库 | 形态 | 适合 |
 |------|------|------|
-| [walter201230/Python](https://github.com/walter201230/Python) | 教程内容主仓（Markdown + GitHub Pages 文档版） | 系统通读、速查、手机阅读 |
+| [walter201230/Python](https://github.com/walter201230/Python) | 教程内容主仓（Markdown），旧 GitHub Pages 作为跳转入口 | 阅读源文、内容贡献 |
 | **walter201230/python-lab**（本仓） | 交互式学习站源码 | 零基础动手学、刷题、解锁式学习 |
 
 教程文字内容沿用主仓，本仓负责把它们重组为 step + exercise 的渐进解锁形态。
+
+在线学习统一进入 learn-py.org；课程目录的「先通读」入口提供完整讲解及练习提示，适合系统通读与速查。
 
 ## 技术栈
 
@@ -35,14 +37,13 @@
 
 ## 本地开发
 
-```bash
-cd web
-pnpm install
-pnpm dev                            # http://localhost:3000
-pnpm build                          # 静态导出到 web/out/
-pnpm tsc --noEmit && pnpm lint      # 类型 + lint
-npm run validate-content            # 校验 content/lessons/ 数据
-```
+应用位于 `web/`，统一使用其 `package.json` 指定的 pnpm 版本。安装、开发、验证与当前部署命令见 [Web 开发说明](web/README.md) 。
+
+## 维护入口
+
+- [项目规范](AGENTS.md) ：目录边界、工作流与文档维护。
+- [功能规范](openspec/README.md) ：唯一 OpenSpec 入口；当前要求与历史方案分开维护。
+- [项目文档](docs/README.md) ：专项资料与已失效部署说明的归档入口。
 
 ## 反馈与贡献
 

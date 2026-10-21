@@ -2,13 +2,16 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "predev": "node scripts/copy-pyodide.mjs && node scripts/copy-monaco.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-pyodide.mjs && node scripts/copy-monaco.mjs",
+    "prebuild": "pnpm check && node scripts/copy-pyodide.mjs && node scripts/copy-monaco.mjs",
     "build": "next build",
     "postbuild": "node scripts/generate-sitemap.mjs",
-    "start": "next start",
+    "check": "pnpm test && pnpm validate-content && pnpm typecheck && pnpm lint",
+    "test": "tsx --test scripts/*.test.ts",
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
     "lint": "eslint",
     "validate-content": "tsx scripts/validate-content.ts"
   },

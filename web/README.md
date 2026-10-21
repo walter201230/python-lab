@@ -4,12 +4,15 @@ Next.js 16 静态导出应用，[learn-py.org](https://learn-py.org) 的全部�
 
 ## 本地开发
 
+在本目录执行命令，使用 `package.json` 声明的 pnpm 10.33.0；依赖版本由唯一锁文件 `pnpm-lock.yaml` 固定。
+
 ```bash
 pnpm install
 pnpm dev                            # http://localhost:3000
-pnpm build                          # 静态导出到 out/（含 postbuild 生成 sitemap）
-pnpm tsc --noEmit && pnpm lint      # 类型 + lint
-npm run validate-content            # 校验 content/lessons/ 数据
+pnpm check                          # 测试、内容及课程目录、类型、lint
+pnpm build                          # 自动先 check，再导出 out/ 并生成 sitemap
+pnpm validate-content               # 单独检查教学配置与课程目录一致性
+pnpm typecheck                      # 生成路由类型，再检查 TypeScript
 ```
 
 ## 目录速览
@@ -22,8 +25,21 @@ src/lib/                 Pyodide worker 单例 + hook（pyodideSingleton / usePy
 src/store/progress.ts    进度存储（zustand + persist localStorage，唯一进度来源）
 public/pyodide.worker.js 代码执行 worker：练习隔离命名空间 / 教学块共享累积，
                          run 串行化 + runId 路由（详见文件内注释）
+public/pyodide/          predev/prebuild 从依赖复制的 Pyodide 资源，不入库
+public/monaco/           predev/prebuild 从依赖复制的编辑器资源，不入库
+scripts/                资源复制、内容及课程目录校验、回归测试、静态 sitemap 生成
 content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises/*.json}
 ```
+
+项目规范见 [仓库 AGENTS.md](../AGENTS.md) 与 [Web 局部约束](AGENTS.md) 。功能规范统一位于 [仓库根 openspec/](../openspec/README.md) ；OpenSpec 命令在仓库根执行。
+
+当前静态站无需配置 JWT、SQLite 或其他环境变量。预览导出产物时，在构建后执行 `python3 -m http.server 3000 --bind 127.0.0.1 --directory out`，访问 `http://127.0.0.1:3000/`；该预览命令需要本机 Python 3。静态导出不使用 `next start`。
+
+## 发布前检查
+
+`pnpm build` 的 prebuild 会先运行 `pnpm check`；测试、内容与课程目录校验、类型检查或 lint 有任一错误即停止，Cloudflare 的现有构建命令也会经过这些检查。`pnpm typecheck` 调用 `next typegen` 生成 `.next/types`，正在运行其他会话的开发服务器时应在隔离副本执行。
+
+课程目录的章节 slug 和 lesson id 必须唯一，lesson.json 的 chapter／id 必须与目录一致；可用课程不能缺少内容，磁盘中的课程不能漏登。展示标题及首页短介绍仍可与正文标题、搜索摘要分别维护。此检查不需要相邻仓库；两仓旧站跳转目标的联合检查见工作区规范或原教程 README。
 
 ## 搜索摘要维护
 
@@ -41,8 +57,9 @@ content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises
 ### 构建配置
 
 - **构建命令**：`pnpm install && pnpm build`
+- **根目录**：`web`（以下命令均在此目录运行）
 - **构建输出目录**：`out`
-- **Node 版本**：≥ 20（建议 22 LTS）
+- **Node 版本**：≥ 20.9.0（Next 依赖声明的最低版本；可使用 Node 22）
 - **环境变量**：无（无账号系统，进度仅保存在浏览器 `localStorage`）
 
 ### 两种部署方式
@@ -62,8 +79,10 @@ npx wrangler pages deploy out --project-name <你的项目名>
 ### 注意事项
 
 - 路由形式为 `/lessons/<chapter>/<lesson>/`（带尾斜杠，CDN 友好）
-- Pyodide 资源（~10MB）由 jsdelivr CDN 加载，不占 Cloudflare 流量
+- Pyodide 和 Monaco 资源由 `predev/prebuild` 从 `node_modules` 复制到 `public/`，随站点同源部署；安装后不要跳过资源复制步骤
 - `public/pyodide.worker.js` 无内容哈希、有 HTTP 缓存：改动 worker 消息协议时，
   必须同步递增 `pyodideSingleton.ts` 里 worker URL 的 `?v=N`，否则部署期会出现
   新页面 JS 配旧缓存 worker 的混配
 - 进度仅存用户浏览器 `localStorage`：换浏览器/清缓存会丢；这是本站当前的设计折中
+
+旧腾讯云 CVM、PM2、SQLite 部署方案已失效，仅保留在 [历史资料](../docs/archive/2026-09-11-structure/README.md) 中；不适用于当前静态站。

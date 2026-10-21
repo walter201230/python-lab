@@ -14,7 +14,7 @@ interface ReadStepCardProps {
 /**
  * 阅读页的教学步骤卡片——StepCard 的纯静态对应物。
  *
- * 与 StepCard 的区别（见 openspec/changes/add-lesson-read-pages/design.md D4）：
+ * 与 StepCard 的区别（见仓库根 openspec/specs/lesson-read-view/spec.md）：
  *   - 不接收 pyStatus / run，因此阅读页不必引入 Pyodide
  *   - python 代码块渲染为静态块，右上角给一个回闯关页的入口，而非「▶ 试运行」
  *   - 没有 read/current/unread 状态——阅读页不读进度，所有段落一律平铺

@@ -1,5 +1,8 @@
-## ADDED Requirements
+# interactive-lesson Specification
 
+## Purpose
+TBD - created by archiving change online-coding-mvp. Update Purpose after archive.
+## Requirements
 ### Requirement: 教学步骤渲染
 
 系统 SHALL 把一节课渲染为「分步教学 + 练习题」的混合页面：左侧顺序展示当前教学步骤（markdown 内容，每步占据小于一屏，包含说明文字、可选示意图、可选「跑这段示例」按钮），右侧固定展示当前练习题的代码编辑器和终端。
@@ -89,3 +92,4 @@
 
 - **WHEN** 用户已解锁到第 3 题，刷新页面
 - **THEN** 系统读取 localStorage 恢复进度，第 1-3 题入口可点击，第 4 题保持锁定
+

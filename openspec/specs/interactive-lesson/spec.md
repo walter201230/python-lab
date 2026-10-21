@@ -1,95 +1,69 @@
 # interactive-lesson Specification
 
 ## Purpose
-TBD - created by archiving change online-coding-mvp. Update Purpose after archive.
+
+定义当前闯关页的教学与练习编排、浏览器内执行、自动判分及解锁规则。正文以单列卡片展示，目录和题号提供导航；完整无门控阅读由 lesson-read-view 规范定义。
+
 ## Requirements
-### Requirement: 教学步骤渲染
 
-系统 SHALL 把一节课渲染为「分步教学 + 练习题」的混合页面：左侧顺序展示当前教学步骤（markdown 内容，每步占据小于一屏，包含说明文字、可选示意图、可选「跑这段示例」按钮），右侧固定展示当前练习题的代码编辑器和终端。
+### Requirement: 教学与练习按课程顺序展示
 
-#### Scenario: 用户进入一节课首页
+系统 MUST 按 lesson.json 的 blocks 顺序混合展示教学和练习。未完成当前练习时，正文 MUST 截止到第一个既未通过、也未查看答案的练习；通过或查看答案后继续展示下一段内容，不使用旧版左右分栏和下一步按钮模型。
 
-- **WHEN** 用户访问 `/lessons/python1/hello-world`
-- **THEN** 页面左侧显示该课的第 1 个教学步骤（markdown 渲染），右侧显示第 1 道题的初始代码（已填入题目模板代码）和空白终端
+#### Scenario: 首次进入闯关课程
 
-#### Scenario: 用户点击「下一步」推进教学
+- **WHEN** 无进度的用户访问 `/lessons/python16/decorator/`
+- **THEN** 只展示教学 01、教学 02 与练习 1，后续教学及练习尚不显示
 
-- **WHEN** 用户在左侧教学步骤完成阅读，点击「下一步」按钮
-- **THEN** 左侧切换到下一个教学步骤，右侧编辑器和题目状态保持不变
+#### Scenario: 推进到下一题
 
-### Requirement: Pyodide 代码运行
+- **WHEN** 用户通过当前练习或确认查看答案
+- **THEN** 其后的教学与下一道练习可见，题号和目录导航与解锁状态一致
 
-系统 SHALL 在用户浏览器中通过 Pyodide（Web Worker 隔离）执行用户编辑器中的 Python 代码，将 stdout/stderr 输出实时显示在右侧终端中。单次执行超时 5 秒，超时强制终止该 Web Worker 并提示「执行超时」。
+### Requirement: Python 在浏览器运行
 
-#### Scenario: 用户点击「运行」按钮
+系统 MUST 通过浏览器 Web Worker 中的 Pyodide 执行代码并展示输出或异常，不向服务端上传用户代码。worker 在跨题与跨路由时复用；练习执行使用隔离命名空间，教学试运行可使用累积命名空间。
 
-- **WHEN** 用户在编辑器输入 `print("Hello")` 后点击「运行」
-- **THEN** Pyodide 在 Web Worker 中执行该代码，终端显示 `Hello\n`，用时 < 1 秒
+#### Scenario: 执行普通代码
 
-#### Scenario: 用户代码包含无限循环
+- **WHEN** 环境就绪后用户运行 `print("Hello")`
+- **THEN** 输出区显示 `Hello`，不触发服务端代码执行请求
 
-- **WHEN** 用户写 `while True: pass` 并点击「运行」
-- **THEN** Pyodide Web Worker 在执行 5 秒后被强制终止，终端显示 `执行超时（5 秒），可能是死循环`
+#### Scenario: 执行超时或异常
 
-#### Scenario: 用户代码抛异常
+- **WHEN** 默认运行配置下代码持续执行超过 5 秒
+- **THEN** 显示执行超时提示并终止、重建 worker
+- **AND** Python 异常通过输出区展示，后续运行仍可重新发起
 
-- **WHEN** 用户写 `print(1 / 0)` 并点击「运行」
-- **THEN** 终端显示完整 traceback（`ZeroDivisionError: division by zero`），但不影响下一次运行
+### Requirement: 按练习规则判分
 
-### Requirement: 自动判分
+点击检查答案时系统 MUST 执行用户代码，并按 grading 中的 stdoutEquals、varsEqual、requiredAst 规则组合判定。所有已配置规则均满足才能通过，失败时 MUST 提供对应诊断。
 
-系统 SHALL 在用户点击「检查答案」时，按题目配置的判分规则（stdout 匹配 / 变量断言 / AST 检查的任意组合）评估用户代码是否通过，给出「通过 / 未通过 + 一句提示」反馈。
+#### Scenario: 判分通过与未通过
 
-#### Scenario: stdout 完全匹配通过
+- **WHEN** 用户代码满足题目所有判分规则
+- **THEN** 题目标记完成，保存通过时的代码和输出，并解锁下一题
+- **AND** 任一规则不满足时不得标记通过
 
-- **WHEN** 题目 expected_stdout = `"Hello, World!\n"`，用户运行结果 stdout = `"Hello, World!\n"`
-- **THEN** 显示绿色「✓ 通过」徽章，并解锁下一题按钮
+### Requirement: 提示与参考答案
 
-#### Scenario: stdout 不匹配
+闯关页 MUST 支持逐条展开提示，并在确认查看答案后展示参考代码、记录已查看答案状态。查看答案 MUST 解锁下一题，但 MUST NOT 等同于独立通过判分。
 
-- **WHEN** 题目 expected_stdout = `"Hello, World!\n"`，用户运行结果 stdout = `"hello world"`
-- **THEN** 显示红色「✗ 未通过 — 输出大小写不一致，注意首字母大写和标点」提示
+#### Scenario: 查看答案继续学习
 
-#### Scenario: 变量值断言通过
+- **WHEN** 用户确认查看当前练习答案
+- **THEN** 该练习进入 viewedSolution，下一题解锁，completed 不因此新增该题
 
-- **WHEN** 题目 expected_vars = `{"name": "Alice"}`，用户代码运行后全局变量 `name` 的值为 `"Alice"`
-- **THEN** 显示「✓ 通过」徽章
+### Requirement: 进度持久化与只读章节
 
-#### Scenario: AST 检查失败
+系统 MUST 通过 Zustand persist 的 `lesson-progress` 存储项保存 byLesson 进度，而不是每课单独的 localStorage 键。详细字段和无账号边界见 progress-storage 规范。
 
-- **WHEN** 题目要求 required_ast = `["FunctionDef:greet"]`，用户代码没有定义 `greet` 函数
-- **THEN** 显示「✗ 未通过 — 题目要求你定义一个名叫 greet 的函数」
+#### Scenario: 刷新恢复
 
-### Requirement: 提示与查看答案
+- **WHEN** 用户刷新已经解锁部分练习的课程
+- **THEN** 从本地进度恢复解锁、完成、查看答案标记，以及通过时保存的代码和输出
 
-系统 SHALL 为每道题提供「提示」按钮（按需展开，1-3 条提示渐进展示）和「查看答案」按钮（确认对话框后展示参考答案）。查看答案后用户仍可继续编辑代码，但题目标记「已查看答案」状态（不影响解锁下一题）。
+#### Scenario: 无练习的概念章节
 
-#### Scenario: 用户点击提示
-
-- **WHEN** 用户在第 3 题点击「提示」按钮
-- **THEN** 提示面板展开，显示该题的第 1 条提示文本
-
-#### Scenario: 用户点击查看答案
-
-- **WHEN** 用户在第 3 题点击「查看答案」并在确认对话框点「确定」
-- **THEN** 编辑器旁打开一个只读的「参考答案」面板显示标准代码，该题状态标记为「已查看答案」
-
-### Requirement: 进度门控（解锁规则）
-
-系统 SHALL 严格按题目顺序解锁——只有当前题判分通过（或显式查看了答案）后，下一题入口才可点击。同一节课内进度 SHALL 持久化在 localStorage（Key 格式 `lesson-progress:<lesson-id>`）。
-
-#### Scenario: 第 1 题未通过时点击第 2 题
-
-- **WHEN** 用户在第 1 题未通过的状态下点击第 2 题入口
-- **THEN** 该入口为禁用态（灰色 + 锁图标），点击无反应
-
-#### Scenario: 第 1 题通过后
-
-- **WHEN** 用户第 1 题判分通过
-- **THEN** 第 2 题入口变为可点击态，自动跳转到第 2 题，localStorage 保存 `lesson-progress:python1-hello-world` = `{ unlockedExercises: [1, 2] }`
-
-#### Scenario: 用户刷新页面
-
-- **WHEN** 用户已解锁到第 3 题，刷新页面
-- **THEN** 系统读取 localStorage 恢复进度，第 1-3 题入口可点击，第 4 题保持锁定
-
+- **WHEN** 用户进入没有练习的闯关课程
+- **THEN** 所有教学内容直接显示，并按现有规则记录 lessonCompleted，不虚构练习或判分入口

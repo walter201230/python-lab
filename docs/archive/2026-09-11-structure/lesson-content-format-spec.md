@@ -1,5 +1,8 @@
-## ADDED Requirements
+# lesson-content-format Specification
 
+## Purpose
+TBD - created by archiving change online-coding-mvp. Update Purpose after archive.
+## Requirements
 ### Requirement: 课程目录结构
 
 系统 SHALL 按以下目录结构组织课程内容：每节课一个独立目录，包含 `lesson.json`（结构化元数据）和若干 `steps/NN.mdx`（教学步骤文本）以及若干 `exercises/NN.json`（练习题）。
@@ -24,12 +27,17 @@ content/lessons/<chapter-slug>/<lesson-slug>/
 
 ### Requirement: lesson.json schema
 
-系统 SHALL 要求 `lesson.json` 包含以下字段：`id`（kebab-case 唯一标识，与目录同名）、`title`（显示标题）、`chapter`（所属章节 slug）、`order`（章节内排序，整数）、`steps`（步骤文件名数组，按顺序）、`exercises`（练习文件名数组，按顺序）、`estimatedMinutes`（预计学习时长，整数）。
+系统 SHALL 要求 `lesson.json` 包含以下字段：`id`（kebab-case 唯一标识，与目录同名）、`title`（显示标题）、`description`（非空课程摘要，供搜索元数据使用）、`chapter`（所属章节 slug）、`order`（章节内排序，整数）、`blocks`（按展示顺序排列的教学与练习引用，每项包含 `kind` 和 `file`）、`estimatedMinutes`（预计学习时长，整数）。
 
 #### Scenario: 合法 lesson.json
 
-- **WHEN** `lesson.json` 内容为 `{"id":"hello-world","title":"第一个 Python 程序","chapter":"python1","order":1,"steps":["01-intro.mdx","02-print.mdx"],"exercises":["01-hello.json","02-greet.json"],"estimatedMinutes":15}`
-- **THEN** 系统加载成功并按 steps/exercises 顺序渲染
+- **WHEN** `lesson.json` 内容为 `{"id":"hello-world","title":"第一个 Python 程序","description":"认识 Python，学习 print 的基本用法，通过第一个 Hello World 程序理解代码与输出的关系。","chapter":"python1","order":1,"blocks":[{"kind":"step","file":"01-intro.mdx"},{"kind":"step","file":"02-print.mdx"},{"kind":"exercise","file":"01-hello.json"},{"kind":"exercise","file":"02-greet.json"}],"estimatedMinutes":15}`
+- **THEN** 系统加载成功并按 blocks 顺序渲染；课程摘要仅由元数据生成逻辑消费，不作为教学正文展示
+
+#### Scenario: 课程摘要缺失或无效
+
+- **WHEN** `description` 缺失、不是字符串，或去除空白后为空
+- **THEN** 内容校验脚本报错并非零退出；新增课程需先填写与实际教学内容对应的摘要
 
 #### Scenario: 缺失必填字段
 
@@ -66,5 +74,5 @@ content/lessons/<chapter-slug>/<lesson-slug>/
 
 #### Scenario: 内容引用错误
 
-- **WHEN** `lesson.json` 中 `steps: ["99-missing.mdx"]` 但该文件不存在
+- **WHEN** `lesson.json` 中 `blocks: [{"kind":"step","file":"99-missing.mdx"}]` 但该文件不存在
 - **THEN** 输出 `✗ python1/hello-world: step 文件不存在 — 99-missing.mdx`，退出码 1

@@ -4,12 +4,14 @@
  * - 跨文件引用一致性（lesson.blocks 引用的 step/exercise 文件存在）
  * - AST 规则语法合法（"NodeType:Name" 格式）
  *
- * 用法：pnpm validate-content（或 npm run validate-content）
+ * 用法：在 web/ 目录执行 pnpm validate-content
  */
 
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import type { Exercise, LessonMeta, ValidationError } from '../src/types/content';
+import { CHAPTERS } from '../src/lib/chapters';
+import { validateCatalog, type CatalogLesson } from './catalogValidation';
 
 const CONTENT_ROOT = join(process.cwd(), 'content', 'lessons');
 
@@ -27,7 +29,7 @@ function readJSON<T>(path: string): T {
   return JSON.parse(readFileSync(path, 'utf-8')) as T;
 }
 
-function validateLesson(lessonDir: string, errors: ValidationError[]): number {
+function validateLesson(lessonDir: string, errors: ValidationError[], lessons: CatalogLesson[]): number {
   const lessonJsonPath = join(lessonDir, 'lesson.json');
   if (!existsSync(lessonJsonPath)) {
     errors.push({ file: relative(CONTENT_ROOT, lessonDir), message: '缺少 lesson.json' });
@@ -44,6 +46,13 @@ function validateLesson(lessonDir: string, errors: ValidationError[]): number {
     });
     return 0;
   }
+
+  if (!lesson || typeof lesson !== 'object' || Array.isArray(lesson)) {
+    errors.push({ file: relative(CONTENT_ROOT, lessonJsonPath), message: 'lesson.json 必须是对象' });
+    return 0;
+  }
+  const [chapterDir, lessonDirName] = relative(CONTENT_ROOT, lessonDir).split(/[\\/]/);
+  lessons.push({ chapterDir, lessonDir: lessonDirName, meta: lesson });
 
   for (const field of REQUIRED_LESSON_FIELDS) {
     if (lesson[field] === undefined) {
@@ -67,7 +76,15 @@ function validateLesson(lessonDir: string, errors: ValidationError[]): number {
   const exercisesDir = join(lessonDir, 'exercises');
   let exerciseCount = 0;
 
-  for (const block of lesson.blocks ?? []) {
+  if (!Array.isArray(lesson.blocks)) {
+    errors.push({ file: relative(CONTENT_ROOT, lessonJsonPath), message: 'blocks 必须是数组' });
+    return 0;
+  }
+  for (const block of lesson.blocks) {
+    if (!block || typeof block !== 'object' || typeof block.file !== 'string') {
+      errors.push({ file: relative(CONTENT_ROOT, lessonJsonPath), message: 'block 必须包含 kind 和文件名' });
+      continue;
+    }
     if (block.kind === 'step') {
       if (!existsSync(join(stepsDir, block.file))) {
         errors.push({
@@ -140,11 +157,12 @@ function validateExercise(exPath: string, errors: ValidationError[]): void {
 
 function main() {
   if (!existsSync(CONTENT_ROOT)) {
-    console.log(`✓ 校验通过：0 节课，0 道题（content/lessons/ 不存在，跳过）`);
-    process.exit(0);
+    console.error('✗ 校验失败：content/lessons/ 不存在');
+    process.exit(1);
   }
 
   const errors: ValidationError[] = [];
+  const lessons: CatalogLesson[] = [];
   let lessonCount = 0;
   let exerciseCount = 0;
 
@@ -154,11 +172,12 @@ function main() {
     for (const lesson of readdirSync(chapterDir)) {
       const lessonDir = join(chapterDir, lesson);
       if (!statSync(lessonDir).isDirectory()) continue;
-      exerciseCount += validateLesson(lessonDir, errors);
+      exerciseCount += validateLesson(lessonDir, errors, lessons);
       lessonCount += 1;
     }
   }
 
+  errors.push(...validateCatalog(CHAPTERS, lessons));
   if (errors.length === 0) {
     console.log(`✓ 校验通过：${lessonCount} 节课，${exerciseCount} 道题`);
     process.exit(0);

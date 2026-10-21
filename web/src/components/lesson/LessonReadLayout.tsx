@@ -8,7 +8,7 @@ import { ReadStepCard } from './ReadStepCard';
  *
  * 与闯关页 LessonLayout 的根本区别是它是 Server Component——不订阅 useProgress、
  * 不调用 usePyodide，因此静态产物即最终内容，爬虫与首次访问者所见完全一致
- * （见 openspec/changes/add-lesson-read-pages/design.md D7）。
+ * （见仓库根 openspec/specs/lesson-read-view/spec.md）。
  */
 export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
   const practiceHref = `/lessons/${meta.chapter}/${meta.id}/`;

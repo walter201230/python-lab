@@ -52,8 +52,6 @@ interface ProgressState {
   markLessonCompleted: (lessonId: string) => void;
   /** 重置某节课进度（开发/测试用） */
   reset: (lessonId: string) => void;
-  /** 用服务端的全量进度替换 byLesson（登录态在 lesson 页 mount 时调用） */
-  hydrate: (byLesson: Record<string, LessonProgress>) => void;
 }
 
 const empty = (firstExerciseId: string): LessonProgress => ({
@@ -146,7 +144,6 @@ export const useProgress = create<ProgressState>()(
           delete next[lessonId];
           return { byLesson: next };
         }),
-      hydrate: (byLesson) => set({ byLesson }),
     }),
     { name: 'lesson-progress' },
   ),

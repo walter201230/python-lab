@@ -1,14 +1,14 @@
 # lesson-content-format Specification
 
 ## Purpose
-TBD - created by archiving change online-coding-mvp. Update Purpose after archive.
+定义 `web/content/lessons/` 中教学步骤、课程编排和练习配置的格式。应用命令在 `web/` 执行；校验入口为 `web/scripts/validate-content.ts`，类型定义为 `web/src/types/content.ts`。
 ## Requirements
 ### Requirement: 课程目录结构
 
 系统 SHALL 按以下目录结构组织课程内容：每节课一个独立目录，包含 `lesson.json`（结构化元数据）和若干 `steps/NN.mdx`（教学步骤文本）以及若干 `exercises/NN.json`（练习题）。
 
 ```
-content/lessons/<chapter-slug>/<lesson-slug>/
+web/content/lessons/<chapter-slug>/<lesson-slug>/
   ├── lesson.json
   ├── steps/
   │   ├── 01-intro.mdx
@@ -20,10 +20,10 @@ content/lessons/<chapter-slug>/<lesson-slug>/
       └── ...
 ```
 
-#### Scenario: 加载 python1 hello-world 课程
+#### Scenario: 加载第一课
 
-- **WHEN** 系统访问路径 `/lessons/python1/hello-world`
-- **THEN** 服务端读取 `content/lessons/python1/hello-world/lesson.json` 和 `steps/*.mdx` 和 `exercises/*.json`，渲染该课页面
+- **WHEN** 构建 `/lessons/python1/intro-and-hello-world/` 页面
+- **THEN** 构建阶段读取 `web/content/lessons/python1/intro-and-hello-world/lesson.json`，按 `blocks` 顺序加载引用的教学和练习文件，渲染静态页面
 
 ### Requirement: lesson.json schema
 
@@ -42,7 +42,7 @@ content/lessons/<chapter-slug>/<lesson-slug>/
 #### Scenario: 缺失必填字段
 
 - **WHEN** `lesson.json` 缺少 `title` 字段
-- **THEN** 内容校验脚本（`pnpm validate-content`）报错并非零退出，CI 阻止合并
+- **THEN** 内容校验脚本（在 `web/` 执行 `pnpm validate-content`）报错并非零退出；修改者须修正后再交付，不假定已有自动合并门禁
 
 ### Requirement: 练习题 JSON schema
 
@@ -65,7 +65,7 @@ content/lessons/<chapter-slug>/<lesson-slug>/
 
 ### Requirement: 内容校验工具
 
-系统 SHALL 提供一个 CLI 工具 `pnpm validate-content`，扫描 `content/lessons/` 下所有 `lesson.json` 和练习 JSON，按 schema 校验、检查跨文件引用一致性（lesson 引用的 step 文件存在、order 不重复、AST 规则语法合法）。
+系统 SHALL 提供 CLI 工具 `pnpm validate-content`，扫描 `web/content/lessons/` 下的课程与课程引用的练习 JSON，检查必填字段、课程摘要类型及非空、block 类型、引用文件存在性、判分规则非空和 AST 规则语法。该脚本不等于完整 JSON Schema 验证，不承诺检查所有字段类型或 `order` 唯一性。
 
 #### Scenario: 所有内容合法
 
@@ -76,3 +76,12 @@ content/lessons/<chapter-slug>/<lesson-slug>/
 
 - **WHEN** `lesson.json` 中 `blocks: [{"kind":"step","file":"99-missing.mdx"}]` 但该文件不存在
 - **THEN** 输出 `✗ python1/hello-world: step 文件不存在 — 99-missing.mdx`，退出码 1
+
+### Requirement: 课程目录与内容身份一致
+
+内容校验 MUST 检查 `chapters.ts` 内章节 slug 唯一、lesson id 全站唯一；lesson.json 的 chapter 和 id MUST 与实际目录一致，内容中的 lesson id 也 MUST 全站唯一。可用课程 MUST 有对应内容，每份课程内容 MUST 在目录中登记。首页展示标题和搜索摘要无需逐字相同；尚未发布的 planned 章节允许没有内容。
+
+#### Scenario: 课程身份错位或遗漏
+
+- **WHEN** lesson.json 的 id 与目录名不同、lesson id 重复、已发布课程内容缺失，或内容没有在 chapters.ts 登记
+- **THEN** `pnpm validate-content` 输出具体路径和原因并非零退出
