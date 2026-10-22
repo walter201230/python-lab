@@ -101,6 +101,16 @@
 - **WHEN** 用户确认查看当前练习答案
 - **THEN** 该练习进入 viewedSolution，下一题解锁，completed 不因此新增该题
 
+### Requirement: 练习题反馈提供复现信息模板
+
+每道练习 MUST 提供指向 `walter201230/Python` 新建 issue 页的反馈链接，预填课程 ID、练习 ID、题目标题及可用的当前页面 URL。反馈正文 MUST 提供问题描述、复现步骤、预期与实际结果、完整报错、设备／操作系统、浏览器及版本、点击或快捷键操作方式、刷新后是否仍出现及可选最小复现代码的填写位置。代码、报错与环境信息由用户自行填写，系统 MUST NOT 自动读取编辑器代码、运行输出或本地学习进度以填入链接，也不自动提交 issue。
+
+#### Scenario: 打开练习反馈
+
+- **WHEN** 用户点击某题的「题目有问题？」
+- **THEN** GitHub 新建 issue 页面带有正确题目身份和复现信息模板，用户填写后自行决定是否提交
+- **AND** 没有当前页面 URL 时省略该字段，其他填写项与 Markdown 段落保持完整
+
 ### Requirement: 进度持久化与只读章节
 
 系统 MUST 通过 Zustand persist 的 `lesson-progress` 存储项保存 byLesson 进度，而不是每课单独的 localStorage 键。详细字段和无账号边界见 progress-storage 规范。

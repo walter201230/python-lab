@@ -35,6 +35,10 @@ content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises
 
 当前静态站无需配置 JWT、SQLite 或其他环境变量。预览导出产物时，在构建后执行 `python3 -m http.server 3000 --bind 127.0.0.1 --directory out`，访问 `http://127.0.0.1:3000/`；该预览命令需要本机 Python 3。静态导出不使用 `next start`。
 
+## 练习题反馈
+
+每道练习的「题目有问题？」会打开 GitHub 新建 issue 页，预填课程、题号和当前页面链接，并提供复现步骤、预期／实际结果、完整报错、浏览器与操作方式、刷新结果及可选复现代码的填写位置。这些信息由用户手动补充；反馈链接不会自动读取编辑器代码、运行输出或学习进度，也不会自动提交 issue。模板在 `src/lib/github.ts` 维护。
+
 ## 代码展示
 
 教学正文、题面、提示、判分说明中的代码块及参考答案使用统一的深色终端样式，提供语言标签、语法高亮和复制按钮。高亮仅加载教程使用的 Python、Bash、TOML／INI、JSON、YAML、Markdown、Lua 语法；无语言标记、未知语言以及输出／报错示例按纯文本展示。长行在代码框内横向滚动，复制保留原有缩进和换行。
