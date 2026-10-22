@@ -1,6 +1,5 @@
 'use client';
 
-import { Children, isValidElement, type ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { headingComponents } from '@/lib/markdownHeadings';
@@ -8,6 +7,8 @@ import { remarkHideComments } from '@/lib/markdownComments';
 import { remarkCodeModes, getCodeMode, codeModeLabels, type CodeMode } from '@/lib/markdownCode';
 import { STICKY_BAR_SCROLL_OFFSET } from '@/lib/layoutConstants';
 import { RunnableCodeBlock } from './RunnableCodeBlock';
+import { CodeBlock } from './CodeBlock';
+import { extractCodeFromPre } from './MarkdownCodeBlock';
 import { TeachingImage } from './TeachingImage';
 import type { PyodideStatus, RunOptions, RunResult } from '@/lib/usePyodide';
 
@@ -43,11 +44,11 @@ export function StepCard({ content, codeModes = [], index, totalSteps, state, py
             run={run}
             runnable={getCodeMode(node) === 'runnable' && !hasNoRunMeta(node)}
             usage={codeModeLabels[getCodeMode(node)]}
+            plainText={getCodeMode(node) === 'output' || getCodeMode(node) === 'error'}
           />
         );
       }
-      // 非 python 代码块（或检测失败）：保留默认渲染
-      return <pre>{children}</pre>;
+      return code ? <CodeBlock code={code.text} language={code.lang} /> : <pre>{children}</pre>;
     },
   };
 
@@ -112,22 +113,4 @@ function hasNoRunMeta(node: unknown): boolean {
     | undefined;
   const codeNode = pre?.children?.find((c) => c.tagName === 'code');
   return /\bno-run\b/.test(codeNode?.data?.meta ?? '');
-}
-
-/**
- * 从 ReactMarkdown 给出的 <pre> children 中拆出代码语言 + 文本。
- * react-markdown 渲染 ```lang\ncode``` 时结构是 <pre><code class="language-lang">code</code></pre>。
- */
-function extractCodeFromPre(
-  children: ReactNode,
-): { lang: string; text: string } | null {
-  const arr = Children.toArray(children);
-  const codeEl = arr.find((c) => isValidElement(c) && c.type === 'code');
-  if (!codeEl || !isValidElement(codeEl)) return null;
-  const props = codeEl.props as { className?: string; children?: ReactNode };
-  const cls = props.className ?? '';
-  const m = /language-(\w+)/.exec(cls);
-  const lang = m ? m[1] : '';
-  const text = String(props.children ?? '').replace(/\n$/, '');
-  return { lang, text };
 }

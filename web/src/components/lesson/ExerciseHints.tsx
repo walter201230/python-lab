@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { markdownCodeComponents } from './MarkdownCodeBlock';
 import { hintToMarkdown } from '@/lib/hintMarkdown';
 
 interface ExerciseHintsProps {
@@ -28,7 +29,7 @@ export function ExerciseHints({ hints }: ExerciseHintsProps) {
           {hints.slice(0, level).map((h, i) => (
             <li key={i}>
               <div className="prose prose-xs max-w-none prose-p:my-0 prose-pre:my-1.5 prose-pre:border prose-pre:border-emerald-500/15 prose-code:text-accent-strong">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{hintToMarkdown(h)}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownCodeComponents}>{hintToMarkdown(h)}</ReactMarkdown>
               </div>
             </li>
           ))}

@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { markdownCodeComponents } from './MarkdownCodeBlock';
 
 interface GradingResultProps {
   pass: boolean;
@@ -41,7 +42,7 @@ export function GradingResult({ pass, msg }: GradingResultProps) {
         )}
       </div>
       <div className="prose prose-sm max-w-none prose-p:text-fg">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownCodeComponents}>{msg}</ReactMarkdown>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CodeOutput } from './CodeOutput';
+import { CodeBlock } from './CodeBlock';
 import type { PyodideStatus, RunOptions, RunResult } from '@/lib/usePyodide';
 
 interface RunnableCodeBlockProps {
@@ -11,6 +12,7 @@ interface RunnableCodeBlockProps {
   /** false 时只渲染代码与「复制」，不给「试运行」——见下方注释里的 no-run。 */
   runnable?: boolean;
   usage?: string;
+  plainText?: boolean;
 }
 
 /**
@@ -24,12 +26,11 @@ interface RunnableCodeBlockProps {
  *   仅展示用途清单中验证通过的独立示例的运行按钮；每次隔离名称空间，
  *   避免先前示例留下的名称影响当前结果。其余片段保留代码、复制和用途提示。
  */
-export function RunnableCodeBlock({ code, pyStatus, run, runnable = false, usage }: RunnableCodeBlockProps) {
+export function RunnableCodeBlock({ code, pyStatus, run, runnable = false, usage, plainText = false }: RunnableCodeBlockProps) {
   const [output, setOutput] = useState<{ stdout: string; stderr: string; error?: string } | null>(
     null,
   );
   const [running, setRunning] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const canRun = pyStatus === 'ready' && !running;
 
@@ -40,46 +41,23 @@ export function RunnableCodeBlock({ code, pyStatus, run, runnable = false, usage
     setRunning(false);
   };
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // 复制失败静默
-    }
-  };
-
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-line-strong/60 bg-code/80">
-      <div className="flex items-center justify-between border-b border-line bg-surface/60 px-3 py-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
-          Python{usage ? ` · ${usage}` : ''}
-        </span>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="rounded px-2 py-0.5 text-xs text-fg-subtle transition hover:bg-raised hover:text-fg-body focus-ring"
-          >
-            {copied ? '已复制' : '复制'}
-          </button>
-          {runnable && (
-            <button
-              type="button"
-              onClick={handleRun}
-              disabled={!canRun}
-              className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 disabled:cursor-not-allowed disabled:opacity-40 focus-ring"
-              title={pyStatus === 'ready' ? '在浏览器里跑这段代码' : 'Python 环境未就绪'}
-            >
-              {running ? '运行中…' : '▶ 试运行'}
-            </button>
-          )}
-        </div>
-      </div>
-      <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-accent-stronger">
-        <code>{code}</code>
-      </pre>
+    <CodeBlock
+      code={code}
+      language="python"
+      usage={usage}
+      plainText={plainText}
+      actions={runnable && (
+        <button
+          type="button"
+          onClick={handleRun}
+          disabled={!canRun}
+          title={pyStatus === 'ready' ? '在浏览器里跑这段代码' : 'Python 环境未就绪'}
+        >
+          {running ? '运行中…' : '▶ 试运行'}
+        </button>
+      )}
+    >
       {output && (
         <CodeOutput
           stdout={output.stdout}
@@ -88,6 +66,6 @@ export function RunnableCodeBlock({ code, pyStatus, run, runnable = false, usage
           variant="card"
         />
       )}
-    </div>
+    </CodeBlock>
   );
 }

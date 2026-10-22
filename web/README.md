@@ -19,7 +19,7 @@ pnpm typecheck                      # 生成路由类型，再检查 TypeScript
 
 ```
 src/components/lesson/   课程页核心：渐进解锁布局（LessonLayout）、练习卡（ExerciseCard）、
-                         教学块试运行（RunnableCodeBlock）
+                         教学块试运行（RunnableCodeBlock）、统一代码框（CodeBlock）
 src/lib/                 Pyodide worker 单例 + hook（pyodideSingleton / usePyodide）、
                          判分纯函数（grader）、课程加载（loadLesson）
 src/store/progress.ts    进度存储（zustand + persist localStorage，唯一进度来源）
@@ -34,6 +34,12 @@ content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises
 项目规范见 [仓库 AGENTS.md](../AGENTS.md) 与 [Web 局部约束](AGENTS.md) 。功能规范统一位于 [仓库根 openspec/](../openspec/README.md) ；OpenSpec 命令在仓库根执行。
 
 当前静态站无需配置 JWT、SQLite 或其他环境变量。预览导出产物时，在构建后执行 `python3 -m http.server 3000 --bind 127.0.0.1 --directory out`，访问 `http://127.0.0.1:3000/`；该预览命令需要本机 Python 3。静态导出不使用 `next start`。
+
+## 代码展示
+
+教学正文、题面、提示、判分说明中的代码块及参考答案使用统一的深色终端样式，提供语言标签、语法高亮和复制按钮。高亮仅加载教程使用的 Python、Bash、TOML／INI、JSON、YAML、Markdown、Lua 语法；无语言标记、未知语言以及输出／报错示例按纯文本展示。长行在代码框内横向滚动，复制保留原有缩进和换行。
+
+阅读页的代码和高亮在静态 HTML 中输出，复制由独立客户端组件处理，不启动 Python 环境或改变进度。闯关页仍按教学用途清单决定是否提供试运行；代码框不改变执行或判分逻辑。样式在 `src/components/lesson/CodeBlock.css`，语言注册在 `src/lib/codeHighlight.ts`。
 
 ## 练习快捷键
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { CodeBlock } from './CodeBlock';
+
 interface SolutionPanelProps {
   solution: string;
 }
@@ -14,9 +16,7 @@ export function SolutionPanel({ solution }: SolutionPanelProps) {
         <span aria-hidden>📖</span>
         <span>参考答案</span>
       </div>
-      <pre className="overflow-x-auto rounded-md border border-emerald-500/15 bg-code p-4 font-mono text-xs leading-relaxed text-accent-strong">
-        {solution}
-      </pre>
+      <CodeBlock code={solution} language="python" />
     </div>
   );
 }

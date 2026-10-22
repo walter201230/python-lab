@@ -70,8 +70,8 @@ test('所有在用步骤在阅读与闯关页给出相同运行许可，示意�
         const expected = codeModes.filter((mode) => mode === 'runnable').length;
         assert.equal((read.match(/在闯关页练习/g) ?? []).length, expected, key);
         assert.equal((practice.match(/▶ 试运行/g) ?? []).length, expected, key);
-        assert.equal((read.match(/Python ·/g) ?? []).length, selected.examples.length, key);
-        assert.equal((practice.match(/Python ·/g) ?? []).length, selected.examples.length, key);
+        assert.equal((read.match(/aria-label="Python代码"/g) ?? []).length, selected.examples.length, key);
+        assert.equal((practice.match(/aria-label="Python代码"/g) ?? []).length, selected.examples.length, key);
         assert.ok(!read.includes('content-completion-') && !read.includes('原教程全文'), key);
         steps++;
       }

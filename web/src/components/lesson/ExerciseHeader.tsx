@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { markdownCodeComponents } from './MarkdownCodeBlock';
 import { buildExerciseFeedbackUrl } from '@/lib/github';
 import type { Exercise } from '@/types/content';
 import { ExerciseHints } from './ExerciseHints';
@@ -68,7 +69,7 @@ export function ExerciseHeader({
         </a>
       </div>
       <div className="prose prose-sm max-w-none prose-p:text-fg prose-strong:text-accent-strong">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{exercise.prompt}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownCodeComponents}>{exercise.prompt}</ReactMarkdown>
       </div>
       {isUnlocked && <ExerciseHints hints={exercise.hints} />}
     </header>

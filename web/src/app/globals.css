@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../components/lesson/CodeBlock.css";
 @plugin "@tailwindcss/typography";
 
 /* 浅色逃生舱：极少数无法用 token 表达的地方（如半透明绿在白底上过淡）用 light: 前缀 */

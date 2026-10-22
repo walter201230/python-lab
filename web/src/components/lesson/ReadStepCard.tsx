@@ -1,9 +1,10 @@
-import { Children, isValidElement, type ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { headingComponents } from '@/lib/markdownHeadings';
 import { remarkHideComments } from '@/lib/markdownComments';
 import { TeachingImage } from './TeachingImage';
+import { CodeBlock } from './CodeBlock';
+import { extractCodeFromPre } from './MarkdownCodeBlock';
 import { remarkCodeModes, getCodeMode, codeModeLabels, type CodeMode } from '@/lib/markdownCode';
 
 interface ReadStepCardProps {
@@ -39,7 +40,7 @@ export function ReadStepCard({
       if (code && code.lang.toLowerCase() === 'python') {
         return <StaticCodeBlock code={code.text} practiceHref={practiceHref} mode={getCodeMode(node)} />;
       }
-      return <pre>{children}</pre>;
+      return code ? <CodeBlock code={code.text} language={code.lang} /> : <pre>{children}</pre>;
     },
   };
 
@@ -67,39 +68,16 @@ export function ReadStepCard({
 /** 静态 python 代码块：外观对齐 RunnableCodeBlock，但把交互按钮换成回闯关页的链接。 */
 function StaticCodeBlock({ code, practiceHref, mode }: { code: string; practiceHref: string; mode: CodeMode }) {
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-line-strong/60 bg-code/80">
-      <div className="flex items-center justify-between border-b border-line bg-surface/60 px-3 py-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
-          Python · {codeModeLabels[mode]}
-        </span>
-        {mode === 'runnable' && <a
-          href={practiceHref}
-          className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 focus-ring"
-        >
+    <CodeBlock
+      code={code}
+      language="python"
+      usage={codeModeLabels[mode]}
+      plainText={mode === 'output' || mode === 'error'}
+      actions={mode === 'runnable' && (
+        <a href={practiceHref}>
           在闯关页练习 →
-        </a>}
-      </div>
-      <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-accent-stronger">
-        <code>{code}</code>
-      </pre>
-    </div>
+        </a>
+      )}
+    />
   );
-}
-
-/**
- * 从 ReactMarkdown 给出的 <pre> children 中拆出代码语言 + 文本。
- * react-markdown 渲染 ```lang\ncode``` 时结构是 <pre><code class="language-lang">code</code></pre>。
- */
-function extractCodeFromPre(
-  children: ReactNode,
-): { lang: string; text: string } | null {
-  const arr = Children.toArray(children);
-  const codeEl = arr.find((c) => isValidElement(c) && c.type === 'code');
-  if (!codeEl || !isValidElement(codeEl)) return null;
-  const props = codeEl.props as { className?: string; children?: ReactNode };
-  const cls = props.className ?? '';
-  const m = /language-(\w+)/.exec(cls);
-  const lang = m ? m[1] : '';
-  const text = String(props.children ?? '').replace(/\n$/, '');
-  return { lang, text };
 }

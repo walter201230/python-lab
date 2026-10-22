@@ -1,0 +1,102 @@
+.lesson-code-block {
+  margin: 1.25rem 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid #343445;
+  border-radius: 12px;
+  background: #11111b;
+  color: #cdd6f4;
+  color-scheme: dark;
+}
+
+.lesson-code-block__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 48px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #343445;
+  background: #181825;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.lesson-code-block__caption { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.lesson-code-block__dots { display: flex; flex-shrink: 0; gap: 7px; margin-right: 6px; }
+.lesson-code-block__dots i { width: 10px; height: 10px; border-radius: 50%; background: #f38ba8; }
+.lesson-code-block__dots i:nth-child(2) { background: #f9e2af; }
+.lesson-code-block__dots i:nth-child(3) { background: #a6e3a1; }
+.lesson-code-block__language { color: #cdd6f4; font-family: var(--font-geist-mono), monospace; }
+.lesson-code-block__usage { color: #a6adc8; }
+.lesson-code-block__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+.lesson-code-block .lesson-code-block__actions button, .lesson-code-block .lesson-code-block__actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid #45475a;
+  border-radius: 6px;
+  background: transparent;
+  color: #bac2de;
+  font: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.lesson-code-block .lesson-code-block__actions a, .lesson-code-block .lesson-code-block__actions button + button { color: #a6e3a1; }
+.lesson-code-block .lesson-code-block__actions button:hover:not(:disabled), .lesson-code-block .lesson-code-block__actions a:hover { background: #313244; color: #cdd6f4; }
+.lesson-code-block__actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+.lesson-code-block__actions :focus-visible, .lesson-code-block .lesson-code-block__code:focus-visible { outline: 2px solid #89b4fa; outline-offset: -3px; }
+
+/* 限定代码框的选择器覆盖正文的全局 .prose pre，避免主题与排版插件吞掉深色代码底。 */
+.lesson-code-block .lesson-code-block__code {
+  margin: 0;
+  padding: 20px 24px;
+  overflow-x: auto;
+  border: 0;
+  border-radius: 0;
+  background: #11111b;
+  color: #cdd6f4;
+  font-family: var(--font-geist-mono), 'SFMono-Regular', Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.8;
+  tab-size: 4;
+  white-space: pre;
+  overflow-wrap: normal;
+  scrollbar-width: thin;
+  scrollbar-color: #45475a #11111b;
+}
+.lesson-code-block__code code { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }
+.lesson-code-block__code ::selection { background: #45475a; color: #fff; }
+.lesson-code-block__code .hljs-keyword, .lesson-code-block__code .hljs-selector-tag { color: #cba6f7; }
+.lesson-code-block__code .hljs-string, .lesson-code-block__code .hljs-regexp, .lesson-code-block__code .hljs-addition { color: #a6e3a1; }
+.lesson-code-block__code .hljs-number, .lesson-code-block__code .hljs-literal { color: #fab387; }
+.lesson-code-block__code .hljs-title, .lesson-code-block__code .hljs-attr, .lesson-code-block__code .hljs-section { color: #89b4fa; }
+.lesson-code-block__code .hljs-built_in, .lesson-code-block__code .hljs-type { color: #f9e2af; }
+.lesson-code-block__code .hljs-comment, .lesson-code-block__code .hljs-quote { color: #9399b2; font-style: italic; }
+.lesson-code-block__code .hljs-meta, .lesson-code-block__code .hljs-symbol, .lesson-code-block__code .hljs-variable { color: #f5c2e7; }
+.lesson-code-block__code .hljs-subst, .lesson-code-block__code .hljs-params { color: #cdd6f4; }
+.lesson-code-block__code .hljs-bullet, .lesson-code-block__code .hljs-link { color: #89dceb; }
+.lesson-code-block__code .hljs-deletion { color: #f38ba8; }
+.lesson-code-block__code .hljs-emphasis { font-style: italic; }
+.lesson-code-block__code .hljs-strong { font-weight: 700; }
+
+.lesson-code-block__output {
+  --code: #181825;
+  --line: #343445;
+  --fg-subtle: #a6adc8;
+  --accent-strong: #a6e3a1;
+  --warn: #f9e2af;
+  --danger: #f38ba8;
+}
+.lesson-code-block .lesson-code-block__output pre { margin: 0; border: 0; background: transparent; overflow-wrap: anywhere; }
+
+@media (max-width: 640px) {
+  .lesson-code-block__toolbar { padding: 8px 12px; }
+  .lesson-code-block .lesson-code-block__code { padding: 16px; font-size: 13px; }
+  .lesson-code-block .lesson-code-block__actions button, .lesson-code-block .lesson-code-block__actions a { min-height: 36px; }
+}
