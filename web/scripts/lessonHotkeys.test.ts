@@ -34,15 +34,22 @@ class Card extends Target {
 }
 
 let cards: Card[];
+let toolbarBottom: number;
+let directoryOpen: boolean;
 const previous = new Map<string, PropertyDescriptor | undefined>();
 
 beforeEach(() => {
+  toolbarBottom = 120;
+  directoryOpen = false;
   cards = [new Card(), new Card()];
   cards[0].rect = { top: -900, bottom: -100, left: 0, right: 900 };
   const globals = {
     Element: Target,
     window: { innerHeight: 800, innerWidth: 1000 },
     document: {
+      querySelector: (selector: string) => selector === 'dialog[open]'
+        ? (directoryOpen ? {} : null)
+        : { getBoundingClientRect: () => ({ bottom: toolbarBottom }) },
       querySelectorAll: () => cards,
       getElementById: (id: string) => id === 'exercise-second' ? cards[1] : null,
     },
@@ -101,6 +108,21 @@ test('编辑器外选择可见面积最大的题，忽略屏幕外更靠前的�
   press();
   assert.deepEqual(cards[0].clicks, []);
   assert.deepEqual(cards[1].clicks, ['[data-action="check"]']);
+});
+
+test('常驻工具栏变高后，不操作被导航完全遮住的练习', () => {
+  toolbarBottom = 200;
+  cards[1].rect = { top: 130, bottom: 195, left: 0, right: 900 };
+  assert.equal(press().prevented, false);
+  cards[1].rect.bottom = 400;
+  assert.equal(press().prevented, true);
+  assert.equal(cards[1].clicks.length, 1);
+});
+
+test('打开目录时快捷键不运行被弹层遮住的练习', () => {
+  directoryOpen = true;
+  assert.equal(press().prevented, false);
+  assert.deepEqual(cards.map((card) => card.clicks), [[], []]);
 });
 
 test('题号链接聚焦时以链接为准，不因另一题可见更多而选错', () => {

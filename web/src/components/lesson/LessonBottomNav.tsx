@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import type { Chapter } from '@/lib/chapters';
+import { lessonHref, type LessonMode } from '@/lib/lessonNavigation';
 
 interface LessonBottomNavProps {
   prevChapter: Chapter | null;
   nextChapter: Chapter | null;
   currentChapterTitle: string;
+  mode?: LessonMode;
 }
 
 /**
@@ -21,6 +23,7 @@ export function LessonBottomNav({
   prevChapter,
   nextChapter,
   currentChapterTitle,
+  mode = 'practice',
 }: LessonBottomNavProps) {
   if (!prevChapter && !nextChapter) return null;
 
@@ -31,7 +34,7 @@ export function LessonBottomNav({
     >
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {prevChapter ? (
-          <NavCard chapter={prevChapter} direction="prev" />
+          <NavCard chapter={prevChapter} direction="prev" mode={mode} />
         ) : (
           <div aria-hidden />
         )}
@@ -41,7 +44,7 @@ export function LessonBottomNav({
         </div>
 
         {nextChapter ? (
-          <NavCard chapter={nextChapter} direction="next" />
+          <NavCard chapter={nextChapter} direction="next" mode={mode} />
         ) : (
           <div aria-hidden />
         )}
@@ -53,13 +56,15 @@ export function LessonBottomNav({
 function NavCard({
   chapter,
   direction,
+  mode,
 }: {
   chapter: Chapter;
   direction: 'prev' | 'next';
+  mode: LessonMode;
 }) {
   const firstLesson = chapter.lessons[0];
   if (!firstLesson) return null;
-  const href = `/lessons/${chapter.slug}/${firstLesson.id}`;
+  const href = lessonHref(chapter.slug, firstLesson.id, mode);
   const isNext = direction === 'next';
 
   return (

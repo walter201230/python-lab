@@ -11,7 +11,8 @@ import { LessonStickyBar } from './LessonStickyBar';
 import { LessonBottomNav } from './LessonBottomNav';
 import { CompletionBanner } from './CompletionBanner';
 import { Confetti } from './Confetti';
-import { LessonToc } from './LessonToc';
+import { LessonNavigation } from './LessonNavigation';
+import { continuationTarget, lessonOutline, visibleBlockCount } from '@/lib/lessonNavigation';
 import { ShortcutHint } from './ShortcutHint';
 import { useChapterNav } from './hooks/useChapterNav';
 import { useLessonHotkeys } from './hooks/useLessonHotkeys';
@@ -70,24 +71,22 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
     prevAllCompletedRef.current = allCompleted;
   }, [hydrated, allCompleted]);
 
-  const visibleBlocks = useMemo(() => {
-    // 过关判定 = 判分通过 OR 查看过答案——与 store 的 unlocked 语义、「查看答案后
-    // 不影响解锁下一题」的弹窗文案一致。此前只认 completed：查看答案后 store 解锁了
-    // 下一题、sticky bar 题号可点，但这里不渲染 → 锚点不存在，点了没反应。
-    const passedSet = new Set([
-      ...(lessonProgress?.completed ?? []),
-      ...(lessonProgress?.viewedSolution ?? []),
-    ]);
-    let cutoff = blocks.length;
-    for (let i = 0; i < blocks.length; i++) {
-      const b = blocks[i];
-      if (b.kind === 'exercise' && !passedSet.has(b.exercise.id)) {
-        cutoff = i + 1;
-        break;
-      }
+  const completed = lessonProgress?.completed;
+  const viewedSolution = lessonProgress?.viewedSolution;
+  const navigationProgress = useMemo(() => ({ completed: completed ?? [], viewedSolution: viewedSolution ?? [] }), [completed, viewedSolution]);
+  const visibleBlocks = useMemo(() => blocks.slice(0, visibleBlockCount(blocks, navigationProgress)), [blocks, navigationProgress]);
+  const outline = useMemo(() => lessonOutline(blocks, 'practice', navigationProgress), [blocks, navigationProgress]);
+
+  // 从阅读页或外部链接进入时，等进度恢复、目标实际渲染后再定位。
+  const positionedHash = useRef('');
+  useEffect(() => {
+    if (!hydrated || !window.location.hash || positionedHash.current === window.location.hash) return;
+    const target = document.getElementById(window.location.hash.slice(1));
+    if (target) {
+      target.scrollIntoView({ block: 'start' });
+      positionedHash.current = window.location.hash;
     }
-    return blocks.slice(0, cutoff);
-  }, [blocks, lessonProgress?.completed, lessonProgress?.viewedSolution]);
+  }, [hydrated, visibleBlocks.length]);
 
   // 当前打开的 step 索引（最后一个未被截断的 step）— 给 StepCard 上"已读/当前"区分
   const currentStepIndex = useMemo(() => {
@@ -106,21 +105,18 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
   }, [exercises]);
 
   return (
-    <div className="bg-tech-grid relative min-h-[calc(100vh-var(--spacing-header))] bg-canvas">
+    <LessonNavigation
+      chapter={meta.chapter}
+      lessonId={meta.id}
+      title={meta.title}
+      mode="practice"
+      outline={outline}
+      exerciseNavigation={<LessonStickyBar items={outline} completedCount={completedCount} />}
+    >
       <PyodideToast status={pyStatus} />
       <Confetti key={confettiKey} trigger={confettiKey > 0} />
       <ShortcutHint />
 
-      <LessonStickyBar
-        title={meta.title}
-        exercises={exercises}
-        progress={lessonProgress}
-        completedCount={completedCount}
-      />
-
-      {/* 正文列对视口居中（59rem = 56rem 内容 + 两侧 px-6）；TOC 挂在列右侧的
-          绝对定位槽里，不占布局流，只在整体放得下（≥1440px）时显示 */}
-      <div className="relative mx-auto max-w-[59rem] px-4 sm:px-6">
       <article className="min-w-0 py-8 sm:py-10">
         <header className="mb-2">
           <h1 className="text-3xl font-bold text-fg sm:text-4xl">{meta.title}</h1>
@@ -178,6 +174,7 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
               totalExercises={exercises.length}
               lessonId={meta.id}
               nextExerciseId={nextExerciseMap[block.exercise.id] ?? null}
+              continuation={continuationTarget(outline, block.exercise.id)}
               pyStatus={pyStatus}
               run={run}
             />
@@ -196,6 +193,7 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
           </div>
         )}
 
+        <section id="lesson-end" aria-label="本章总结">
         {(allCompleted || readOnlyDone) && (
           <CompletionBanner title={meta.title} nextChapter={nextChapter} />
         )}
@@ -217,12 +215,8 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
           nextChapter={nextChapter}
           currentChapterTitle={meta.title}
         />
+        </section>
       </article>
-
-      <div className="absolute left-full top-0 hidden h-full min-[1440px]:block">
-        <LessonToc blocks={blocks} progress={lessonProgress} lessonTitle={meta.title} />
-      </div>
-      </div>
-    </div>
+    </LessonNavigation>
   );
 }

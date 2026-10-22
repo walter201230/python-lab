@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { STICKY_BAR_SCROLL_OFFSET } from '@/lib/layoutConstants';
 
 /**
  * lesson 全局快捷键。
@@ -15,6 +14,7 @@ import { STICKY_BAR_SCROLL_OFFSET } from '@/lib/layoutConstants';
  */
 export function handleLessonHotkey(e: KeyboardEvent): void {
   if (e.defaultPrevented || e.isComposing || e.altKey || !(e.metaKey || e.ctrlKey) || e.key !== 'Enter') return;
+  if (document.querySelector('dialog[open]')) return;
 
   const origin = e.target instanceof Element ? e.target : null;
   let target = origin?.closest<HTMLElement>('[data-exercise-card]') ?? null;
@@ -28,7 +28,7 @@ export function handleLessonHotkey(e: KeyboardEvent): void {
 
   if (!target) {
     let largest = 0;
-    const top = Number.parseFloat(STICKY_BAR_SCROLL_OFFSET);
+    const top = document.querySelector<HTMLElement>('[data-lesson-toolbar]')?.getBoundingClientRect().bottom ?? 120;
     for (const card of document.querySelectorAll<HTMLElement>('[data-exercise-card]')) {
       const rect = card.getBoundingClientRect();
       if (rect.right <= 0 || rect.left >= window.innerWidth) continue;

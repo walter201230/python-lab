@@ -28,6 +28,8 @@ export interface LessonProgress {
   submittedCode: Record<string, string>;
   /** 通过判分时的运行输出——刷新后回显在输出区 */
   submittedOutput: Record<string, SubmittedOutput>;
+  /** 尚未通过的本地草稿；旧版进度允许缺省。 */
+  draftCode?: Record<string, string>;
   /** 仅 read-only（无练习题）章节使用：访问页面即标记 true */
   lessonCompleted?: boolean;
 }
@@ -38,6 +40,7 @@ interface ProgressState {
   ensureLesson: (lessonId: string, firstExerciseId: string) => void;
   /** 切换当前查看的练习题 */
   setCurrent: (lessonId: string, exerciseId: string) => void;
+  saveDraft: (lessonId: string, exerciseId: string, code: string) => boolean;
   /** 标记练习题判分通过 + 保存通过时的代码与输出 + 解锁下一题 */
   markCompleted: (
     lessonId: string,
@@ -65,7 +68,7 @@ const empty = (firstExerciseId: string): LessonProgress => ({
 
 export const useProgress = create<ProgressState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       byLesson: {},
       ensureLesson: (lessonId, firstExerciseId) =>
         set((s) => {
@@ -91,6 +94,23 @@ export const useProgress = create<ProgressState>()(
             [lessonId]: { ...(s.byLesson[lessonId] ?? empty(exerciseId)), currentExerciseId: exerciseId },
           },
         })),
+      saveDraft: (lessonId, exerciseId, code) => {
+        const cur = get().byLesson[lessonId];
+        if (!cur || !cur.unlocked.includes(exerciseId) || cur.completed.includes(exerciseId)) return false;
+        if (!useProgress.persist?.getOptions().storage) return false;
+        try {
+          set((s) => ({
+            byLesson: {
+              ...s.byLesson,
+              [lessonId]: { ...cur, draftCode: { ...cur.draftCode, [exerciseId]: code } },
+            },
+          }));
+          return true;
+        } catch {
+          // 配额或隐私设置阻止持久化时，内存中的编辑仍保留，由界面提示。
+          return false;
+        }
+      },
       markCompleted: (lessonId, exerciseId, code, output, nextExerciseId) =>
         set((s) => {
           const cur = s.byLesson[lessonId] ?? empty(exerciseId);

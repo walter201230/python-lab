@@ -2,6 +2,9 @@ import Link from 'next/link';
 import type { LoadedLesson } from '@/lib/loadLesson';
 import { ReadExerciseCard } from './ReadExerciseCard';
 import { ReadStepCard } from './ReadStepCard';
+import { LessonNavigation } from './LessonNavigation';
+import { LessonBottomNav } from './LessonBottomNav';
+import { chapterNeighbors, lessonOutline } from '@/lib/lessonNavigation';
 
 /**
  * 阅读页布局：无门控地铺开该 lesson 的全部教学段。
@@ -13,10 +16,10 @@ import { ReadStepCard } from './ReadStepCard';
 export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
   const practiceHref = `/lessons/${meta.chapter}/${meta.id}/`;
   const totalSteps = blocks.filter((b) => b.kind === 'step').length;
+  const { prevChapter, nextChapter } = chapterNeighbors(meta.chapter);
 
   return (
-    <div className="bg-tech-grid relative min-h-[calc(100vh-var(--spacing-header))] bg-canvas">
-      <div className="mx-auto max-w-[59rem] px-4 sm:px-6">
+    <LessonNavigation chapter={meta.chapter} lessonId={meta.id} title={meta.title} mode="read" outline={lessonOutline(blocks, 'read')}>
         <article className="py-8 sm:py-10">
           <header className="mb-2">
             <h1 className="text-3xl font-bold text-fg sm:text-4xl">{meta.title}</h1>
@@ -31,7 +34,7 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
               <span className="mx-2 text-fg-faint">·</span>
               预计 <span className="text-accent">{meta.estimatedMinutes}</span> 分钟
             </p>
-            <p className="mt-3 text-sm text-fg-subtle">
+            {exercises.length > 0 && <p className="mt-3 text-sm text-fg-subtle">
               本页是本章的通读版，可直接读完全部讲解。想动手写代码、跑判分，去{' '}
               <Link
                 href={practiceHref}
@@ -40,7 +43,7 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
                 闯关模式
               </Link>
               。
-            </p>
+            </p>}
           </header>
 
           {blocks.map((block) => {
@@ -67,7 +70,7 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
             );
           })}
 
-          <div className="mt-10 rounded-2xl border border-emerald-500/25 bg-emerald-500/8 px-6 py-6 text-center">
+          {exercises.length > 0 && <div className="mt-10 rounded-2xl border border-emerald-500/25 bg-emerald-500/8 px-6 py-6 text-center">
             <p className="text-fg-body">
               读完了？{exercises.length > 0 ? '动手练一遍才算真会。' : '继续下一章吧。'}
             </p>
@@ -77,9 +80,9 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
             >
               去闯关模式练习 →
             </Link>
-          </div>
+          </div>}
+          <LessonBottomNav prevChapter={prevChapter} nextChapter={nextChapter} currentChapterTitle={meta.title} mode="read" />
         </article>
-      </div>
-    </div>
+    </LessonNavigation>
   );
 }
