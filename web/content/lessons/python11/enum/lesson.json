@@ -4,16 +4,47 @@
   "description": "学习用 Python Enum 定义有名称的常量，掌握成员访问、遍历以及名称和值的区别。结合自动赋值、唯一性检查与枚举比较示例，认识整数和字符串枚举的适用场景，理解枚举相比散落字符串或数字的优势，让状态表达更清楚，减少魔法常量带来的混淆。",
   "chapter": "python11",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 40,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-why-enum.mdx" },
-    { "kind": "step", "file": "03-basic-usage.mdx" },
-    { "kind": "exercise", "file": "01-define-color.json" },
-    { "kind": "exercise", "file": "02-name-value.json" },
-    { "kind": "exercise", "file": "03-iterate.json" },
-    { "kind": "step", "file": "04-advanced.mdx" },
-    { "kind": "exercise", "file": "04-auto.json" },
-    { "kind": "step", "file": "05-comparison.mdx" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python11-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python11-1.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python11-2.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-define-color.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-name-value.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-iterate.json"
+    },
+    {
+      "kind": "step",
+      "file": "04-advanced.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-auto.json"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python11-3.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python11-4.mdx"
+    }
   ]
 }

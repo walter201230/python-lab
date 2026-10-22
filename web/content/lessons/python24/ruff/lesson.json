@@ -4,12 +4,117 @@
   "description": "学习用 Ruff 检查和格式化 Python 代码，认识常用规则、导入排序、自动修复与不安全修复的区别。结合项目配置、忽略注释和报错示例，了解如何设置目标版本、排除目录及规则范围，并将检查接入编辑器、提交检查和持续集成流程。",
   "chapter": "python24",
   "order": 1,
-  "estimatedMinutes": 18,
+  "estimatedMinutes": 40,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-what-is-ruff.mdx" },
-    { "kind": "step", "file": "03-install-and-run.mdx" },
-    { "kind": "step", "file": "04-config.mdx" },
-    { "kind": "step", "file": "05-integration.mdx" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 老办法到底烦在哪"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## ruff 是个啥"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 安装"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 第一次跑"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 配置：pyproject.toml"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 完整配置示例"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 常用规则集一览"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 自动修复实战"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## ruff format：black 替代品"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 集成 pre-commit"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 集成 GitHub Actions CI"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 集成编辑器"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 从 black + flake8 + isort 迁移"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## ruff vs black + flake8 + isort 对照表"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## ruff 自家规则：RUF 系列"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 一个常见坑：和 mypy 的关系"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 一个进阶玩法：分目录用不同规则"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 一个进阶玩法：noqa 注释"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 几个易踩的坑"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python24-1.mdx",
+      "section": "## 每次先处理一条看得懂的检查结果"
+    }
   ]
 }

@@ -4,16 +4,63 @@
   "description": "从类与对象的概念入手学习 Python 面向对象编程，理解属性、方法和实例的关系，掌握用 __init__ 初始化对象的方式。通过人物类的示例学习继承与方法重写，观察不同对象如何响应相同的方法调用，理解多态在组织和复用代码中的作用。",
   "chapter": "python8",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 70,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-class-define.mdx" },
-    { "kind": "exercise", "file": "01-class-basic.json" },
-    { "kind": "step", "file": "03-init.mdx" },
-    { "kind": "exercise", "file": "02-init.json" },
-    { "kind": "step", "file": "04-inheritance.mdx" },
-    { "kind": "exercise", "file": "03-inheritance.json" },
-    { "kind": "step", "file": "05-polymorphism.mdx" },
-    { "kind": "exercise", "file": "04-polymorphism.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python8-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python8-1.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python8-2.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python8-3.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python8-4.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python8-5.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-class-basic.json"
+    },
+    {
+      "kind": "step",
+      "file": "12-original-source-python8-6.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-init.json"
+    },
+    {
+      "kind": "step",
+      "file": "13-original-source-python8-7.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-inheritance.json"
+    },
+    {
+      "kind": "step",
+      "file": "14-original-source-python8-8.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-polymorphism.json"
+    },
+    {
+      "kind": "step",
+      "file": "15-original-source-python8-9.mdx"
+    }
   ]
 }

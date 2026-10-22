@@ -4,18 +4,51 @@
   "description": "认识 Python 的迭代器与生成器，理解 for 循环如何逐个获取元素，以及 next 与 yield 的作用。通过列表推导式、条件过滤和斐波那契示例观察执行过程，并学习 zip 等遍历工具，选择清晰的数据遍历方式，理解按需生成的特点。",
   "chapter": "python7",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 60,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-iteration.mdx" },
-    { "kind": "exercise", "file": "01-for-iterate.json" },
-    { "kind": "step", "file": "03-iterator.mdx" },
-    { "kind": "exercise", "file": "02-iter-next.json" },
-    { "kind": "step", "file": "04-list-comprehension.mdx" },
-    { "kind": "exercise", "file": "03-list-comp.json" },
-    { "kind": "step", "file": "05-generator.mdx" },
-    { "kind": "exercise", "file": "04-generator.json" },
-    { "kind": "step", "file": "06-combined.mdx" },
-    { "kind": "exercise", "file": "05-zip-pair.json" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python7-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python7-1.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-for-iterate.json"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python7-2.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-iter-next.json"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python7-3.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-list-comp.json"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python7-4.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-generator.json"
+    },
+    {
+      "kind": "step",
+      "file": "12-original-source-python7-5.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-zip-pair.json"
+    }
   ]
 }

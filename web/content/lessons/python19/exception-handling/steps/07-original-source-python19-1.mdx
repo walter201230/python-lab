@@ -1,0 +1,1467 @@
+# 异常处理
+
+写代码这件事，最让新手崩溃的瞬间是哪种？各位先别急着回答，我来描述一个场景：你刚学完语法，兴冲冲写了几十行代码，按下回车，结果终端弹出一坨红字：
+
+```
+Traceback (most recent call last):
+  File "main.py", line 5, in <module>
+    print(10 / 0)
+ZeroDivisionError: division by zero
+```
+
+一脸懵。这玩意儿是啥？我哪里写错了？为啥程序就崩了？
+
+其实啊，这就是 Python 的「异常机制」在工作。程序遇到了它处理不了的情况，比如除以零、读不存在的文件、把字符串当数字加，于是它就「抛」一个异常出来，然后整个程序停下来，告诉你：「我不干了，你来收拾」。
+
+可是各位想想，真实世界里的程序怎么可能因为一个小问题就停摆？银行 ATM 你输错密码三次它会提示，不会直接死机；网页加载图片失败会显示一个占位图，不会整页白屏；微信收消息网络不通它会重试，不会闪退。这些场景背后，全都是「异常处理」在做事。
+
+Python 早就给各位准备好了一整套工具：`try` / `except` / `else` / `finally` / `raise` / 自定义异常类，再加上 3.11 之后引入的「异常组」（ExceptionGroup）和 `except*`，整套机制非常完备。今天这篇，咱们就把这套机制从最朴素的写法一路捋到最新的 PEP 654，确保各位看完之后，再也不怕红字 traceback。
+
+
+
+## 程序为什么会「炸」
+
+我们先从最简单的例子开始。打开 Python 解释器，敲一行：
+
+<!-- skip-ci -->
+```python
+print(10 / 0)
+```
+
+输出：
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ZeroDivisionError: division by zero
+```
+
+这就叫「异常」。Python 在执行 `10 / 0` 的时候发现：除数是零，这事儿数学上没法干，于是它创建了一个 `ZeroDivisionError` 对象，把这个对象「抛」出来。如果没人接，这个异常就会一路冒泡到最外层，最后由 Python 解释器接住，打印 traceback，然后退出程序。
+
+各位再看一个：
+
+<!-- skip-ci -->
+```python
+nums = [1, 2, 3]
+print(nums[10])
+```
+
+输出：
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+IndexError: list index out of range
+```
+
+`IndexError`，下标越界。再来一个：
+
+<!-- skip-ci -->
+```python
+d = {'name': '两点水'}
+print(d['age'])
+```
+
+输出：
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+KeyError: 'age'
+```
+
+`KeyError`，字典里没这个键。
+
+各位发现了吧？每一种「错误」都有它自己的名字。这些名字就是异常的「类型」，是 Python 内置的一组类。它们不是给你看着玩的，是供你用来「精确捕捉」的——不同类型用不同的处理方式。
+
+
+
+## 最朴素的 try / except
+
+来，我们把第一段代码改造一下。我们不希望除以零让整个程序崩溃，而是希望它在崩之前给出一句友好的提示，然后继续往下走：
+
+```python
+try:
+    result = 10 / 0
+    print(result)
+except ZeroDivisionError:
+    print('哎呀，除数不能是零')
+
+print('程序继续运行')
+```
+
+输出：
+
+```
+哎呀，除数不能是零
+程序继续运行
+```
+
+是不是发现，红字 traceback 没了，程序也没崩，最后那句「程序继续运行」也乖乖打印出来了。
+
+`try` / `except` 的语法就这么简单，记住三件事：
+
+- `try:` 块里放「可能出问题」的代码
+- `except XxxError:` 块里放「出了问题该怎么办」的代码
+- 如果 `try` 块没出错，`except` 块完全跳过，跟没写一样
+
+各位再想想：如果 `try` 块里有十行代码，第三行炸了，后面七行还会执行吗？
+
+答案是：**不会**。Python 一旦在 `try` 里发现异常，就立刻跳到对应的 `except`，`try` 里剩下的代码全部跳过。我们写个例子验证一下：
+
+```python
+try:
+    print('第一行')
+    print(10 / 0)
+    print('第三行——这一行不会被执行')
+except ZeroDivisionError:
+    print('我接住了')
+
+print('程序继续')
+```
+
+输出：
+
+```
+第一行
+我接住了
+程序继续
+```
+
+果然，「第三行」没打印出来。这个细节非常重要，很多新手 debug 半天找不到问题，就是因为以为 `try` 里抛了异常之后下面还会跑——不会的，跳过了。
+
+
+
+## 一次捕获多种异常
+
+刚才的例子只捕了 `ZeroDivisionError`，但实际写代码时，一段代码往往可能抛好几种异常。比如：
+
+```python
+def parse_age(s):
+    try:
+        age = int(s)
+        return 100 / age
+    except ZeroDivisionError:
+        return '年龄不能是 0'
+    except ValueError:
+        return '输入的不是数字'
+
+
+print(parse_age('25'))
+print(parse_age('0'))
+print(parse_age('abc'))
+```
+
+输出：
+
+```
+4.0
+年龄不能是 0
+输入的不是数字
+```
+
+各位看到了吧？两个 `except` 分支，分别处理不同的异常类型。Python 会按顺序匹配，第一个匹配上的分支被执行，后面的跳过。
+
+那如果两种异常想用同一段代码处理呢？写两次太啰嗦。有简便写法：
+
+```python
+def parse_age(s):
+    try:
+        age = int(s)
+        return 100 / age
+    except (ZeroDivisionError, ValueError):
+        return '输入有问题'
+
+
+print(parse_age('25'))
+print(parse_age('0'))
+print(parse_age('abc'))
+```
+
+输出：
+
+```
+4.0
+输入有问题
+输入有问题
+```
+
+把多个异常类型用一对小括号括起来，逗号分隔，就能一锅端。注意这个**括号**，不写括号语法就不对了。
+
+
+
+## 拿到异常对象——`as e`
+
+各位光知道「出错了」还不够，有时候你需要知道「具体错在哪儿」。Python 允许你用 `as` 把异常对象抓出来：
+
+```python
+def parse_age(s):
+    try:
+        age = int(s)
+        return 100 / age
+    except (ZeroDivisionError, ValueError) as e:
+        return f'出错啦：{type(e).__name__} - {e}'
+
+
+print(parse_age('0'))
+print(parse_age('abc'))
+```
+
+输出：
+
+```
+出错啦：ZeroDivisionError - division by zero
+出错啦：ValueError - invalid literal for int() with base 10: 'abc'
+```
+
+`e` 就是异常对象本身。`type(e).__name__` 是它的类名，`str(e)` 是它的错误信息。在做日志、做调试的时候，这种写法比简单打印「出错啦」要有用得多。
+
+
+
+## 万能兜底——`except Exception`
+
+有时候，各位不知道代码里到底会抛什么异常，又不想写一长串 `except`。这时候可以用一个「父类」来兜底：
+
+```python
+try:
+    risky_operation()
+except Exception as e:
+    print(f'未知错误：{e}')
+```
+
+`Exception` 是绝大多数异常的「祖宗」，写它就等于「能接住几乎所有异常」。
+
+但是！这里有个**坑**：很多新手喜欢写 `except:` 后面什么类型都不写，或者写 `except BaseException:`。这两种写法都太狠了——它们会把 `KeyboardInterrupt`（你按 Ctrl+C 想中断程序）和 `SystemExit`（程序主动 `sys.exit()`）也接住，导致你的程序按 Ctrl+C 都停不下来。
+
+记住：**兜底用 `Exception`，不要用 `BaseException`，更不要写裸 `except:`**。这是江湖规矩。
+
+
+
+## 异常的家族——继承层级
+
+各位可能要问：「`Exception` 是几乎所有异常的祖宗，那它上面还有谁？下面又有哪些？」
+
+来，咱们看一下异常的家族图谱：
+
+```
+BaseException
+ ├── SystemExit
+ ├── KeyboardInterrupt
+ ├── GeneratorExit
+ └── Exception
+      ├── ArithmeticError
+      │    ├── ZeroDivisionError
+      │    └── OverflowError
+      ├── LookupError
+      │    ├── IndexError
+      │    └── KeyError
+      ├── ValueError
+      ├── TypeError
+      ├── AttributeError
+      ├── NameError
+      ├── OSError
+      │    └── FileNotFoundError
+      └── ...
+```
+
+这棵树读起来要点有几个：
+
+- 最顶层是 `BaseException`，所有异常都继承自它
+- `SystemExit` / `KeyboardInterrupt` / `GeneratorExit` 这三个跟「程序流程控制」相关，不应该被普通的 `try/except` 接住
+- 其他**业务相关**的异常都在 `Exception` 下面
+- `Exception` 又分成几个大家族：算术错误、查找错误、值错误、类型错误等等
+
+理解了这个层级，各位就能玩一个小技巧了：**捕获父类等于捕获所有子类**。比如：
+
+```python
+try:
+    nums = [1, 2, 3]
+    print(nums[10])
+except LookupError as e:
+    print(f'查找错误：{e}')
+```
+
+输出：
+
+```
+查找错误：list index out of range
+```
+
+`IndexError` 是 `LookupError` 的子类，所以用父类去接子类，完全没问题。
+
+那么各位再思考一下：如果 `except` 写了多个，顺序应该「父在前」还是「子在前」？
+
+```python
+# 错误示范
+try:
+    nums = [1, 2, 3]
+    print(nums[10])
+except LookupError:
+    print('查找错误')
+except IndexError:  # 这一行永远跑不到
+    print('下标错误')
+```
+
+`LookupError` 已经把 `IndexError` 一锅端了，后面那个 `except IndexError` 形同虚设。所以原则是：**子在前，父在后**。具体的异常先写，宽泛的兜底放最后。
+
+
+
+## else——没出错的时候才走
+
+`try / except` 还有两个好搭档：`else` 和 `finally`。我们先看 `else`。
+
+```python
+def divide(a, b):
+    try:
+        result = a / b
+    except ZeroDivisionError:
+        print('除数不能是零')
+    else:
+        print(f'计算成功，结果是 {result}')
+
+
+divide(10, 2)
+divide(10, 0)
+```
+
+输出：
+
+```
+计算成功，结果是 5.0
+除数不能是零
+```
+
+`else` 块只在 `try` 块**没有**抛异常的时候执行。各位可能要问：「我把 `print(f'...')` 直接写在 `try` 里不也一样吗？」
+
+不一样。区别在于「捕获范围」。各位看：
+
+```python
+def divide(a, b):
+    try:
+        result = a / b
+        print(f'计算成功，结果是 {result}')   # 假设这里也可能抛异常
+    except ZeroDivisionError:
+        print('除数不能是零')
+```
+
+如果 `print` 那一行也抛了 `ZeroDivisionError`（举例而已），它会被同一个 `except` 接住——可这就**误伤**了，因为你的本意是只接住「计算」那一步的错误。
+
+`else` 把「成功后才做的事」隔离出来，让 `try` 块里只放「真正可能出错的那一行」，逻辑更干净。这是它的核心价值。
+
+
+
+## finally——不管啥情况都得跑
+
+`finally` 块更狠：**不管 `try` 块成功还是失败，不管异常被接住还是没被接住，`finally` 一定会执行**。
+
+```python
+def read_first_line(path):
+    f = open(path, 'r')
+    try:
+        return f.readline()
+    finally:
+        f.close()
+        print(f'已关闭 {path}')
+```
+
+为什么需要 `finally`？想想各位平时写代码：打开文件、连数据库、申请资源……这些操作完事儿都得「关闭」「释放」。如果中间出错了直接跳走，资源就泄露了。`finally` 就是用来确保「**无论如何这段清理代码都得跑**」的。
+
+`finally` 还能跟 `except` 一起用：
+
+```python
+def safe_read(path):
+    try:
+        f = open(path, 'r')
+        return f.readline()
+    except FileNotFoundError:
+        print(f'文件 {path} 不存在')
+        return None
+    finally:
+        print('清理工作执行了')
+
+
+print(safe_read('not_exist.txt'))
+```
+
+输出：
+
+```
+文件 not_exist.txt 不存在
+清理工作执行了
+None
+```
+
+各位发现了吗？「清理工作执行了」这句话，无论 try 出不出错，都跑了。
+
+不过呢，开文件这种场景，现代 Python 推荐用 `with` 语句，它内部就用了 `finally` 的机制，写法更简洁：
+
+```python
+def safe_read(path):
+    try:
+        with open(path, 'r') as f:
+            return f.readline()
+    except FileNotFoundError:
+        print(f'文件 {path} 不存在')
+        return None
+```
+
+`with` 自带「无论如何都关文件」的能力，本质上跟 `finally` 是一回事。
+
+
+
+## 主动抛异常——`raise`
+
+到目前为止各位都是在「接」异常，那能不能「抛」一个？当然能。`raise` 关键字就是干这个的。
+
+```python
+def set_age(age):
+    if age < 0:
+        raise ValueError(f'年龄不能是负数，你传了 {age}')
+    if age > 200:
+        raise ValueError(f'年龄不能超过 200，你传了 {age}')
+    return age
+
+
+try:
+    set_age(-5)
+except ValueError as e:
+    print(f'参数有问题：{e}')
+```
+
+输出：
+
+```
+参数有问题：年龄不能是负数，你传了 -5
+```
+
+`raise XxxError('msg')` 的意思是「我现在就抛一个 `XxxError`，里面带这条消息」。各位平时写函数的时候，遇到「调用方传的参数不合理」「业务规则不满足」这种情况，就应该主动 `raise`，让调用方知道「你这数据我不收」，而不是闷头返回一个奇怪的值。
+
+为啥？想想看：
+
+```python
+def set_age(age):
+    if age < 0:
+        return None      # 不好的写法
+    return age
+```
+
+调用方拿到 `None`，根本不知道是「这次没数据」还是「我传错了」。但是 `raise ValueError('年龄不能是负数')`，调用方一看就明白：「啊，我传的参数不合规」。
+
+异常是 Python 里**传递错误信息的标准方式**，比 `return None`、`return -1`、`return False` 表达力强得多。
+
+
+
+## 异常链——`raise ... from e`
+
+各位再来看一个稍微高级的场景。假设有这么一个函数：
+
+```python
+def load_config(path):
+    with open(path, 'r') as f:
+        return f.read()
+```
+
+如果 `path` 不存在，会抛 `FileNotFoundError`。但是站在「使用配置」这一层来看，「文件不存在」这个错误太底层了。我希望对外抛一个更业务化的错误，比如 `ConfigError('配置加载失败')`，但又不想丢掉「底层到底是啥错」这个信息。怎么办？
+
+PEP 3134 给出了答案——「异常链」：
+
+```python
+class ConfigError(Exception):
+    pass
+
+
+def load_config(path):
+    try:
+        with open(path, 'r') as f:
+            return f.read()
+    except FileNotFoundError as e:
+        raise ConfigError(f'配置加载失败：{path}') from e
+
+
+try:
+    load_config('not_exist.json')
+except ConfigError as e:
+    print(f'业务错误：{e}')
+```
+
+输出：
+
+```
+业务错误：配置加载失败：not_exist.json
+```
+
+注意 `raise ConfigError(...) from e` 这个写法。`from e` 就是把「原始异常」挂在新异常的 `__cause__` 上。如果不被外层接住，traceback 会同时打印两层错误，长这样：
+
+```
+Traceback (most recent call last):
+  File "...", line X, in load_config
+    with open(path, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'not_exist.json'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "...", line Y, in <module>
+    load_config('not_exist.json')
+  File "...", line Z, in load_config
+    raise ConfigError(...) from e
+ConfigError: 配置加载失败：not_exist.json
+```
+
+「The above exception was the direct cause of the following exception」——这句话就是异常链的标志。各位看到这种 traceback，要知道：**底下那个错才是根因，上面那个错是它包装出来的**。
+
+那如果不写 `from e`，直接 `raise ConfigError(...)` 呢？Python 会自动给你加一个 `__context__`，traceback 里会写「During handling of the above exception, another exception occurred」（在处理上面那个异常的过程中，又抛了下面这个异常）。这种叫「隐式链」。
+
+显式 `from e` 表达的是「我**故意**把底层异常包装成业务异常」；不写 `from e` 表达的是「我处理上一个异常的时候不小心又出错了」。语义不同，建议各位**显式包装的时候一定加 `from e`**。
+
+
+
+## 自定义异常类
+
+刚才那个 `ConfigError` 各位看到了吧？自定义异常类其实就一行：
+
+```python
+class ConfigError(Exception):
+    pass
+```
+
+继承 `Exception` 就行。但是为啥要自定义？直接用内置的 `ValueError`、`RuntimeError` 不行吗？
+
+来，咱们用一个「打卡」业务场景说明。「水哥」在「做鸭事业部」搞了个打卡系统，业务规则有：
+
+- 还没到上班时间，不能打卡
+- 已经打过卡了，不能重复打
+- 不在公司网络，不能打卡
+
+如果用内置异常：
+
+```python
+def punch(user, time, ip):
+    if time < 9:
+        raise ValueError('未到上班时间')
+    if user.already_punched_today:
+        raise ValueError('今天已经打过卡了')
+    if not ip.startswith('192.168.'):
+        raise ValueError('不在公司网络')
+```
+
+调用方接到 `ValueError`，根本分不清是哪种情况。如果想分别处理，只能去字符串匹配——这非常脆弱。
+
+自定义异常体系：
+
+```python
+class PunchError(Exception):
+    """打卡相关错误的基类。"""
+    pass
+
+
+class PunchTimeError(PunchError):
+    pass
+
+
+class PunchDuplicateError(PunchError):
+    pass
+
+
+class PunchLocationError(PunchError):
+    pass
+
+
+def punch(user_already_punched, hour, ip):
+    if hour < 9:
+        raise PunchTimeError('未到上班时间')
+    if user_already_punched:
+        raise PunchDuplicateError('今天已经打过卡了')
+    if not ip.startswith('192.168.'):
+        raise PunchLocationError('不在公司网络')
+    return '打卡成功'
+
+
+# 调用方
+try:
+    punch(False, 8, '192.168.1.1')
+except PunchTimeError as e:
+    print(f'时间问题：{e}，请等到 9 点')
+except PunchDuplicateError as e:
+    print(f'已打卡：{e}')
+except PunchLocationError as e:
+    print(f'位置问题：{e}，请连公司 wifi')
+except PunchError as e:
+    print(f'打卡失败：{e}')
+```
+
+输出：
+
+```
+时间问题：未到上班时间，请等到 9 点
+```
+
+各位看到了吧？
+
+- 每种错误有自己的类，调用方可以**精确捕获**
+- 一个公共父类 `PunchError`，调用方也可以**一锅端兜底**
+- 类名本身就是文档——不用看消息，光看类名就知道出啥事了
+
+这就是自定义异常类的价值——**让错误也变成代码结构的一部分**。
+
+那自定义异常类还可以带数据，比如：
+
+```python
+class PunchError(Exception):
+    def __init__(self, message, user_id=None, hour=None):
+        super().__init__(message)
+        self.user_id = user_id
+        self.hour = hour
+
+
+try:
+    raise PunchError('未到上班时间', user_id=123, hour=8)
+except PunchError as e:
+    print(f'消息：{e}')
+    print(f'用户：{e.user_id}')
+    print(f'时间：{e.hour}')
+```
+
+输出：
+
+```
+消息：未到上班时间
+用户：123
+时间：8
+```
+
+需要更多上下文信息时，把它放进异常对象。后端写日志、做监控的时候，这种结构化错误就特别值钱。
+
+
+
+## 内置异常速查表
+
+各位上面看了一些，可能还想问「常见的内置异常都有哪些？」我整理了一份速查表，工作里 90% 的场景都能覆盖：
+
+| 异常类 | 触发场景 | 例子 |
+|---|---|---|
+| `ValueError` | 类型对了但值不合法 | `int('abc')` |
+| `TypeError` | 类型不对 | `'a' + 1` |
+| `KeyError` | 字典里没这个键 | `{'a': 1}['b']` |
+| `IndexError` | 序列下标越界 | `[1, 2][5]` |
+| `AttributeError` | 对象没这个属性 | `'abc'.foo` |
+| `NameError` | 引用了未定义的变量 | `print(undefined_x)` |
+| `FileNotFoundError` | 文件不存在 | `open('not_exist.txt')` |
+| `ZeroDivisionError` | 除以零 | `1 / 0` |
+| `ImportError` | 导入失败 | `import not_exist_module` |
+| `ModuleNotFoundError` | 模块找不到（`ImportError` 子类） | `import not_exist_module` |
+| `RuntimeError` | 运行时通用错误 | 用得不多，能避就避 |
+| `NotImplementedError` | 抽象方法没实现 | 接口/抽象类里常用 |
+| `StopIteration` | 迭代器没了 | 一般 Python 自己处理 |
+| `OSError` | 操作系统级错误 | 比如读写权限不够 |
+| `PermissionError` | 权限不足（`OSError` 子类） | 写只读文件 |
+| `RecursionError` | 递归太深 | 没写终止条件的递归 |
+| `KeyboardInterrupt` | 用户按 Ctrl+C | 这个**别**接住 |
+| `SystemExit` | `sys.exit()` 抛的 | 这个也**别**接住 |
+
+最后那两个再强调一下：`KeyboardInterrupt` 和 `SystemExit` 都是 `BaseException` 的直接子类，不是 `Exception` 的子类。所以正常写 `except Exception` 是接不到它们的——这是好事，避免误伤。
+
+
+
+## 一次想报告多个错误？——异常组（Python 3.11+）
+
+各位看到这里，常规的异常处理已经全会了。但接下来要讲一个**比较新**的特性，是 Python 3.11 引入的「异常组」（PEP 654）。
+
+先抛痛点。假设「水哥」在「做鸭事业部」搞了个批量任务：要给五个 URL 发请求，把结果都存下来。代码大概长这样：
+
+```python
+def fetch_one(url):
+    # 模拟可能失败
+    if 'bad' in url:
+        raise ValueError(f'参数不对：{url}')
+    if 'down' in url:
+        raise ConnectionError(f'连不上：{url}')
+    return f'{url} 的内容'
+
+
+def fetch_all(urls):
+    results = []
+    for url in urls:
+        results.append(fetch_one(url))
+    return results
+```
+
+各位想想：如果 `urls` 里有两个会抛 `ValueError`、一个会抛 `ConnectionError`，传统写法会怎样？
+
+第一个 URL 抛了之后，`fetch_all` 直接退出，**剩下的根本没跑**。后面那两个错你压根不知道。可你的业务需求是「**一次性看到所有出错的 URL**」，让 ops 同学一次修完，不用反复跑。
+
+传统的 try/except 写法只能告诉你**第一个**错误，搞不定这种场景。各位说怎么办？
+
+土办法是把每个 URL 的异常自己收集起来：
+
+```python
+def fetch_all(urls):
+    results = []
+    errors = []
+    for url in urls:
+        try:
+            results.append(fetch_one(url))
+        except Exception as e:
+            errors.append(e)
+    return results, errors
+```
+
+能用，但是有几个问题：
+
+- 调用方拿到 `(results, errors)` 这个二元组，签名就丑了
+- 错误以「列表」形式返回，调用方还得自己 if 判断、自己写循环报告
+- 这套机制是「自己手搓」的，不同库各搞一套，不通用
+
+PEP 654 就是来解决这事儿的。Python 3.11 引入了 `ExceptionGroup`，专门用来「**把多个异常打包成一个**」抛出去：
+
+<!-- skip-ci -->
+```python
+def fetch_all(urls):
+    results = []
+    errors = []
+    for url in urls:
+        try:
+            results.append(fetch_one(url))
+        except Exception as e:
+            errors.append(e)
+    if errors:
+        raise ExceptionGroup('部分 URL 抓取失败', errors)
+    return results
+```
+
+调用一下：
+
+<!-- skip-ci -->
+```python
+urls = ['ok-1', 'bad-2', 'down-3', 'ok-4', 'bad-5']
+try:
+    fetch_all(urls)
+except ExceptionGroup as eg:
+    print(f'共有 {len(eg.exceptions)} 个错误')
+    for e in eg.exceptions:
+        print(f'  - {type(e).__name__}: {e}')
+```
+
+输出（在 Python 3.11+ 上）：
+
+```
+共有 3 个错误
+  - ValueError: 参数不对：bad-2
+  - ConnectionError: 连不上：down-3
+  - ValueError: 参数不对：bad-5
+```
+
+这就是异常组的核心：**一次抛出一组异常，调用方一次性拿到所有错误**。
+
+需要 Python 3.11+，老版本运行不了。各位的 Python 是不是 3.11+ 直接 `python3 --version` 就能看到。
+
+
+
+## 用 `except*` 拆解异常组
+
+各位可能要问：「我接住 `ExceptionGroup` 之后，能不能像普通 except 那样按异常类型分别处理？」
+
+可以。Python 3.11 同时引入了一个新语法：`except*`（带星号）。它专门用来**按类型拆分异常组**。来看：
+
+<!-- skip-ci -->
+```python
+def fetch_all(urls):
+    results = []
+    errors = []
+    for url in urls:
+        try:
+            results.append(fetch_one(url))
+        except Exception as e:
+            errors.append(e)
+    if errors:
+        raise ExceptionGroup('部分 URL 抓取失败', errors)
+    return results
+
+
+urls = ['ok-1', 'bad-2', 'down-3', 'ok-4', 'bad-5']
+try:
+    fetch_all(urls)
+except* ValueError as eg:
+    print(f'参数错误 {len(eg.exceptions)} 个：')
+    for e in eg.exceptions:
+        print(f'  - {e}')
+except* ConnectionError as eg:
+    print(f'连接错误 {len(eg.exceptions)} 个：')
+    for e in eg.exceptions:
+        print(f'  - {e}')
+```
+
+输出：
+
+```
+参数错误 2 个：
+  - 参数不对：bad-2
+  - 参数不对：bad-5
+连接错误 1 个：
+  - 连不上：down-3
+```
+
+各位看到了吗？两个 `except*` 分支，自动把 `ExceptionGroup` 按类型**拆成了两份**，分别处理。这是普通 `except` 做不到的——普通 `except` 一旦匹配就跑一次然后结束，但 `except*` 会**遍历整个组**，把符合类型的都挑出来。
+
+`except*` 的几个关键点：
+
+- 语法是 `except* ExceptionType:`，注意星号紧贴 `except`
+- 接收到的 `eg` 是一个**新的** `ExceptionGroup`，里面只装匹配的异常
+- 所有 `except*` 分支都会被检查（不是只跑第一个），不匹配的异常会被「重新打包」继续往外抛
+- 不能跟普通的 `except` 混用，`try` 里只能要么全是 `except`、要么全是 `except*`
+
+那么各位再想想：如果异常组里既有 `ValueError` 又有 `OSError`，但你只写了 `except* ValueError`，那 `OSError` 们会怎么样？
+
+答：它们会被**重新打包成一个新的 `ExceptionGroup` 继续抛出**。这就是 `except*` 跟 `except` 最根本的区别——`except` 是「拿走一个」，`except*` 是「拿走匹配的一组，剩下的继续传」。
+
+
+
+## add_note——给异常加备注（Python 3.11+）
+
+异常组旁边还有一个小特性，叫 `add_note`，也是 3.11 引入的，配合异常调试特别好用。
+
+各位调试时是不是经常想：「这个 `KeyError` 到底是哪一行抛的？哪个用户、哪个请求触发的？」光看异常本身只有键名，没上下文。`add_note` 就是来加上下文的：
+
+<!-- skip-ci -->
+```python
+def process_user(user_id, data):
+    try:
+        return data['name']
+    except KeyError as e:
+        e.add_note(f'处理用户 {user_id} 时出错')
+        e.add_note(f'数据键：{list(data.keys())}')
+        raise
+
+
+process_user(123, {'age': 18})
+```
+
+输出（traceback 末尾）：
+
+```
+KeyError: 'name'
+处理用户 123 时出错
+数据键：['age']
+```
+
+`add_note` 把字符串挂在异常对象的 `__notes__` 列表上。traceback 打印时，会自动把这些 note 跟在异常消息后面。
+
+为啥不直接 `raise KeyError('处理用户 123 时出错，数据键：[age]')` 重新抛一个？因为那样**会丢失原始 traceback 的一部分信息**，而 `add_note` 是「保留原异常 + 附加备注」，更轻量、更优雅。
+
+`add_note` 可以调用多次，每次加一条 note。在调试库代码、写中间件的时候特别有用。
+
+
+
+## 小实战：safe_divide 与批量除法
+
+各位讲了这么多，咱们用一个小实战收个尾。需求是：
+
+- 写一个 `safe_divide(a, b)` 函数，正常返回结果，除零返回 `None`，其他错误也返回 `None`
+- 写一个 `batch_divide(pairs)` 函数，对一组 `(a, b)` 做除法，把所有出错的批量上报，用 `ExceptionGroup`
+
+先写第一个：
+
+```python
+def safe_divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        print(f'  除零：{a} / {b}')
+        return None
+    except TypeError as e:
+        print(f'  类型错：{e}')
+        return None
+
+
+print(safe_divide(10, 2))
+print(safe_divide(10, 0))
+print(safe_divide('a', 1))
+```
+
+输出：
+
+```
+5.0
+  除零：10 / 0
+None
+  类型错：unsupported operand type(s) for /: 'str' and 'int'
+None
+```
+
+朴素，但够用。再来批量版本——这个用异常组：
+
+<!-- skip-ci -->
+```python
+def divide_strict(a, b):
+    if b == 0:
+        raise ZeroDivisionError(f'{a} / 0')
+    if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+        raise TypeError(f'{a!r} / {b!r} 类型不对')
+    return a / b
+
+
+def batch_divide(pairs):
+    results = []
+    errors = []
+    for a, b in pairs:
+        try:
+            results.append(divide_strict(a, b))
+        except Exception as e:
+            errors.append(e)
+    if errors:
+        raise ExceptionGroup(f'批量除法有 {len(errors)} 个错', errors)
+    return results
+
+
+pairs = [(10, 2), (10, 0), ('a', 1), (8, 4), (5, 0)]
+
+try:
+    print(batch_divide(pairs))
+except* ZeroDivisionError as eg:
+    print(f'除零错误 {len(eg.exceptions)} 个：')
+    for e in eg.exceptions:
+        print(f'  - {e}')
+except* TypeError as eg:
+    print(f'类型错误 {len(eg.exceptions)} 个：')
+    for e in eg.exceptions:
+        print(f'  - {e}')
+```
+
+输出（Python 3.11+）：
+
+```
+除零错误 2 个：
+  - 10 / 0
+  - 5 / 0
+类型错误 1 个：
+  - 'a' / 1 类型不对
+```
+
+各位看到了吧？整个流程下来：
+
+1. `divide_strict` 严格抛异常，参数不对绝不偷偷返回 `None`
+2. `batch_divide` 把所有异常收集起来，用 `ExceptionGroup` 一次性抛出
+3. 调用方用 `except*` 按类型分组，一次性把所有错误**全报告完**
+
+这就是异常组带来的「**部分失败**」（partial failure）处理范式：**该成功的成功，该失败的失败，所有错误一并上报**。这种范式在 asyncio 并发、批量 RPC、并行抓取场景里特别常见，Python 3.11 之前都得自己手搓，3.11 之后就是语言级支持了。
+
+
+
+## 嵌套的异常组——递归结构
+
+各位再深入一点。`ExceptionGroup` 本身也是一个异常，那它能不能**装进另一个 `ExceptionGroup`**？
+
+可以的。异常组是一个**树形结构**——一个组里既能装普通异常，也能再装组。这种嵌套在「分布式任务、子任务再分子任务」的场景下很常见。
+
+来个例子。假设「水哥」要批量更新员工信息，每个员工有「基础信息」和「打卡记录」两部分要分别更新，每一部分都可能失败：
+
+<!-- skip-ci -->
+```python
+def update_employee(emp):
+    sub_errors = []
+    try:
+        update_basic_info(emp)
+    except Exception as e:
+        sub_errors.append(e)
+    try:
+        update_punch_record(emp)
+    except Exception as e:
+        sub_errors.append(e)
+    if sub_errors:
+        raise ExceptionGroup(f'员工 {emp} 更新失败', sub_errors)
+
+
+def batch_update(employees):
+    errors = []
+    for emp in employees:
+        try:
+            update_employee(emp)
+        except Exception as e:
+            errors.append(e)
+    if errors:
+        raise ExceptionGroup('批量更新部分失败', errors)
+```
+
+这种结构出来的异常组就是嵌套的，最外层那个组里装的是若干「员工 X 更新失败」的子组。`except*` 厉害的地方是：**它能穿透任意嵌套层级**，把指定类型的异常全部拎出来。
+
+<!-- skip-ci -->
+```python
+try:
+    batch_update(employees)
+except* ConnectionError as eg:
+    print(f'网络相关错误共 {len(eg.exceptions)} 个分组')
+except* ValueError as eg:
+    print(f'参数相关错误共 {len(eg.exceptions)} 个分组')
+```
+
+不管 `ConnectionError` 是装在第一层还是第二层，`except*` 都会找出来。这点是它跟普通 `except` 最大的区别。
+
+
+
+## `eg.subgroup` 与 `eg.split`——手动玩异常组
+
+`except*` 已经够用了，但有时候各位希望更精细的控制——比如只接管「某个特定条件」的异常，而不是简单按类型分组。`ExceptionGroup` 提供了两个实用方法：`subgroup` 和 `split`。
+
+<!-- skip-ci -->
+```python
+errors = [
+    ValueError('坏值 1'),
+    TypeError('坏类型'),
+    ValueError('坏值 2'),
+    ConnectionError('断网'),
+]
+eg = ExceptionGroup('一堆错', errors)
+
+# subgroup 按条件提取
+value_eg = eg.subgroup(ValueError)
+print(f'ValueError 子组：{len(value_eg.exceptions)} 个')
+
+# split 按条件拆成「匹配的 / 不匹配的」两份
+matched, rest = eg.split(ValueError)
+print(f'匹配：{len(matched.exceptions)} 个；剩下：{len(rest.exceptions)} 个')
+```
+
+输出（Python 3.11+）：
+
+```
+ValueError 子组：2 个
+匹配：2 个；剩下：2 个
+```
+
+`subgroup` 跟 `split` 都接收一个**类型**或者**判断函数**作为参数。判断函数版本特别灵活：
+
+<!-- skip-ci -->
+```python
+matched, rest = eg.split(lambda e: '坏' in str(e))
+```
+
+这就把「错误消息里包含『坏』字」的全挑出来了。各位写复杂的中间件、调度器代码时，这两个方法非常有用。
+
+
+
+## 别犯这些反模式
+
+各位见过的「异常处理写糟」的代码，几乎都集中在下面这几种反模式。我挨个说，每个都给出「错」「对」对照。
+
+### 反模式一：吞异常
+
+```python
+# 错
+try:
+    do_something()
+except Exception:
+    pass
+```
+
+这叫「吞异常」（exception swallowing）。出错了你既不打日志、也不重抛、也不返回特殊值——出问题永远查不到根因。
+
+<!-- skip-ci -->
+```python
+# 对
+import logging
+
+try:
+    do_something()
+except Exception:
+    logging.exception('do_something 失败')
+    raise
+```
+
+至少要打日志。如果决定不重抛，必须有明确的业务理由——而且强烈建议加注释说明「为啥不重抛」。
+
+### 反模式二：抓得太宽
+
+```python
+# 错
+try:
+    age = int(input('年龄：'))
+    save_to_db(age)
+except Exception:
+    print('出错了')
+```
+
+这一坨 `try` 里有两件事：转换、入库。哪一步错都被一锅端，错误信息丢了。
+
+<!-- skip-ci -->
+```python
+# 对
+try:
+    age = int(input('年龄：'))
+except ValueError:
+    print('请输入合法数字')
+    return
+
+try:
+    save_to_db(age)
+except OSError as e:
+    print(f'数据库写入失败：{e}')
+    return
+```
+
+每个 `try` 块只包**一件事**，捕获**它特有**的异常类型。这就是异常处理的「最小作用域」原则。
+
+### 反模式三：用异常做流程控制
+
+<!-- skip-ci -->
+```python
+# 错——查字典里有没有键
+try:
+    val = d['key']
+    use(val)
+except KeyError:
+    use_default()
+```
+
+不是说不行，而是「用 `if / else` 能写」的逻辑就别用异常。异常的开销比普通分支大，而且让代码意图变得隐晦。
+
+<!-- skip-ci -->
+```python
+# 对
+val = d.get('key')
+if val is not None:
+    use(val)
+else:
+    use_default()
+```
+
+那什么时候用异常合适？**「正常情况下不该出错」**——比如读文件、网络请求、用户输入校验。这些场景本质上是「错误处理」，用异常自然。
+
+### 反模式四：忘记调用方需要原始信息
+
+<!-- skip-ci -->
+```python
+# 错
+try:
+    do_thing()
+except SomeError as e:
+    raise MyError('操作失败')
+```
+
+这把原始异常丢光了。调用方拿到 `MyError`，traceback 里没有 `SomeError` 的信息——根因丢失。
+
+<!-- skip-ci -->
+```python
+# 对
+try:
+    do_thing()
+except SomeError as e:
+    raise MyError('操作失败') from e
+```
+
+记得 `from e`。这是举手之劳，但能在生产事故里救你的命。
+
+### 反模式五：用 `except` 替代类型检查
+
+<!-- skip-ci -->
+```python
+# 错
+try:
+    n = int(x)
+except (TypeError, ValueError):
+    n = 0
+```
+
+如果 `x` 的类型本来就该校验，直接校验比靠异常兜底更清晰。当然，对外部输入做兜底是合理的——内部逻辑不该这么写。
+
+
+
+## assert——调试期的轻量级断言
+
+异常处理之外，Python 还有一个表亲叫 `assert`。它的作用是：**在代码里插入「我假定 XX 一定成立」的检查**，不成立就抛 `AssertionError`。
+
+```python
+def calculate_average(nums):
+    assert len(nums) > 0, '空列表没法算平均值'
+    return sum(nums) / len(nums)
+
+
+print(calculate_average([1, 2, 3]))
+```
+
+输出：
+
+```
+2.0
+```
+
+`assert` 的语法是 `assert 表达式, 错误消息`。表达式为假就抛 `AssertionError`。
+
+但是！`assert` 有个**重要的坑**：用 `python -O`（优化模式）跑代码时，**所有的 `assert` 语句都会被丢弃**。所以**绝对不能**用 `assert` 做生产环境的输入校验。它只该用在「开发调试」「测试断言」「内部不变式（invariant）保护」这些场景。
+
+错误示范：
+
+```python
+def withdraw(account, amount):
+    assert amount > 0, '取款金额必须为正数'   # 错——优化模式下检查就没了
+    account.balance -= amount
+```
+
+正确做法：
+
+```python
+def withdraw(account, amount):
+    if amount <= 0:
+        raise ValueError('取款金额必须为正数')
+    account.balance -= amount
+```
+
+各位记住一个简单原则：**`assert` 是给程序员看的，`raise` 是给程序看的**。
+
+
+
+## traceback 模块——把错误打印得更友好
+
+异常被接住之后，有时候各位想自己控制「错误怎么打印」。比如写日志、写 Web 后端的错误页面。Python 标准库的 `traceback` 模块就是干这个的。
+
+```python
+import traceback
+
+
+def do_work():
+    return 1 / 0
+
+
+try:
+    do_work()
+except ZeroDivisionError:
+    # 把完整的 traceback 转成字符串
+    s = traceback.format_exc()
+    print('--- 错误日志 ---')
+    print(s)
+    print('--- 结束 ---')
+```
+
+输出：
+
+```
+--- 错误日志 ---
+Traceback (most recent call last):
+  File "...", line 8, in <module>
+    do_work()
+  File "...", line 5, in do_work
+    return 1 / 0
+           ~~^~~
+ZeroDivisionError: division by zero
+
+--- 结束 ---
+```
+
+`traceback.format_exc()` 把当前正在处理的异常的完整 traceback 转成字符串。这个字符串你想存日志、想发邮件、想入库，都可以。
+
+类似的还有：
+
+- `traceback.print_exc()`：直接打印到 `stderr`
+- `traceback.format_exception(exc)`：传入异常对象，转 list of str
+- `traceback.print_exception(exc)`：传入异常对象，打印到 `stderr`
+
+写自己的中间件、写日志框架时，这些函数特别好用。
+
+
+
+## logging.exception——日志推荐写法
+
+各位生产代码里基本都会用 `logging` 模块。它对异常有专门的支持：
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def risky():
+    return 1 / 0
+
+
+try:
+    risky()
+except Exception:
+    logger.exception('调用 risky 失败')
+```
+
+输出（节选）：
+
+```
+ERROR:__main__:调用 risky 失败
+Traceback (most recent call last):
+  File "...", line 11, in <module>
+    risky()
+  File "...", line 7, in risky
+    return 1 / 0
+           ~~^~~
+ZeroDivisionError: division by zero
+```
+
+`logger.exception(msg)` 等价于 `logger.error(msg, exc_info=True)`。它会**自动**把当前异常的 traceback 附加在日志里。
+
+各位写后端服务记住这一条：**接异常的地方，几乎总是要 `logger.exception` 一下，否则线上排查问题会让你哭出来**。
+
+
+
+## warnings——比异常温柔的提醒
+
+异常是「炸了」，但有时候你想表达的是「能跑，但不推荐」。比如某个老 API 准备废弃，或者某个参数组合存在性能问题。这时候用 Python 的 `warnings` 模块。
+
+```python
+import warnings
+
+
+def old_api(x):
+    warnings.warn('old_api 已废弃，请改用 new_api', DeprecationWarning)
+    return x * 2
+
+
+print(old_api(3))
+```
+
+输出（stderr 部分）：
+
+```
+warning: DeprecationWarning: old_api 已废弃，请改用 new_api
+6
+```
+
+`warnings.warn(消息, 类别)` 是「温柔的告知」——程序照常往下跑，但调用方能在 stderr 看到提示。
+
+`warnings` 跟异常的关键差别：**warnings 默认不会让程序中断**。但是各位可以通过 `warnings.filterwarnings('error')` 把它升级成异常，方便测试时强制清理废弃用法。
+
+写库给别人用的童鞋，这个东西一定要会，比直接 `raise` 友好得多。
+
+
+
+## try/except 在表达式里——不能写
+
+各位可能用过其他语言的 `try` 表达式，比如 Rust 的 `?`、Kotlin 的 `runCatching`。Python **不**提供这种语法。在 Python 里 `try/except` 只能是**语句**，不能写成表达式：
+
+<!-- skip-ci -->
+```python
+# 错——语法不允许
+result = try:
+    int(x)
+except ValueError:
+    0
+```
+
+要写一行版的「转换失败就给默认值」，标准做法是封装一个小工具函数：
+
+```python
+def safe_int(x, default=0):
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return default
+
+
+print(safe_int('42'))
+print(safe_int('abc'))
+print(safe_int(None, default=-1))
+```
+
+输出：
+
+```
+42
+0
+-1
+```
+
+「Pythonic 的写法是封装一个小函数」，各位记住这点。
+
+
+
+## EAFP vs LBYL——Python 的哲学
+
+最后说一下两种**风格**的对比，理解这个对各位组织代码很有帮助。
+
+- **LBYL**（Look Before You Leap，跳之前先看看）：先用 `if` 判断条件成立，再做操作
+- **EAFP**（Easier to Ask Forgiveness than Permission，先做了再道歉）：直接做操作，出错了用 `try/except` 兜底
+
+举个例子，「打开文件读取内容」：
+
+```python
+# LBYL
+import os
+
+if os.path.exists('config.json'):
+    with open('config.json', 'r') as f:
+        data = f.read()
+else:
+    data = ''
+```
+
+```python
+# EAFP
+try:
+    with open('config.json', 'r') as f:
+        data = f.read()
+except FileNotFoundError:
+    data = ''
+```
+
+很多其他语言（如 Java）偏向 LBYL，但 **Python 文化偏向 EAFP**。原因有两个：
+
+1. LBYL 在并发场景下有「**检查后失效**」的风险（比如 `os.path.exists` 通过了，但下一秒文件被别人删了，`open` 还是会炸）
+2. EAFP 写出来更接近「自然语言」——「我直接干了，干不了再说」
+
+当然不是所有场景都适合 EAFP。比如查字典时用 `dict.get(key, default)` 比 `try / except KeyError` 更清晰。各位的判断标准是：
+
+- **正常情况下大概率成功，偶尔失败** → 用 EAFP（异常）
+- **正常情况下经常需要分支** → 用 LBYL（`if/else`）
+
+
+
+## 最后碎碎念几句
+
+把今天的内容捋一遍：
+
+1. **`try / except`** 是 Python 处理错误的核心结构，记住「子在前，父在后」
+2. **多异常**用 `except (A, B)` 一锅端；用 `as e` 拿到异常对象
+3. **异常有家族层级**，捕父类就等于捕所有子类；兜底用 `Exception`，别用裸 `except:`
+4. **`else`** 是「没出错才走」，**`finally`** 是「无论如何都走」
+5. **`raise`** 主动抛异常，**`raise ... from e`** 显式异常链，调试时能找到根因
+6. **自定义异常类** 让错误也变成代码结构的一部分，业务复杂时是必备
+7. **`ExceptionGroup` + `except*`**（Python 3.11+）解决「一次报告多个错误」的痛点
+8. **`add_note`**（Python 3.11+）给异常加调试上下文，比重新抛更优雅
+
+异常处理写得好不好，是新手和老手最大的分水岭之一。新手要么完全不写——程序一炸就完蛋；要么乱写——`except Exception: pass` 把所有错误都吞了，出问题神仙都救不回来。老手会精确捕捉、合理传递、必要时包装、绝不偷偷吞。
+
+下一篇我们继续往前走，讲讲生成器和迭代器，让各位的代码再上一个台阶。各位加油！
+
+
+
+## 把错误缩小到一份输入
+
+这次把前面跳过负数的练习改成明确报告问题。我们先约定输入是一段文本，内容应当是非负整数：
+
+```python
+def parse_minutes(text):
+    try:
+        minutes = int(text)
+    except ValueError:
+        raise ValueError('分钟数必须写成整数') from None
+    if minutes < 0:
+        raise ValueError('分钟数不能为负数')
+    return minutes
+
+
+for text in ['15', '0', '-3', 'abc']:
+    try:
+        print(parse_minutes(text))
+    except ValueError as error:
+        print(error)
+```
+
+输出：
+
+```text
+15
+0
+分钟数不能为负数
+分钟数必须写成整数
+```
+
+这里捕获 `ValueError`，是因为我们知道正在处理什么失败。它没有说明所有类型的输入都能处理；例如把一个列表当成 `text` 传入，属于另一种接口使用问题。
+
+遇到一大段 traceback，先看最后的错误类型和说明，再往上找自己的文件与调用位置。保留那个会失败的输入，把无关界面、循环和文件操作逐步去掉，留下最短的复现代码。每删减一次就重新运行，确认还在复现同一个问题。
+
+需要提问时，可以把问题写成五部分：执行环境、最短代码、实际输入、预期结果、实际结果与完整报错。再写上已经尝试过什么。自己试着用这五部分描述 `parse_minutes('-3')`，再把输入换成 `'15'` 做正常对照。

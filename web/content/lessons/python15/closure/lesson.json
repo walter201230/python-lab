@@ -4,15 +4,23 @@
   "description": "从累加学习时间的需求出发理解 Python 闭包，认识嵌套函数如何保留并访问外层变量。通过工厂函数、计数器和累加器示例，掌握 nonlocal 修改外层状态的方式，区分读取变量与重新赋值，比较闭包和类保存状态的思路，为理解装饰器打好基础。",
   "chapter": "python15",
   "order": 1,
-  "estimatedMinutes": 25,
+  "estimatedMinutes": 30,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-what-is-closure.mdx" },
-    { "kind": "exercise", "file": "02-make-adder.json" },
-    { "kind": "step", "file": "03-nonlocal.mdx" },
-    { "kind": "exercise", "file": "01-make-counter.json" },
-    { "kind": "step", "file": "04-use-cases.mdx" },
-    { "kind": "exercise", "file": "03-study-time.json" },
-    { "kind": "step", "file": "05-original-and-practice.mdx" }
+    {
+      "kind": "step",
+      "file": "05-original-and-practice.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-make-adder.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-make-counter.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-study-time.json"
+    }
   ]
 }

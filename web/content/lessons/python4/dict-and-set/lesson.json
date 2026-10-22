@@ -4,22 +4,47 @@
   "description": "学习 Python 字典和集合的创建与使用，掌握键值访问、新增修改、删除、字典合并及集合去重。通过交集等集合运算与常用方法示例，理解字典的键值关系、集合的唯一性和适用场景，比较它们与列表的区别，逐步学会为查找、去重和数据整理选择合适的容器。",
   "chapter": "python4",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 70,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-dict-create.mdx" },
-    { "kind": "exercise", "file": "01-dict-create.json" },
-    { "kind": "step", "file": "03-dict-access.mdx" },
-    { "kind": "exercise", "file": "02-dict-access.json" },
-    { "kind": "step", "file": "04-dict-modify.mdx" },
-    { "kind": "exercise", "file": "03-dict-modify.json" },
-    { "kind": "step", "file": "05-dict-merge.mdx" },
-    { "kind": "exercise", "file": "04-dict-merge.json" },
-    { "kind": "step", "file": "06-set-basics.mdx" },
-    { "kind": "exercise", "file": "05-set-dedup.json" },
-    { "kind": "step", "file": "07-set-modify.mdx" },
-    { "kind": "exercise", "file": "06-set-add.json" },
-    { "kind": "step", "file": "08-set-ops.mdx" },
-    { "kind": "exercise", "file": "07-set-ops.json" }
+    {
+      "kind": "step",
+      "file": "09-original-source-python4-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python4-Dict.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-dict-create.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-dict-access.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-dict-modify.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-dict-merge.json"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python4-Set.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-set-dedup.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "06-set-add.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "07-set-ops.json"
+    }
   ]
 }

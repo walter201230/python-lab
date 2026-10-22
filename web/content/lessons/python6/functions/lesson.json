@@ -4,18 +4,51 @@
   "description": "学习 Python 函数的定义、调用、返回值和参数传递，理解为什么要把重复逻辑封装成函数。通过默认参数、关键字参数、可变参数与多个返回值的示例，掌握函数接口的写法，再结合 lambda 和排序场景认识匿名函数，让代码更容易复用。",
   "chapter": "python6",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 75,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-define.mdx" },
-    { "kind": "exercise", "file": "01-define-add.json" },
-    { "kind": "step", "file": "03-return.mdx" },
-    { "kind": "exercise", "file": "02-multi-return.json" },
-    { "kind": "step", "file": "04-arguments.mdx" },
-    { "kind": "exercise", "file": "03-default-arg.json" },
-    { "kind": "exercise", "file": "04-args.json" },
-    { "kind": "step", "file": "05-lambda.mdx" },
-    { "kind": "exercise", "file": "05-lambda.json" },
-    { "kind": "step", "file": "06-original-and-practice.mdx" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python6-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python6-1.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-define-add.json"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python6-2.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-multi-return.json"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python6-3.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-default-arg.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-args.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-and-practice.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python6-5.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-lambda.json"
+    }
   ]
 }

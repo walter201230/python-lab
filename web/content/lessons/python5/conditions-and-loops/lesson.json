@@ -4,21 +4,51 @@
   "description": "学习 Python 条件判断与循环控制，从 if 分支到 match/case，理解如何按条件选择执行路径。结合 for、range 和 while 示例练习求和与倒计时，掌握循环退出和跳过本轮的区别，理清多条件判断与嵌套执行的顺序。",
   "chapter": "python5",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 80,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-if-basic.mdx" },
-    { "kind": "exercise", "file": "01-if-basic.json" },
-    { "kind": "step", "file": "03-if-elif.mdx" },
-    { "kind": "exercise", "file": "02-if-elif.json" },
-    { "kind": "exercise", "file": "03-if-and-or.json" },
-    { "kind": "step", "file": "04-match-case.mdx" },
-    { "kind": "exercise", "file": "04-match-case.json" },
-    { "kind": "step", "file": "05-for-range.mdx" },
-    { "kind": "exercise", "file": "05-for-range.json" },
-    { "kind": "step", "file": "06-while.mdx" },
-    { "kind": "exercise", "file": "06-while.json" },
-    { "kind": "step", "file": "07-break-continue.mdx" },
-    { "kind": "exercise", "file": "07-break-continue.json" }
+    {
+      "kind": "step",
+      "file": "08-original-source-python5-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python5-If.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-if-basic.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-if-elif.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-if-and-or.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-match-case.json"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python5-Cycle.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-for-range.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "06-while.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "07-break-continue.json"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python5-Example.mdx"
+    }
   ]
 }

@@ -1,0 +1,1211 @@
+# pyproject.toml + uv：把「我电脑能跑你电脑跑不了」彻底拍死
+
+各位有没有过这种崩溃时刻——水哥把代码打包发给同事，同事跑了一下，报一堆 `ModuleNotFoundError`。水哥说：「你 `pip install` 一下就好了。」同事问：「装哪个版本？」水哥翻了翻自己的电脑，半天没找到一份完整的 `requirements.txt`，最后只好憋出一句：「呃，我电脑能跑啊，奇了怪了。」
+
+这种事在 Python 圈子里实在太常见了。三年前是这样，五年前也是这样，再往前回到上古时代，那时候大家用的还是 `setup.py` + `requirements.txt` + `MANIFEST.in` + `setup.cfg` 一堆零碎文件，每个文件管一摊事，新手看了想哭。
+
+「为什么搞这么复杂？」有童鞋会问。
+
+答案是，历史包袱。Python 的打包工具是慢慢演化出来的，每一代工具都留下了一些自己的文件。直到 2018 年 PEP 518 出台，2021 年 PEP 621 跟进，社区才终于约定：**所有项目元数据、依赖、工具配置，统一塞进一个文件，叫 `pyproject.toml`**。
+
+到了 2024 年，又出了一个叫 `uv` 的工具，`Astral` 出品（就是写 `ruff` 那家），用 `Rust` 写的，比 `pip` 快 10 到 100 倍，单二进制，没有任何依赖，一条命令装上就能用。
+
+这两件武器加在一起，就是这一章要讲的内容。学完这一章，各位以后开新项目，从零到「一个能跑、能锁定依赖、能跑测试的项目」只需要四五条命令。同事再问「我装哪个版本」，把项目目录甩过去，他 `uv sync` 一下，整个环境一模一样地长出来——这才是 2026 年该有的体验。
+
+
+## 老办法到底惨在哪
+
+先回忆一下老办法长什么样。一个「正经的」Python 项目，目录里通常有这些文件：
+
+```
+my-project/
+├── setup.py
+├── setup.cfg
+├── requirements.txt
+├── requirements-dev.txt
+├── MANIFEST.in
+├── pytest.ini
+├── .flake8
+├── tox.ini
+└── my_project/
+    └── __init__.py
+```
+
+光配置文件就八九个。每个文件管的事都不一样：
+
+- `setup.py`：打包用，告诉 `pip` 这个项目的名字、版本、入口
+- `setup.cfg`：`setup.py` 的一部分配置可以挪进来，看心情
+- `requirements.txt`：生产依赖列表
+- `requirements-dev.txt`：开发依赖列表（测试、`linter`、`formatter`）
+- `MANIFEST.in`：打包时要带上哪些非代码文件
+- `pytest.ini`：`pytest` 的配置
+- `.flake8`：`flake8` 的配置
+- `tox.ini`：多版本测试用
+
+各位看着是不是已经头大了？而这还不是最惨的。最惨的是：
+
+**`requirements.txt` 不锁版本。**
+
+各位写过这种 `requirements.txt` 没？
+
+```
+requests
+flask
+sqlalchemy
+```
+
+干干净净，三行搞定。半年后某天同事拉下来跑，`requests` 自动装了最新版，结果有个废弃的 API 被删了，代码挂掉。这就是著名的「能跑」和「能复现」之间的鸿沟。
+
+老办法不是不能解决，而是要堆一堆补丁：用 `pip-tools` 生成 `requirements.lock`、用 `pipenv` 维护 `Pipfile.lock`、用 `poetry` 维护 `poetry.lock`，每个工具都有自己的 `lock` 文件格式，跨工具不通用。
+
+「那 `Pipenv` 不就解决问题了吗？」有童鞋还记得这个工具。Pipenv 流行过一阵，但是慢得令人发指。装一个 `numpy` 解析依赖能转 30 秒，大项目动辄几分钟，工程师生命被消耗在等 `pipenv install` 上。
+
+后来出了 `poetry`，比 `pipenv` 快多了，但也有自己的问题：它发明了一套自己的依赖语法（用 `^` 和 `~` 表示版本范围），跟标准 `PEP 508` 不完全兼容，迁移起来不顺。
+
+到了 2024 年，社区终于把场子收拾干净了：
+
+- **元数据格式** 统一成 `pyproject.toml`（`PEP 621`）
+- **依赖格式** 统一成 `PEP 508`
+- **工具** 推荐用 `uv`（速度王者）
+
+往下我们就一步步看，新办法到底有多省心。
+
+
+## pyproject.toml 是个啥
+
+`pyproject.toml` 是一个文件名，文件格式是 `TOML`。各位没接触过 `TOML` 的童鞋别紧张，它就是个比 `JSON` 友好、比 `YAML` 严格的配置格式。长这样：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+```
+
+中括号 `[project]` 是「段」，下面 `key = value` 是配置项。字符串用双引号，数字直接写，列表用方括号，跟大多数语言的语法差不多。
+
+`pyproject.toml` 的核心思想是：**项目的所有信息，集中放一个文件**。具体能放什么？看下面这个完整例子：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+description = "两点水的小工具"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+    "click>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+```
+
+各位数一下，这一个文件里同时承担了多少职责：
+
+- `[project]` 段：项目名字、版本、`Python` 版本要求、依赖列表——以前这些写在 `setup.py` 里
+- `[project.optional-dependencies]` 段：开发依赖、可选依赖——以前是 `requirements-dev.txt`
+- `[build-system]` 段：怎么打包这个项目——以前是 `setup.py` + `MANIFEST.in`
+- `[tool.ruff]` 段：`ruff` 的配置——以前是 `.ruff.toml` 或 `setup.cfg`
+- `[tool.pytest.ini_options]` 段：`pytest` 的配置——以前是 `pytest.ini`
+
+一个文件搞定一切。新人接手一个项目，打开 `pyproject.toml`，从上到下扫一遍，整个项目的元数据、依赖、工具配置全在脑子里了。
+
+「这不就是 `package.json` 吗？」写过 `Node.js` 的童鞋会这么问。
+
+是的，思路就是抄的 `package.json`，但是 `pyproject.toml` 更严谨——它定义了 `[project]` 段必须遵守 `PEP 621`，工具配置在 `[tool.*]` 段下面，不会乱跑。
+
+接下来逐个字段讲讲。
+
+
+## 最简 pyproject.toml 逐字段拆解
+
+下面这段是一个项目能跑起来的最小集合：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+]
+```
+
+五个字段，每个都讲清楚。
+
+### name
+
+```toml
+name = "my-project"
+```
+
+项目的名字。这个名字是发布到 `PyPI` 时用的，全网唯一。命名规则：
+
+- 只能包含字母、数字、连字符 `-`、下划线 `_`、点 `.`
+- 不区分大小写——`My-Project` 和 `my_project` 在 `PyPI` 看来是同一个名字
+- 习惯上用全小写 + 连字符
+
+各位起名字的时候要注意一下：项目名（`name`）和包导入名（`import` 用的）不一定相同。比如著名的 `Pillow`，项目名是 `Pillow`，但导入时是 `import PIL`；`scikit-learn` 项目名带连字符，导入时是 `import sklearn`。
+
+如果各位的项目只是自己玩玩，不发布到 `PyPI`，名字随便起，但还是建议规范点。
+
+### version
+
+```toml
+version = "0.1.0"
+```
+
+版本号。建议遵守 `语义化版本`（`Semantic Versioning`），格式是 `MAJOR.MINOR.PATCH`：
+
+- `MAJOR`：大改动、不兼容更新（比如把 `1.x` 升到 `2.x` 时，老代码可能跑不了）
+- `MINOR`：新加功能，向后兼容（`0.1.x` 升到 `0.2.x`）
+- `PATCH`：修 `bug`，向后兼容（`0.1.0` 升到 `0.1.1`）
+
+新项目从 `0.1.0` 起步，第一个稳定版打 `1.0.0`。各位也可以用 `setuptools-scm` 这种工具从 `git tag` 自动取版本，这里先不展开，把基础玩熟再说。
+
+### requires-python
+
+```toml
+requires-python = ">=3.10"
+```
+
+声明这个项目需要哪个版本的 `Python`。水哥强烈建议各位都写上这一行，原因有三：
+
+1. 有人用 `Python 3.7` 装你的包，能立刻报错，而不是跑到一半才挂
+2. `pip` 在解析依赖时会用这个信息选合适的子依赖
+3. 工具（`ruff`、`mypy`）会用这个信息决定哪些语法可用
+
+版本范围语法用的是 `PEP 440`：
+
+- `>=3.10`：3.10 或更高都行
+- `>=3.10,<4.0`：3.10 起，但 4.0 之前
+- `~=3.10`：3.10.x 系列，不允许 3.11
+- `==3.10.*`：3.10 的任意小版本
+
+2026 年开新项目，水哥的建议：直接写 `>=3.10` 或 `>=3.11`。3.9 已经接近退役，3.10 起才有现代特性（`match` 语句、更好的类型提示）。
+
+### dependencies
+
+```toml
+dependencies = [
+    "httpx>=0.27",
+    "click>=8.0",
+]
+```
+
+项目运行时需要的依赖列表。每一项是一个字符串，遵守 `PEP 508` 语法。常见的几种写法：
+
+```toml
+dependencies = [
+    "httpx",                   # 任意版本
+    "httpx>=0.27",             # 0.27 起
+    "httpx>=0.27,<1.0",        # 范围
+    "httpx==0.27.2",           # 钉死
+    "httpx[http2]",            # 带 extras
+    "httpx ; python_version >= '3.10'",  # 条件依赖
+]
+```
+
+各位平时最常用的是 `>=X.Y` 这种「下限」写法。这是社区惯例：写下限，别写上限，除非确实知道某个上限会出问题。原因是：你今天写了 `httpx<1.0`，明天 `httpx 1.0` 出来了，所有依赖你的项目都被卡住，逼着升级——这个就叫「上限污染」，是个流毒。
+
+依赖的「精确版本」靠 `lock` 文件（`uv.lock`）来记录，下面会讲。
+
+### 一个完整的最小例子
+
+把这五个字段拼起来，一个能跑的最小 `pyproject.toml` 长这样：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+]
+```
+
+就这。五行，比 `setup.py` 短得多，比 `setup.cfg` + `requirements.txt` 加起来短得多。新人看一眼就懂。
+
+对于「不打算发布到 `PyPI`，只是个内部脚本」的项目，到这里就够用了。如果要发布到 `PyPI`，还需要 `[build-system]` 段告诉打包工具怎么构建，下面的 `uv init` 会自动生成。
+
+
+## uv 是什么 & 怎么装
+
+讲完文件格式，现在轮到工具了。
+
+`uv` 是 `Astral` 出的 `Python` 包管理器和项目管理器。`Astral` 这家公司各位应该不陌生，他们做的 `ruff` 现在是 `Python linter` 兼 `formatter` 的事实标准。`uv` 是他们的下一款产品，目标是替代 `pip`、`pip-tools`、`pipenv`、`poetry`、`virtualenv`、`pyenv` 一整套老工具。
+
+听起来很狂吧？但是 `uv` 真的做到了。它的卖点：
+
+- **快**：用 `Rust` 写的，依赖解析比 `pip` 快 10-100 倍。装个 `numpy` 半秒搞定，不像 `pipenv` 转半天
+- **单二进制**：`uv` 本身没有 `Python` 依赖，一个可执行文件，往哪里一放就能用
+- **统一**：项目管理（创建项目、加依赖、跑脚本）、`Python` 版本管理（装 `Python` 解释器）、虚拟环境管理（`venv`），全在一个工具里
+- **兼容**：`uv pip install` 跟 `pip install` 用法一致；`pyproject.toml` 用的是 `PEP 621` 标准，迁出迁入没壁垒
+
+2024 年初发布以来，`uv` 已经被各大公司、开源项目快速采用。2026 年的现在，开新项目首选 `uv`，几乎没有疑问。
+
+### 安装 uv
+
+`macOS` 用户最简单：
+
+```bash
+brew install uv
+```
+
+跨平台通用方案：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+`Windows` 用户用 `PowerShell`：
+
+```bash
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+如果各位电脑里已经有 `pip`，也可以这样：
+
+```bash
+pip install uv
+```
+
+但水哥更推荐独立安装——`uv` 本来就是为了脱离 `pip` 而设计的，没必要绑着 `pip` 装。
+
+装完之后，看一下版本：
+
+```bash
+uv --version
+```
+
+输出大概是这样：
+
+```
+uv 0.5.20
+```
+
+具体版本号各位看自己电脑上的，能跑出来就行。
+
+### 顺便：装 Python 本身
+
+很多童鞋的电脑里没有合适版本的 `Python`，或者只有系统自带的 `Python 3.9`。`uv` 还能帮各位装 `Python`：
+
+```bash
+uv python install 3.12
+```
+
+跑完之后，`Python 3.12` 就装到 `uv` 管理的目录里了。这相当于一个轻量版的 `pyenv`。
+
+看看装了哪些 `Python`：
+
+```bash
+uv python list
+```
+
+输出大致是这样：
+
+```
+cpython-3.12.7-macos-aarch64-none           /Users/foo/.local/share/uv/python/...
+cpython-3.11.10-macos-aarch64-none          /Users/foo/.local/share/uv/python/...
+cpython-3.10.15-macos-aarch64-none          /Users/foo/.local/share/uv/python/...
+```
+
+以后开新项目直接挑想用的版本，不用纠结电脑里装了什么。
+
+
+## uv init 创建一个项目
+
+理论讲够了，开干。
+
+```bash
+uv init my-project
+```
+
+这一条命令做了一堆事。看看生成的目录：
+
+```bash
+cd my-project
+ls -la
+```
+
+输出大致：
+
+```
+.git/
+.gitignore
+.python-version
+README.md
+main.py
+pyproject.toml
+```
+
+逐个文件看一下。
+
+### .python-version
+
+```
+3.12
+```
+
+这一个文件钉死了项目用的 `Python` 版本。各位到任何一台装了 `uv` 的电脑上，进入这个目录，`uv` 会自动用 `3.12`，没装就自动装。这就是上面 `uv python install` 的妙用。
+
+### pyproject.toml
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+```
+
+跟我们前面手写的最小例子很像，只多了 `description` 和 `readme`。`uv init` 默认假设各位会写一个 `README.md`，所以也帮你创建好了空的 `README`。
+
+`dependencies = []` 是空的，因为还没加任何依赖。
+
+### main.py
+
+```python
+def main():
+    print("Hello from my-project!")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+一个可以直接跑的「`Hello World`」入口。
+
+### .gitignore
+
+`uv` 还顺手帮各位生成了 `Python` 项目通用的 `.gitignore`，把 `__pycache__/`、`.venv/`、`*.pyc` 这些都屏蔽了。各位不用再去网上抄 `.gitignore` 模板。
+
+### 跑一下试试
+
+```bash
+uv run main.py
+```
+
+输出：
+
+```
+Hello from my-project!
+```
+
+`uv run` 这个命令是 `uv` 的核心入口之一，它会做这几件事：
+
+1. 检查项目的 `Python` 版本是否合适，没有就自动装
+2. 检查 `.venv/` 虚拟环境是否存在，不存在就自动建
+3. 检查依赖是否齐全，不齐全就自动装
+4. 用项目的虚拟环境跑命令
+
+所以各位看到了，从 `uv init` 到代码跑起来，**两条命令**：`uv init my-project`、`uv run main.py`。中间没有任何「先创建虚拟环境、再激活、再装依赖」的步骤。这就是 `uv` 的体验。
+
+
+## uv add 添加依赖
+
+新项目跑起来了，现在加点东西进去。各位平时怎么装 `httpx`？
+
+老办法：
+
+```bash
+pip install httpx
+# 然后手动打开 requirements.txt，加一行
+echo "httpx" >> requirements.txt
+```
+
+两步走，而且很容易忘记第二步——装完之后跑得好好的，提交代码却没把 `requirements.txt` 改了，同事拉下来又跑不动。
+
+`uv` 的办法：
+
+```bash
+uv add httpx
+```
+
+一条命令搞定。这条命令背后做了什么？
+
+1. 解析 `httpx` 的最新版本（满足项目 `requires-python` 的）
+2. 装到项目的 `.venv/` 里
+3. 把 `httpx>=0.28` 写到 `pyproject.toml` 的 `dependencies` 里
+4. 更新 `uv.lock`，把 `httpx` 和它所有传递依赖的精确版本都钉下来
+
+打开 `pyproject.toml` 看看：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+]
+```
+
+`dependencies` 多了一行，自动添加。各位不需要手动维护这个列表。
+
+### 加多个依赖
+
+```bash
+uv add httpx click rich
+```
+
+一次加三个，依赖解析一起跑，比一个一个 `pip install` 快得多。
+
+### 加开发依赖
+
+测试用的 `pytest`、`linter` 用的 `ruff`，这些不是项目运行时需要的，只在开发时用，应该放在「开发依赖」里。`uv` 用 `--dev` 标志：
+
+```bash
+uv add --dev pytest ruff
+```
+
+这次 `pyproject.toml` 多了一段：
+
+```toml
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+```
+
+注意是 `[dependency-groups]` 而不是 `[project.optional-dependencies]`——这是 `PEP 735` 的新格式，`uv` 默认使用。两者都能用，但 `dependency-groups` 是 2024 年起的新标准，专门为「不发布、只本地开发用」的依赖准备的。
+
+### 删除依赖
+
+```bash
+uv remove rich
+```
+
+不光从 `pyproject.toml` 删除，还会从 `.venv/` 卸载，并且更新 `uv.lock`。删得干净。
+
+### 升级依赖
+
+```bash
+uv add httpx --upgrade
+```
+
+或者：
+
+```bash
+uv lock --upgrade-package httpx
+```
+
+升级到最新满足约束的版本。
+
+### 指定版本范围
+
+各位如果对版本有特殊要求：
+
+```bash
+uv add "httpx>=0.27,<0.30"
+```
+
+这就在 `pyproject.toml` 写下 `httpx>=0.27,<0.30`。`uv` 会在这个范围内选一个最新版本装。
+
+
+## uv run 跑命令
+
+`uv run` 不光能跑 `main.py`，能跑任何命令。
+
+跑一段 `Python` 脚本：
+
+```bash
+uv run python -c "import httpx; print(httpx.__version__)"
+```
+
+输出大概：
+
+```
+0.28.1
+```
+
+跑 `pytest`：
+
+```bash
+uv run pytest
+```
+
+跑自定义脚本：
+
+```bash
+uv run python scripts/build.py
+```
+
+`uv run` 的好处是：**它保证用的是项目的虚拟环境**。各位不用 `source .venv/bin/activate`，不用每次新开终端都重新激活，进入项目目录之后直接 `uv run` 就行。
+
+「那如果我就是想激活一下，跑一堆命令呢？」当然也可以：
+
+```bash
+source .venv/bin/activate
+python -c "import httpx; print(httpx.__version__)"
+pytest
+```
+
+激活之后跟传统流程一样。但水哥自己几乎不激活了，`uv run` 加在每条命令前面就够。
+
+### 跑命令行工具
+
+很多包会装一个命令行工具，比如 `ruff` 装完会有 `ruff` 这个命令。在 `uv` 项目里这样跑：
+
+```bash
+uv run ruff check .
+```
+
+`uv` 会从 `.venv/bin/` 里找 `ruff` 来执行。
+
+### 跑临时一次性命令
+
+有时候各位想用一个工具，但不想把它加进项目依赖。比如想瞄一眼 `httpie` 怎么发请求：
+
+```bash
+uvx httpie https://httpbin.org/get
+```
+
+`uvx` 是 `uv tool run` 的简写，它会在一个临时环境装上 `httpie`，跑完即丢，不污染项目。这相当于 `pipx run`，但快得多。
+
+类似地，临时跑 `cowsay`：
+
+```bash
+uvx cowsay "你好两点水"
+```
+
+各位可以拿这个工具替代很多「装一次只用一次」的场景。
+
+
+## uv sync 同步依赖
+
+讲到这里，关键问题来了：**同事拉下来怎么跑？**
+
+老办法：
+
+```bash
+git clone <repo>
+cd <repo>
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+五条命令。跨平台还有差异，`Windows` 激活虚拟环境的命令不一样。
+
+`uv` 的办法：
+
+```bash
+git clone <repo>
+cd <repo>
+uv sync
+```
+
+完事。`uv sync` 会做：
+
+1. 检查 `.python-version` 指定的 `Python` 版本，没有就装
+2. 创建 `.venv/`（如果不存在）
+3. 按 `uv.lock` 里钉死的精确版本装所有依赖（包括开发依赖）
+
+「精确版本」是关键。`uv.lock` 里记录的不是 `httpx>=0.28`，而是 `httpx==0.28.1`、加上 `httpx` 的所有传递依赖也都钉到具体版本。所以 `uv sync` 出来的环境，跟水哥电脑上的环境，**字节级一模一样**。
+
+各位以前 `pip install -r requirements.txt` 装出来的环境，依赖解析每次跑都可能选不同的版本（除非 `requirements.txt` 里已经手动钉死了所有传递依赖，这相当折磨人）。`uv sync` 把这件事自动化了。
+
+### uv.lock 长什么样
+
+```bash
+head -30 uv.lock
+```
+
+输出大致：
+
+```
+version = 1
+revision = 1
+requires-python = ">=3.12"
+
+[[package]]
+name = "anyio"
+version = "4.6.2.post1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "idna" },
+    { name = "sniffio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/.../anyio-4.6.2.post1.tar.gz", hash = "sha256:..." }
+```
+
+每个包记录了：
+
+- 名字、版本
+- 来源（`PyPI`、`git`、本地路径……）
+- 它依赖了哪些其他包
+- 源代码包（`sdist`）的下载地址、哈希值
+- 二进制轮子（`wheel`）的下载地址、哈希值
+
+哈希值是关键——`uv sync` 装的时候会校验，确保下载到的包跟 `lock` 时一模一样，避免了「`PyPI` 上的包被人篡改」这种供应链攻击。
+
+### 几个常用 sync 选项
+
+只装生产依赖，不装开发依赖（部署时常用）：
+
+```bash
+uv sync --no-dev
+```
+
+强制重新解析依赖（比如改了 `pyproject.toml` 之后）：
+
+```bash
+uv sync --reinstall
+```
+
+只装某个 `dependency-group`：
+
+```bash
+uv sync --only-group dev
+```
+
+各位平常 90% 的时间都只用 `uv sync` 不带任何参数，够了。
+
+
+## 自动管理虚拟环境
+
+老办法的虚拟环境流程，各位都熟：
+
+```bash
+python -m venv .venv
+source .venv/bin/activate    # macOS/Linux
+.venv\Scripts\activate       # Windows
+pip install ...
+```
+
+这一套有几个痛点：
+
+1. 容易忘记激活——开个新终端就要重新激活一遍
+2. 跨平台不统一——`Windows` 和 `macOS` 命令不一样
+3. 切项目要先 `deactivate` 再激活新的，烦
+4. 用错虚拟环境是常见 bug——明明装了 `httpx`，怎么 `import` 报错？哦，激活到别的环境了
+
+`uv` 的策略：**根本不需要激活**。每次跑命令用 `uv run`，`uv` 会自动找到当前目录的 `.venv/`，用里面的 `Python` 跑。各位连「当前激活了哪个环境」这个心智负担都没了。
+
+要看当前用的是哪个 `Python`：
+
+```bash
+uv run which python
+```
+
+输出：
+
+```
+/Users/walter/projects/my-project/.venv/bin/python
+```
+
+进入项目目录，自动用项目的 `.venv`。
+
+### 想手动激活也行
+
+兼容传统流程，`uv` 也允许激活：
+
+```bash
+source .venv/bin/activate
+python main.py
+```
+
+激活之后用 `python` 命令直接跑，不需要 `uv run` 前缀。水哥偶尔在「连续跑很多命令、要保持环境激活」时这么用。
+
+
+## 从 requirements.txt 迁移过来
+
+各位手上有老项目，已经在用 `requirements.txt`，怎么迁过来？
+
+### 场景一：从 requirements.txt 直接 lock
+
+如果各位的 `requirements.txt` 已经是「输入约束」（写了 `httpx>=0.27` 这种范围），可以这样：
+
+```bash
+uv pip compile requirements.in > requirements.txt
+```
+
+习惯上，`requirements.in` 是「输入」（带版本范围），`requirements.txt` 是「输出」（钉死的精确版本）。这是 `pip-tools` 的约定，`uv pip compile` 完全兼容。
+
+如果各位手上没有 `requirements.in`，只有 `requirements.txt` 而且里面已经写了精确版本，可以直接当作 `lock` 用，跳过这一步。
+
+### 场景二：把 requirements.txt 转成 pyproject.toml
+
+这是更彻底的迁移。假设各位现有的 `requirements.txt`：
+
+```
+httpx>=0.27
+click>=8.0
+sqlalchemy>=2.0
+```
+
+第一步：在项目根目录跑：
+
+```bash
+uv init --no-package
+```
+
+`--no-package` 告诉 `uv` 这只是个应用，不打算发布到 `PyPI`。会生成 `pyproject.toml`、`.python-version`，但不会生成 `[build-system]` 段。
+
+第二步：把 `requirements.txt` 里的依赖一行一行 `uv add`：
+
+```bash
+uv add httpx click sqlalchemy
+```
+
+或者批量：
+
+```bash
+uv add -r requirements.txt
+```
+
+`-r` 让 `uv` 读 `requirements.txt`，把里面的依赖全加进 `pyproject.toml`。
+
+第三步：删掉老的 `requirements.txt`（如果还想保留兼容性，可以从 `pyproject.toml` 导出）：
+
+```bash
+uv export --no-dev > requirements.txt
+```
+
+这样 `requirements.txt` 就成了「从 `lock` 文件导出来的精确版本」，老工具（`Docker` 镜像构建脚本之类）还能继续用。
+
+### 场景三：从 poetry 迁过来
+
+`poetry` 项目也用 `pyproject.toml`，但是它的格式跟 `PEP 621` 不完全一样，依赖写在 `[tool.poetry.dependencies]` 段。
+
+最快的迁移办法：
+
+```bash
+uvx pdm import pyproject.toml
+```
+
+或者手动把 `[tool.poetry.dependencies]` 段改写成 `[project]` 段下的 `dependencies` 列表。`poetry` 的 `^1.0` 写法要换成 `>=1.0,<2.0`，`~1.0` 换成 `>=1.0,<1.1`，照规则翻译就是。
+
+迁移完之后，删掉 `poetry.lock`，跑 `uv lock` 生成新的 `uv.lock`：
+
+```bash
+uv lock
+```
+
+### 场景四：从 pipenv 迁过来
+
+`pipenv` 用的是 `Pipfile` 和 `Pipfile.lock`。直接手动转换：把 `Pipfile` 里的 `[packages]` 段对应到 `dependencies`，`[dev-packages]` 段对应到 `[dependency-groups].dev`。然后 `uv lock` 生成新的锁文件。
+
+
+## uv vs pip vs poetry vs pipenv 一桌对比
+
+各位经常听人说哪个工具好哪个工具坏。水哥做个不带感情色彩的对比：
+
+| 工具      | 速度   | 锁定文件     | 项目管理 | Python 管理 | 2026 推荐度    |
+|-----------|--------|--------------|----------|-------------|----------------|
+| `pip`     | 慢     | 没有（要配 `pip-tools`） | 没有     | 没有        | 老项目维护用   |
+| `pipenv`  | 极慢   | `Pipfile.lock`         | 有       | 没有        | 不推荐         |
+| `poetry`  | 中等   | `poetry.lock`          | 有       | 没有        | 还能用         |
+| `uv`      | 极快   | `uv.lock`              | 有       | 有          | **首选**       |
+
+各位看完心里就有数了。如果是 2026 年开新项目，无脑选 `uv`；如果是老项目还在用 `pip` + `requirements.txt`，建议尽快迁过来；老项目用了 `poetry` 也别慌，能跑就让它跑，等下次大重构再说。
+
+
+## 实战：从零到「能跑、能锁、能测」
+
+讲了这么多，来一个完整的小实战。需求：写一个「抓取一个 URL，打印响应状态码」的小工具，要求：
+
+1. 用 `httpx` 发请求
+2. 用 `pytest` 写一个测试
+3. 锁定依赖，发给同事能直接跑
+
+全套命令长这样：
+
+```bash
+# 1. 创建项目
+uv init url-checker
+cd url-checker
+
+# 2. 加生产依赖
+uv add httpx
+
+# 3. 加开发依赖
+uv add --dev pytest
+
+# 4. 写代码（下面会贴）
+
+# 5. 跑测试
+uv run pytest
+
+# 6. 提交到 git
+git add .
+git commit -m "init project"
+```
+
+代码这部分。先是主逻辑文件 `url_checker.py`：
+
+<!-- skip-ci -->
+```python
+import httpx
+
+
+def check_url(url: str) -> int:
+    """返回 URL 的响应状态码"""
+    response = httpx.get(url, timeout=5.0)
+    return response.status_code
+
+
+def main():
+    url = "https://httpbin.org/status/200"
+    code = check_url(url)
+    print(f"{url} -> {code}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+然后是测试文件 `tests/test_url_checker.py`：
+
+<!-- skip-ci -->
+```python
+from url_checker import check_url
+
+
+def test_check_url_returns_int():
+    """这里只是个示意，真实测试应该 mock httpx"""
+    # 实际测试中会用 respx 或 httpx.MockTransport 来 mock
+    pass
+
+
+def test_status_code_type():
+    """假定 200 就是 200，类型应该是 int"""
+    assert isinstance(200, int)
+```
+
+跑测试：
+
+```bash
+uv run pytest
+```
+
+输出大致：
+
+```
+========================= test session starts =========================
+collected 2 items
+
+tests/test_url_checker.py ..                                    [100%]
+========================= 2 passed in 0.05s =========================
+```
+
+跑主程序：
+
+```bash
+uv run url_checker.py
+```
+
+输出：
+
+```
+https://httpbin.org/status/200 -> 200
+```
+
+发给同事：
+
+```bash
+git push origin main
+```
+
+同事拉下来：
+
+```bash
+git clone <repo>
+cd url-checker
+uv sync
+uv run url_checker.py
+```
+
+三条命令，环境完全一致，能跑。这就是 2026 年的工作流。
+
+### 项目最终的目录结构
+
+```
+url-checker/
+├── .git/
+├── .gitignore
+├── .python-version
+├── .venv/              # uv 自动生成，不进 git
+├── README.md
+├── pyproject.toml
+├── tests/
+│   └── test_url_checker.py
+├── url_checker.py
+└── uv.lock
+```
+
+进 `git` 的有：
+
+- `.gitignore`
+- `.python-version`
+- `README.md`
+- `pyproject.toml`
+- `uv.lock`（**很重要**，别忘了提交）
+- `tests/`
+- `url_checker.py`
+
+不进 `git` 的：
+
+- `.venv/`（`uv init` 自动加进 `.gitignore`）
+- `__pycache__/`、`*.pyc`
+
+各位常犯的错是：忘了提交 `uv.lock`。没有 `lock` 文件，`uv sync` 没法保证版本一致——它会临时去解析依赖，每次结果可能不同。所以记住：**`uv.lock` 是项目的一部分，必须进 `git`**。
+
+
+## 几个常见坑和小技巧
+
+### 坑一：把 .venv 提交到 git
+
+新手很容易忘记加 `.venv/` 到 `.gitignore`。这事 `uv init` 已经帮你处理了，但如果是手动迁移的老项目，记得检查一下 `.gitignore`。
+
+### 坑二：忘了 uv.lock
+
+刚才说过了，再说一遍。`uv.lock` 必须进 `git`。
+
+### 坑三：在虚拟环境里全局装包
+
+各位有时候会习惯性 `pip install something`，结果装到了系统 `Python` 里，跟项目无关。在 `uv` 项目里：
+
+- 加项目依赖用 `uv add`
+- 想全局装一个 CLI 工具用 `uv tool install`（比如 `uv tool install ruff`）
+- 想临时跑一次用 `uvx`
+
+不要在 `uv` 项目里直接 `pip install`，除非各位明确知道在做什么。
+
+### 技巧一：缓存全局共享
+
+`uv` 有个全局缓存，所有项目共享下载过的包。各位可以这样看：
+
+```bash
+uv cache dir
+```
+
+输出：
+
+```
+/Users/walter/.cache/uv
+```
+
+新项目第一次 `uv sync`，如果包在缓存里，秒装完，不用重新下载。这是 `uv` 「快」的另一个原因。
+
+清理缓存：
+
+```bash
+uv cache clean
+```
+
+平时不需要清，磁盘紧张了再清。
+
+### 技巧二：把 pyproject.toml 当配置中心
+
+前面提过，`pyproject.toml` 不光放项目元数据，还能放工具配置。完整一点的例子：
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+```
+
+`ruff`、`pytest`、`mypy` 三个工具的配置全在一起，新人接手项目打开一个文件什么都看见了。各位以前散落在 `.flake8`、`.pylintrc`、`pytest.ini`、`mypy.ini` 一堆文件里的配置，都可以收回来。
+
+### 技巧三：`uv tool install` 装 CLI 工具
+
+想全局装 `ruff`，让任何目录都能用？
+
+```bash
+uv tool install ruff
+```
+
+跟 `pipx install ruff` 一样，但快得多。装完之后 `ruff` 就在 `PATH` 里了。
+
+升级：
+
+```bash
+uv tool upgrade ruff
+```
+
+卸载：
+
+```bash
+uv tool uninstall ruff
+```
+
+各位可以拿 `uv tool` 替代 `pipx`、`brew install` 一些 `Python` CLI 工具。
+
+### 技巧四：`uvx` 跑一次性命令
+
+前面提过 `uvx`，再强调一下。各位想试用一个工具，但不想全局装：
+
+```bash
+uvx ruff check .
+uvx pycowsay "Hello"
+uvx httpie GET https://httpbin.org/get
+```
+
+`uvx` 会在临时环境里装一下，跑完即丢。比 `pipx run` 快几十倍。
+
+
+## 单文件脚本也能用 uv
+
+进阶玩法：各位有时候写个一次性脚本，可能就 50 行 `Python`，但要用 `httpx`。难道为这 50 行新建一个项目？
+
+`uv` 支持「内联依赖」语法（`PEP 723`）。在脚本头部写一段元数据：
+
+<!-- skip-ci -->
+```python
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "httpx",
+# ]
+# ///
+
+import httpx
+
+response = httpx.get("https://httpbin.org/get")
+print(response.status_code)
+```
+
+跑：
+
+```bash
+uv run script.py
+```
+
+`uv` 会读取脚本头部的元数据，自动建一个临时环境装上 `httpx`，跑完即丢。**单个 .py 文件就是个完整项目**，发给同事一份就能跑。
+
+各位写「一次性小工具」的体验从此跃迁。
+
+
+## 关于发布到 PyPI
+
+这一章主要讲「项目」管理，发布到 `PyPI` 不是重点，但稍微提一下，让各位心里有数。
+
+`uv init` 不带任何参数时，生成的 `pyproject.toml` 不带 `[build-system]` 段，意味着这是个「应用」，不是「库」。如果各位想发布到 `PyPI`，要这样初始化：
+
+```bash
+uv init --package my-library
+```
+
+`--package` 会生成带 `[build-system]` 段的 `pyproject.toml`、生成 `src/my_library/__init__.py` 这种标准包结构。
+
+要打包，跑：
+
+```bash
+uv build
+```
+
+会在 `dist/` 目录下生成 `.tar.gz`（源码包）和 `.whl`（轮子）。
+
+要发布到 `PyPI`：
+
+```bash
+uv publish
+```
+
+第一次发布要先在 `PyPI` 注册账号，配 `API token`。这部分超出本章范围，各位想发布到 `PyPI` 的时候再去看 `uv publish` 的官方文档。
+
+对绝大多数童鞋来说，`uv` 的核心价值就是「应用」级别的依赖管理——不是为了发包，是为了「我电脑能跑你电脑也能跑」。这件事 `uv sync` 一把搞定。
+
+
+## 小结
+
+这一章信息量大，最后给各位提炼成几条记得住的：
+
+**第一，`pyproject.toml` 取代了一切。**
+
+`setup.py`、`setup.cfg`、`requirements.txt`、`requirements-dev.txt`、`pytest.ini`、`.flake8`、`tox.ini` 一堆零碎文件，2026 年都可以收进 `pyproject.toml` 一个文件。新项目就这么开。
+
+**第二，`uv` 是 2026 年的首选包管理器。**
+
+`Astral` 出品，`Rust` 写的，10-100x 速度，单二进制，统一管理 `Python` 版本、虚拟环境、依赖。
+
+**第三，记住这五条核心命令。**
+
+```bash
+uv init my-project       # 创建项目
+uv add httpx             # 加生产依赖
+uv add --dev pytest      # 加开发依赖
+uv sync                  # 同步环境（同事拉下来用）
+uv run python main.py    # 跑命令
+```
+
+**第四，`uv.lock` 必须进 git。**
+
+这是「环境字节级一致」的保证。
+
+**第五，老项目用 `uv pip compile` 生成 `requirements.txt`，新项目用 `uv add` + `uv sync`。**
+
+各位下次再开新项目，从「装 `Python` 解释器、建虚拟环境、装依赖、写 `setup.py`」一系列繁琐流程里解脱出来——一句 `uv init`，一句 `uv add`，几秒钟从零到能跑。同事拉下来 `uv sync`，环境一模一样。
+
+「我电脑能跑你电脑跑不了」这句话，2026 年起，可以扔进历史的垃圾桶了。
+
+
+
+## 用一个能交给别人运行的小项目验收环境
+
+本章的命令很多，先给它们安排一件具体的事：把最后一章的学习时间记录工具放进独立项目，确认它可以在清楚的环境里运行。
+
+在本地选择一个新的练习目录，按下面的顺序做：
+
+```bash
+uv init study-tracker-practice
+cd study-tracker-practice
+```
+
+把综合练习的 `tracker.py` 和 `test_tracker.py` 复制到这个新项目，再运行：
+
+```bash
+uv run tracker.py --help
+uv run python -m unittest -v
+```
+
+这里的工具本身只使用标准库。首次准备环境可能需要下载 Python，按实际网络条件完成；不要因为示例没有第三方依赖，就把它理解成所有工程都不需要管理依赖。
+
+做完以后，自己说明 `pyproject.toml` 记录什么、当前用了哪个 Python、哪些文件是源代码、哪些是本地生成物。引入实际依赖后，再练习锁文件与同步命令。验收重点是从一个明确目录和一组命令得到同样结果，不是记住工具名。
+
+可对照 [uv 官方项目指南](https://docs.astral.sh/uv/guides/projects/) 阅读命令含义。执行终端和环境管理练习需要本地环境，不在浏览器 Python 编辑器中输入这些 shell 命令。

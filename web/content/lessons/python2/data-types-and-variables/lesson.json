@@ -4,25 +4,71 @@
   "description": "学习 Python 的字符串、整数、浮点数、布尔值和空值，理解变量的创建、赋值与指向关系。结合 print 输出、基础算术运算、类型转换和字符编码示例，掌握 f-string 插值及常用格式写法，把数据、计算与文本输出连接起来。",
   "chapter": "python2",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 95,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-print.mdx" },
-    { "kind": "exercise", "file": "01-hello-world.json" },
-    { "kind": "step", "file": "03a-string.mdx" },
-    { "kind": "exercise", "file": "09-string-basics.json" },
-    { "kind": "step", "file": "03b-numbers.mdx" },
-    { "kind": "exercise", "file": "03-arithmetic.json" },
-    { "kind": "step", "file": "03c-bool-none.mdx" },
-    { "kind": "exercise", "file": "10-bool-logic.json" },
-    { "kind": "step", "file": "03d-fstring.mdx" },
-    { "kind": "exercise", "file": "04-string-concat.json" },
-    { "kind": "step", "file": "04-string-coding.mdx" },
-    { "kind": "exercise", "file": "07-ascii-code.json" },
-    { "kind": "step", "file": "05-type-conversion.mdx" },
-    { "kind": "exercise", "file": "08-type-conversion.json" },
-    { "kind": "step", "file": "06-variable.mdx" },
-    { "kind": "exercise", "file": "02-variable-assign.json" },
-    { "kind": "exercise", "file": "05-combined.json" }
+    {
+      "kind": "step",
+      "file": "10-original-source-python2-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python2-Grammar.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "12-original-source-python2-print.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-hello-world.json"
+    },
+    {
+      "kind": "step",
+      "file": "13-original-source-python2-Type_of_data.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "09-string-basics.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-arithmetic.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "10-bool-logic.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-string-concat.json"
+    },
+    {
+      "kind": "step",
+      "file": "14-original-source-python2-StringCoding.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "07-ascii-code.json"
+    },
+    {
+      "kind": "step",
+      "file": "15-original-source-python2-Type_conversion.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "08-type-conversion.json"
+    },
+    {
+      "kind": "step",
+      "file": "16-original-source-python2-Variable.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-variable-assign.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-combined.json"
+    }
   ]
 }

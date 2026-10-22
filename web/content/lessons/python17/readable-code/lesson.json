@@ -4,16 +4,117 @@
   "description": "学习让 Python 代码更容易阅读的方法，包括有含义的变量命名、减少嵌套的早返回、列表与字典推导式，以及函数参数和返回值的类型注解。通过改写前后的代码对照，理解简洁与可读性之间的取舍，识别过度压缩表达式的问题，写出便于复习和维护的代码。",
   "chapter": "python17",
   "order": 1,
-  "estimatedMinutes": 40,
+  "estimatedMinutes": 145,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-naming.mdx" },
-    { "kind": "step", "file": "03-early-return.mdx" },
-    { "kind": "exercise", "file": "01-early-return.json" },
-    { "kind": "step", "file": "04-comprehension.mdx" },
-    { "kind": "exercise", "file": "02-list-comp.json" },
-    { "kind": "exercise", "file": "03-dict-comp.json" },
-    { "kind": "step", "file": "05-type-hints.mdx" },
-    { "kind": "exercise", "file": "04-type-hints.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-codeSpecification-codeSpecification_Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-codeSpecification-codeSpecification_first.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-codeSpecification-codeSpecification_second.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-codeSpecification-codeSpecification_third.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "03-early-return.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-early-return.json"
+    },
+    {
+      "kind": "step",
+      "file": "04-comprehension.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-list-comp.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-dict-comp.json"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 最简单的注解"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-type-hints.json"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 常用的几个基础类型"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 函数可能返回 None 怎么办"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 容器类型怎么注解"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 变量也能加注解"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## Callable 和 Any——两个特殊角色"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 类型起得太长？给它起个别名"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 类的属性怎么注解"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## Protocol——类型注解版的 duck typing"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 写完注解，怎么真的检查类型"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 一些常见疑问"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python17-1.mdx",
+      "section": "## 注解写上了，输入就一定正确吗"
+    }
   ]
 }

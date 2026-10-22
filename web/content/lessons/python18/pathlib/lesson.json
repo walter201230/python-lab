@@ -4,16 +4,138 @@
   "description": "学习 Python pathlib 的路径操作，用 Path 表达文件与目录，理解路径拼接和父目录访问。结合示例提取文件名、主干与扩展名，比较它与字符串路径处理的区别，认识多后缀文件的特点，并了解文件读写、目录遍历等本地操作的入口与边界。",
   "chapter": "python18",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 95,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-create-path.mdx" },
-    { "kind": "step", "file": "03-attributes.mdx" },
-    { "kind": "exercise", "file": "01-name-suffix-stem.json" },
-    { "kind": "step", "file": "04-joining.mdx" },
-    { "kind": "exercise", "file": "02-joining.json" },
-    { "kind": "exercise", "file": "03-parents.json" },
-    { "kind": "step", "file": "05-glob-and-iter.mdx" },
-    { "kind": "exercise", "file": "04-suffixes.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 一、第一个 Path"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 二、用 `/` 来拼接路径"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 三、常用属性，一锅端"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.1 `.name`：完整文件名（带后缀）"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.2 `.stem`：去掉后缀的「主干」"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.3 `.suffix`：扩展名（带点）"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-name-suffix-stem.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-joining.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.4 `.parent`：父目录"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.5 `.parents`：所有祖先目录"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-parents.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-suffixes.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.6 `.anchor`：锚点"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "### 3.7 综合演示"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 四、判断和信息"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 五、遍历目录"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 六、读写文件"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 七、创建和删除"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 八、路径转换"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 九、改个名字：`with_name` / `with_stem` / `with_suffix`"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 十、跨平台：`PurePath` 系列"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 十一、老写法对照表 + 常见踩坑"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 十二、小实战：递归统计某目录下所有 `.py` 文件的总行数"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 十三、彩蛋：和老 API 互通"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 十四、小结"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python18-1.mdx",
+      "section": "## 文件写到哪里了"
+    }
   ]
 }

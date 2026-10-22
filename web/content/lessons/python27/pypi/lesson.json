@@ -4,13 +4,137 @@
   "description": "了解 Python 工具从本地项目到发布安装的流程，学习源码目录、项目元数据、构建产物与版本号的组织方式。结合测试仓库与 PyPI 发布步骤，认识说明文档与许可证的作用，再通过命令行示例理解参数、子命令及安装后的入口。",
   "chapter": "python27",
   "order": 1,
-  "estimatedMinutes": 25,
+  "estimatedMinutes": 35,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-project-layout.mdx" },
-    { "kind": "step", "file": "03-build-and-publish.mdx" },
-    { "kind": "step", "file": "04-typer-basics.mdx" },
-    { "kind": "step", "file": "05-typer-advanced.mdx" },
-    { "kind": "step", "file": "06-real-world.mdx" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## PyPI 是个啥"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 先把项目结构搭对"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## pyproject.toml 必填字段拆解"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## build-backend：谁来负责打包"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 本地构建：uv build 一条命令出炉"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 注册 TestPyPI 账号"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 上传到 TestPyPI 演练"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 正式上传到 PyPI"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 版本号管理：手动 vs 自动"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## README 和 LICENSE：最低限度的「正经感」"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## CI 自动发包：打 tag 就发版"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## CLI 的痛：argparse 太啰嗦"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 第一个 typer"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 多命令 app"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 类型注解 = CLI 参数"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## Optional 参数：默认值的魔法"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 必选参数 vs 可选参数：一句话区分"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 交互式输入：prompt 和 confirm"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 错误退出：typer.Exit 和 typer.Abort"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 彩色输出：echo 和 secho"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 子命令嵌套：app.add_typer"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 打包成系统命令：[project.scripts]"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 实战：todo-cli 从零到发布"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python27-1.mdx",
+      "section": "## 先把本地命令的使用约定做清楚"
+    }
   ]
 }

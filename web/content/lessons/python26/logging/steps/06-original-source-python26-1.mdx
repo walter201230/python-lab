@@ -1,0 +1,1183 @@
+# logging：把 print 调试升级成正经日志
+
+各位写代码的时候，是不是几乎都干过这种事——
+
+代码跑出问题了，怎么办？随手在可疑位置插一行 `print('xxx')`，再跑一次，看输出在哪儿断掉。然后再插一行 `print('yyy')`，再跑。最后整个文件里散落着十几个 `print('111')`、`print('here')`、`print(user)`，bug 修好之后，要么忘了删，要么删了又怕下次再调试时还得重新插。
+
+本地玩玩还能凑合，可一旦把代码部署到服务器，问题就来了——
+
+「线上挂了，咋回事？」打开服务器一看，啥都没有。`print` 默认是写到标准输出的，要是程序被 `systemd` 或者 `Docker` 拉起来，输出可能根本没人接，或者全混在一起，谁也分不清是哪个时间、哪个模块、哪条业务挂的。
+
+「让我加点日志吧。」于是各位开始改代码，把 `print` 换成 `print(time.strftime('%H:%M:%S'), 'xxx')`，再加一段把它写到文件里的逻辑——写完发现，自己在重新发明日志库。
+
+Python 标准库里早就备好了答案，就叫 `logging`。一行不长的代码，就能让输出自带「时间戳 + 级别 + 模块名 + 进程信息」，还能同时写到控制台、文件、远程服务器，并且可以一键切换「调试时啥都打、上线后只打 ERROR」。
+
+这一章咱们就从最简单的 `logging.info('hi')` 开始，一路讲到生产环境会怎么用。学完之后，各位应该能：
+
+1. 写出第一个带时间戳的日志，不再用 `print` 调试
+2. 知道 5 个日志级别分别该用在什么场景
+3. 用 `getLogger(__name__)` 给每个模块一个独立的 logger
+4. 用 `RotatingFileHandler` 防止日志文件无限膨胀
+5. 用 `dictConfig` + `yaml` 在生产环境集中管理日志配置
+6. 用 `logger.exception()` 在 `except` 里自动带上完整的 traceback
+7. 知道什么时候该上「结构化日志」，什么时候继续用文本日志
+
+走起。
+
+
+
+## 第一个 logger
+
+各位先来感受一下 `logging` 是怎么个用法。最简单的写法只有两行：
+
+```python
+import logging
+
+logging.info("两点水开始打卡了")
+```
+
+跑一下，奇怪的事情来了——**啥都没输出**。
+
+这是新手第一次用 `logging` 几乎都会踩的坑。原因是：`logging` 默认的级别是 `WARNING`，比它低的 `INFO` 和 `DEBUG` 直接被丢掉了。
+
+各位把上面那行换成 `logging.warning('水哥忘了打卡')` 再跑：
+
+```python
+import logging
+
+logging.warning("两点水忘了打卡")
+```
+
+终于看到输出：
+
+```
+WARNING:root:两点水忘了打卡
+```
+
+注意这一行的格式：**级别 + logger 名字 + 内容**，三段式。`root` 是默认 logger 的名字，后面会讲怎么换。
+
+那 `INFO` 怎么打出来呢？最简单的办法是先调一行 `basicConfig`：
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info("两点水开始打卡了")
+```
+
+这次看到了：
+
+```
+INFO:root:两点水开始打卡了
+```
+
+`basicConfig(level=logging.INFO)` 这一行做的事情是「把 root logger 的级别调成 INFO」。一调下来，`INFO` 及以上（也就是 `INFO`、`WARNING`、`ERROR`、`CRITICAL`）都会被打出来。
+
+各位这里可能有疑问——「那 `DEBUG` 怎么打？」很简单，`level=logging.DEBUG`。`DEBUG` 是最低级别，调到这里，所有日志都会出来。
+
+「为什么 `logging` 要默认 WARNING？」官方的解释是：`logging` 库是给「库的作者」准备的，库要是默认就打一堆 INFO，会污染最终用户的输出。所以默认只打「值得用户注意」的 WARNING 及以上。这个设计哲学理解一下，对后面看库的源码很有帮助。
+
+
+
+## 5 个日志级别
+
+`logging` 一共有 5 个内置级别，从低到高排：
+
+| 级别 | 数值 | 含义 | 啥时候用 |
+|---|---|---|---|
+| DEBUG | 10 | 调试细节 | 开发期间打变量、看流程 |
+| INFO | 20 | 关键流程 | 服务启动、请求进来、任务完成 |
+| WARNING | 30 | 警告但不影响运行 | 配置文件用了默认值、降级了 |
+| ERROR | 40 | 错误，部分功能挂了 | 抓到异常、外部接口超时 |
+| CRITICAL | 50 | 致命，整个程序得停 | 数据库连不上、关键依赖不可用 |
+
+数值是给「过滤」用的——级别 = 30 的时候，所有 < 30 的日志都被丢掉，只保留 30、40、50 的。
+
+各位记不住每个级别该用在哪儿？水哥给一个直观的判断标准——
+
+- **DEBUG**：「我自己调试时想看，别人不需要看的」。比如「`user_id = 42`」、「进入分支 A」、「SQL 语句拼接结果」。
+- **INFO**：「程序正常运行的关键节点」。比如「服务启动完毕，监听 8080」、「接收到打卡请求，user=水哥」、「定时任务跑完，处理了 100 条记录」。
+- **WARNING**：「不太对劲，但还能跑」。比如「config.yaml 里 timeout 没配，用默认 30 秒」、「水哥今天打卡迟了 5 分钟」。
+- **ERROR**：「这一次失败了」。比如「数据库连接超时，本次打卡保存失败」、「调外部接口 500 了」。
+- **CRITICAL**：「整个程序要崩」。比如「Redis 连不上，所有请求都没法处理」、「磁盘写满，无法写入日志文件」。
+
+「`WARNING` 和 `ERROR` 怎么区分？」这是各位最容易纠结的两个。一个简单的标准——**这一次操作还能完成吗？能完成就 `WARNING`，不能完成就 `ERROR`**。
+
+写代码时各位可以用一个一句话原则——
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+logging.debug("调试看的，临时变量")
+logging.info("正常流程的关键节点")
+logging.warning("不对劲但能继续")
+logging.error("这次操作失败了")
+logging.critical("整个程序要挂")
+```
+
+跑一下，五条全部打出来。
+
+
+
+## basicConfig：最简的一行配置
+
+刚才那个 `basicConfig`，各位再展开看一眼。它能配的东西不止 `level`，常用的有这些：
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+logging.info("两点水准备打卡")
+logging.warning("打卡机故障")
+```
+
+输出长这样：
+
+```
+2026-04-28 09:00:00 - INFO - 两点水准备打卡
+2026-04-28 09:00:00 - WARNING - 打卡机故障
+```
+
+是不是比 `print` 看着舒服多了？时间戳、级别、消息全有了。
+
+`basicConfig` 几个常用参数——
+
+- `level`：日志级别，比如 `logging.INFO`
+- `format`：每条日志的格式，下一节专门讲
+- `datefmt`：时间戳的格式，`strftime` 那一套
+- `filename`：写到文件，比如 `'app.log'`
+- `filemode`：写文件的模式，`'a'` 追加（默认），`'w'` 覆盖
+- `encoding`：文件编码，**强烈建议加 `encoding='utf-8'`**，不然 Windows 上中文很容易挂
+
+写到文件的话：
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    filename="app.log",
+    filemode="a",
+    encoding="utf-8",
+)
+
+logging.info("两点水准备打卡")
+```
+
+跑完之后看一下当前目录，多了一个 `app.log` 文件，里面就是日志内容。
+
+「`basicConfig` 能调好几次吗？」不行。它只在「root logger 还没配过 handler」时才会生效，第二次调用是不起作用的。所以**整个程序里 `basicConfig` 只调一次**，通常放在程序入口处。
+
+`basicConfig` 的好处是简单——一行起飞。坏处是它把所有东西都挂在 root logger 上，且只能配一个 handler。要是各位的需求是「同时输出到控制台和文件」、「不同模块用不同级别」，那 `basicConfig` 就不够了，要走下一节的「正经做法」。
+
+
+
+## 正经做法：getLogger(\_\_name\_\_)
+
+新手最常见的反模式是直接 `import logging` 之后到处 `logging.info(...)`、`logging.error(...)`。这其实是用了 root logger，**所有模块共用同一个 logger**，分不清日志是哪儿来的。
+
+正经做法是——**每个模块开一个独立的 logger**：
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+def punch_in(user):
+    logger.info("用户 %s 开始打卡", user)
+```
+
+`__name__` 是 Python 内置的变量，在 `mymodule.py` 里 `__name__ == 'mymodule'`，在包 `app/services/punch.py` 里 `__name__ == 'app.services.punch'`。这个名字会出现在每条日志里，各位一眼就能看出日志是哪个模块打的。
+
+为什么推荐这个写法？三个原因——
+
+1. **能看出哪个模块打的日志**。出 bug 时直接定位到模块。
+2. **能给不同模块设不同级别**。比如 `app.services` 整组打 DEBUG，`app.api` 只打 WARNING。
+3. **logger 自动按层级继承**，下面会专门讲。
+
+完整一点的例子：
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
+logger = logging.getLogger(__name__)
+
+
+def punch_in(user):
+    logger.info("用户 %s 开始打卡", user)
+    logger.debug("当前内存里有 %d 个待处理任务", 5)
+
+
+punch_in("两点水")
+```
+
+输出：
+
+```
+2026-04-28 09:00:00 - __main__ - INFO - 用户 两点水 开始打卡
+```
+
+`%(name)s` 把 logger 的名字打出来了。`__main__` 是因为这个文件直接被 `python xxx.py` 跑，要是被 import 进来名字就是模块名了。
+
+注意这里用的是 `logger.info("用户 %s 开始打卡", user)` 这种「`%` 占位符 + 多参数」的写法，**不是** `f-string` 也**不是** `+` 拼接。为什么？因为 `logging` 内部会判断「这条日志的级别要不要打」——如果不打，那么 `user` 这个变量根本不会被格式化进字符串，省 CPU。
+
+各位写 `logger.debug(f"user={user}")` 的话，f-string 会先算出来一个完整字符串，再传给 `logger.debug`，就算 `debug` 级别不打也白白花了 CPU。在打卡服务这种 QPS 高的场景下，这点开销累计起来能有差别。
+
+「我看不少代码里用 f-string 打日志啊？」是的，f-string 写起来简单，可读性好，**只要不在性能敏感路径上，f-string 也能用**。水哥的建议是——库代码、热路径用 `%`；业务代码、低频日志用 f-string，看场景。
+
+
+
+## format 字符串：常用占位符
+
+`format` 那一串看着像天书，其实就几个常用占位符。水哥把这个表收藏起来，写日志时直接抄——
+
+| 占位符 | 含义 |
+|---|---|
+| `%(asctime)s` | 时间，默认 `2026-04-28 09:00:00,123` |
+| `%(name)s` | logger 名字（来自 `getLogger(__name__)`） |
+| `%(levelname)s` | 日志级别名字，比如 `INFO`、`ERROR` |
+| `%(message)s` | 日志正文 |
+| `%(module)s` | 模块名，不带后缀 |
+| `%(funcName)s` | 函数名 |
+| `%(lineno)d` | 行号 |
+| `%(filename)s` | 文件名 |
+| `%(pathname)s` | 完整文件路径 |
+| `%(process)d` | 进程 ID |
+| `%(thread)d` | 线程 ID |
+| `%(threadName)s` | 线程名字 |
+
+最常用的搭配是：
+
+```python
+"%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+```
+
+要追查 bug 时常用的更详细版本：
+
+```python
+"%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s"
+```
+
+输出大概是：
+
+```
+2026-04-28 09:00:00 [ERROR] app.services.punch:42 - 数据库连接超时
+```
+
+「我能不能把日志打成一行 JSON？」可以，后面专门讲「结构化日志」那一节。
+
+
+
+## 多个 handler：控制台 + 文件 + 滚动文件
+
+刚才 `basicConfig` 一次只能挂一个去处。可大部分项目都需要「同时输出到控制台 + 文件」，开发时看控制台，出问题时翻文件。
+
+这里要登场的是 `Handler` 这个概念。一个 logger 可以挂任意多个 handler，每个 handler 决定日志要送到哪儿。常用的 handler 有这些——
+
+- `StreamHandler`：写到 stderr 或者 stdout（默认 stderr），也就是控制台
+- `FileHandler`：写到文件
+- `RotatingFileHandler`：写到文件，按大小滚动（写满 10MB 自动归档，重新开新文件）
+- `TimedRotatingFileHandler`：按时间滚动（每天/每小时一个新文件）
+- `SMTPHandler`：把日志当邮件发
+- `SysLogHandler`：写到 syslog
+- `HTTPHandler`：把日志 POST 到一个 HTTP 接口
+
+来一段「同时输出到控制台和文件」的代码：
+
+```python
+import logging
+
+logger = logging.getLogger("app")
+logger.setLevel(logging.DEBUG)
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+
+file = logging.FileHandler("app.log", encoding="utf-8")
+file.setLevel(logging.DEBUG)
+
+fmt = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+console.setFormatter(fmt)
+file.setFormatter(fmt)
+
+logger.addHandler(console)
+logger.addHandler(file)
+
+logger.debug("这条只在文件里能看到")
+logger.info("这条控制台和文件都能看到")
+logger.warning("这条也是两边都看到")
+```
+
+跑一下，控制台能看到 `INFO` 和 `WARNING`，但 `DEBUG` 看不到；打开 `app.log` 文件，三条都在。
+
+注意几个要点——
+
+1. **logger 自身有一个级别，每个 handler 也有自己的级别**。日志先过 logger 的级别，再过 handler 的级别。logger 设了 DEBUG，但 console 只到 INFO，所以 console 看不到 DEBUG。
+2. **每个 handler 可以有自己的 formatter**。你想让控制台简洁、文件详细，分别给两个 handler 设不同的 formatter 就行。
+3. **handler 可以来回换**。线上环境换成 `SysLogHandler`，开发环境换成 `StreamHandler`，业务代码完全不需要改。
+
+接下来重头戏——`RotatingFileHandler`。生产环境 `FileHandler` 几乎不能直接用，因为日志会越写越长，几个月下来一个文件 10GB，开都开不开。`RotatingFileHandler` 解决这个问题：
+
+```python
+import logging
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger("app")
+logger.setLevel(logging.INFO)
+
+handler = RotatingFileHandler(
+    "app.log",
+    maxBytes=10 * 1024 * 1024,
+    backupCount=5,
+    encoding="utf-8",
+)
+handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+)
+logger.addHandler(handler)
+
+logger.info("两点水准备打卡")
+```
+
+`maxBytes=10 * 1024 * 1024` 表示「文件超过 10MB 就滚动」，`backupCount=5` 表示「最多保留 5 个老文件」。最终目录里会出现 `app.log`、`app.log.1`、`app.log.2`、...、`app.log.5`。再写就把最老的 `app.log.5` 删掉，每次保持最多 6 个文件、总大小不超过 60MB。
+
+按时间滚动用 `TimedRotatingFileHandler`：
+
+```python
+import logging
+from logging.handlers import TimedRotatingFileHandler
+
+logger = logging.getLogger("app")
+logger.setLevel(logging.INFO)
+
+handler = TimedRotatingFileHandler(
+    "app.log",
+    when="midnight",
+    backupCount=30,
+    encoding="utf-8",
+)
+handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+)
+logger.addHandler(handler)
+
+logger.info("两点水按时打卡")
+```
+
+`when="midnight"` 表示每天凌晨切一个新文件，`backupCount=30` 最多保留 30 天历史。这种配法特别适合定时任务、Web 服务这类长跑进程。
+
+`when` 还能写 `'D'`（按天）、`'H'`（按小时）、`'M'`（按分钟，不太用）、`'W0'..'W6'`（按周，0 是周一）。
+
+「能不能既按大小又按时间？」标准库不直接支持，但有第三方库 `concurrent-log-handler` 提供这个功能，多进程写日志也是它解决的——`RotatingFileHandler` 在多进程同时写时会丢数据，**生产环境一定要换成多进程安全的 handler**。
+
+
+
+## Logger 的层级：getLogger('a.b.c') 的玄机
+
+各位前面已经看到 `getLogger(__name__)` 这种用法了。`__name__` 在包 `app.services.punch` 里就是 `app.services.punch`——一个用点分隔的字符串。
+
+这不是巧合，而是 `logging` 一个非常重要的设计：**logger 名字按 `.` 分隔，自动形成树状层级**。
+
+```
+root
+├── app
+│   ├── app.services
+│   │   ├── app.services.punch
+│   │   └── app.services.report
+│   └── app.api
+│       └── app.api.punch
+└── ...
+```
+
+层级的好处是——**日志会自动向上传播**。`app.services.punch` 打一条日志，会先经过 `app.services.punch` 的 handler，再传给 `app.services` 的 handler，再传给 `app`，再传给 root。
+
+所以一个常见的配置模式是这样的——**只在 root logger 上挂 handler，每个模块只调 `getLogger(__name__)`，啥都不管**：
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
+logger_punch = logging.getLogger("app.services.punch")
+logger_report = logging.getLogger("app.services.report")
+
+logger_punch.info("两点水打卡了")
+logger_report.warning("月报数据缺失")
+```
+
+输出：
+
+```
+2026-04-28 09:00:00 - app.services.punch - INFO - 两点水打卡了
+2026-04-28 09:00:00 - app.services.report - WARNING - 月报数据缺失
+```
+
+`logger_punch` 自己没挂 handler，但 `basicConfig` 给 root logger 挂了一个 `StreamHandler`，日志一路冒泡到 root，被打了出来。
+
+层级还有一个重要用法——**给某个模块单独调级别**。比如说，整个项目都打 `INFO`，但是 `app.services.punch` 这一块儿 bug 多，调试期间想打 `DEBUG`：
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logging.getLogger("app.services.punch").setLevel(logging.DEBUG)
+```
+
+简单一行，`app.services.punch` 这个 logger 及它的子 logger 全部打 `DEBUG`，其他模块不受影响。生产环境调试一个具体模块不用改代码，单独把它的级别调下来就行。
+
+「子 logger 想关掉冒泡怎么办？」设 `propagate = False`：
+
+```python
+import logging
+
+logger = logging.getLogger("app.audit")
+logger.propagate = False
+```
+
+加了这行，`app.audit` 的日志不会再传给 `app` 和 root。常见用法是「审计日志要单独写到 audit.log，但又不想污染主日志」。
+
+
+
+## logger.exception()：在 except 里自动带 traceback
+
+各位写 try-except 时，是不是经常这么写——
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def divide(a, b):
+    try:
+        return a / b
+    except Exception as e:
+        logger.error("除法挂了：%s", e)
+```
+
+输出：
+
+```
+ERROR:__main__:除法挂了：division by zero
+```
+
+看着没毛病，但有一个大问题——**没有 traceback**。各位线上挂了之后想查到底哪一行炸了，单看 `division by zero` 五个字根本没用。
+
+正经写法是用 `logger.exception()`：
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def divide(a, b):
+    try:
+        return a / b
+    except Exception:
+        logger.exception("除法挂了")
+
+
+divide(1, 0)
+```
+
+输出：
+
+```
+ERROR:__main__:除法挂了
+Traceback (most recent call last):
+  File "tmp.py", line 9, in divide
+    return a / b
+ZeroDivisionError: division by zero
+```
+
+完整的 traceback 自动带出来了。各位看这一段，立马就能知道是 `tmp.py` 第 9 行 `a / b` 的位置抛了 `ZeroDivisionError`。
+
+`logger.exception()` 等价于 `logger.error("...", exc_info=True)`。要是各位想让 `WARNING` 也带 traceback，可以这么写：
+
+<!-- skip-ci -->
+```python
+logger.warning("除法警告", exc_info=True)
+```
+
+`exc_info=True` 是这个魔法的开关。`exception()` 只是 `error + exc_info=True` 的快捷写法，**只能在 except 块里用**，因为它依赖当前异常上下文。
+
+线上服务里凡是 `except` 块，**几乎都该用 `logger.exception()` 而不是 `logger.error(str(e))`**。各位记住这条铁律就赢了一半。
+
+
+
+## 配置文件：dictConfig 和 yaml
+
+handler 一多、formatter 一多、logger 一多，`addHandler`、`setFormatter` 写起来就开始啰嗦。配置代码占了一大片，主业务代码反而被挤到下面。
+
+这时候要登场的是 `logging.config.dictConfig`——一个字典就把整套日志配置给定下来。
+
+来一段完整例子。一个打卡服务，要求：
+
+- 控制台只打 INFO 及以上
+- 文件 `app.log` 打 DEBUG 及以上
+- 文件按 10MB 滚动，保留 5 份
+- 每条日志都带时间戳、模块名、级别
+
+`logging_config.py`：
+
+```python
+import logging
+import logging.config
+
+config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "default",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "default",
+            "filename": "app.log",
+            "maxBytes": 10485760,
+            "backupCount": 5,
+            "encoding": "utf-8",
+        },
+    },
+    "root": {
+        "level": "DEBUG",
+        "handlers": ["console", "file"],
+    },
+}
+
+logging.config.dictConfig(config)
+
+logger = logging.getLogger("app.services.punch")
+logger.info("两点水开始打卡")
+logger.debug("调试细节")
+```
+
+跑一下，控制台只看到 INFO，但 `app.log` 里 INFO 和 DEBUG 都有。
+
+字典三大块——
+
+1. `formatters`：起几个名字不同的格式
+2. `handlers`：每个 handler 指定 class、level、formatter
+3. `loggers` / `root`：把上面的 handler 装到具体 logger 上
+
+`disable_existing_loggers: False` 几乎是要写的——默认是 `True`，会把已经存在的 logger 全部禁掉，导致依赖库的日志全没了，巨坑。
+
+不过 Python 字面量写起来还是有点啰嗦，配置一多眼睛都花。生产环境更常见的是用 YAML 把配置抽出来——
+
+`logging.yaml`：
+
+```yaml
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: default
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: default
+    filename: app.log
+    maxBytes: 10485760
+    backupCount: 5
+    encoding: utf-8
+
+root:
+  level: DEBUG
+  handlers: [console, file]
+```
+
+加载它的 Python 代码：
+
+<!-- skip-ci -->
+```python
+import logging.config
+import yaml
+
+with open("logging.yaml", encoding="utf-8") as f:
+    config = yaml.safe_load(f)
+
+logging.config.dictConfig(config)
+
+logger = logging.getLogger("app.services.punch")
+logger.info("两点水开始打卡")
+```
+
+`yaml` 不是标准库，要装一下：
+
+```bash
+uv add pyyaml
+```
+
+YAML 比 Python dict 看着舒服多了，**改配置不用动代码**——运维同学想把 `level` 从 INFO 调成 DEBUG，只需要改 yaml 文件然后重启服务。
+
+「有没有更现代的写法？」有些项目把 `logging` 配置写在 `pyproject.toml` 里，不过水哥个人觉得 `pyproject.toml` 已经被各种配置塞得很满，单独 yaml 文件清晰一些。各位按团队习惯来。
+
+`dictConfig` 还能做一件事——**给不同的 logger 配不同的 handler**。比如：
+
+```yaml
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: default
+  audit_file:
+    class: logging.handlers.RotatingFileHandler
+    formatter: default
+    filename: audit.log
+    maxBytes: 10485760
+    backupCount: 30
+
+loggers:
+  app.audit:
+    level: INFO
+    handlers: [audit_file]
+    propagate: false
+  app:
+    level: INFO
+
+root:
+  level: WARNING
+  handlers: [console]
+```
+
+这套配置——
+
+- 整个 `app` 包打 `INFO`
+- `app.audit` 这个特殊的 logger 单独写到 `audit.log`，并且 `propagate: false` 不再向上冒泡
+- 其他第三方库（`requests`、`urllib3` 这些）走 root，只打 `WARNING`
+
+各位实际项目里，**最常用的就是这种 yaml + dictConfig 的组合**。
+
+
+
+## logging vs print：什么时候用哪个
+
+新手最常问的一个问题——「写脚本到底用 `print` 还是 `logging`？」
+
+水哥的判断标准是这样：
+
+| 场景 | 推荐 |
+|---|---|
+| 一次性小脚本（数据清洗、爬一次东西） | `print` 即可 |
+| Jupyter / 探索性分析 | `print` 即可 |
+| 给用户的 CLI 输出（比如「下载完成 100/100」） | `print` 或专门的 progress bar |
+| 业务服务（Web、定时任务、消费者） | `logging` |
+| 库 / SDK | `logging`，**不要** `print` |
+| 错误信息 | `logging.error/exception` |
+
+记住一条原则——**给用户看的输出用 `print`，给开发/运维看的输出用 `logging`**。
+
+`print` 和 `logging` 主要的区别——
+
+| 维度 | print | logging |
+|---|---|---|
+| 时间戳 | 没有 | 自动带 |
+| 级别区分 | 没有 | DEBUG/INFO/WARNING/ERROR/CRITICAL |
+| 输出去处 | 只能 stdout/stderr | 控制台、文件、邮件、syslog... |
+| 上线后过滤 | 改代码 | 改配置即可 |
+| 异常 traceback | 自己 `traceback.format_exc()` | `logger.exception()` 一行搞定 |
+| 多模块来源 | 看不出来 | `%(name)s` 一目了然 |
+
+水哥当年最痛的教训——**任何打算上线的代码，从第一天起就用 `logging`**。等代码都写完了再「换日志」是地狱级的体力活，每一行 `print` 都要琢磨用哪个级别，还得小心别把面向用户的输出也换成 logging。
+
+
+
+## 结构化日志（JSON）：让日志能被机器查
+
+文本日志好读，可一旦日志量大起来，要查「过去 1 小时所有 user=水哥 的 ERROR」这种问题，`grep` 来 `grep` 去就要崩溃。
+
+现代日志系统（`Loki`、`Elasticsearch`、`Datadog`、`Splunk`）都吃 JSON——每条日志一行 JSON，字段清清楚楚，按字段查、聚合、画图都能秒出。
+
+`logging` 标准库本身不直接生成 JSON，但社区有两个第三方库——
+
+**1. `python-json-logger`**：最简单，给 `logging` 加一个 JSON formatter。
+
+装一下：
+
+```bash
+uv add python-json-logger
+```
+
+用法：
+
+<!-- skip-ci -->
+```python
+import logging
+from pythonjsonlogger import jsonlogger
+
+logger = logging.getLogger("app")
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter(
+    "%(asctime)s %(name)s %(levelname)s %(message)s"
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+logger.info("两点水打卡", extra={"user": "两点水", "method": "fingerprint"})
+```
+
+输出：
+
+```json
+{"asctime": "2026-04-28 09:00:00", "name": "app", "levelname": "INFO", "message": "两点水打卡", "user": "两点水", "method": "fingerprint"}
+```
+
+`extra` 那个字典里的字段，全部进 JSON。日志系统就能按 `user` 直接查。
+
+**2. `structlog`**：更现代、更强大，现在 Python 圈结构化日志的事实标准。
+
+装一下：
+
+```bash
+uv add structlog
+```
+
+用法（最简形式）：
+
+<!-- skip-ci -->
+```python
+import structlog
+
+logger = structlog.get_logger()
+
+logger.info("两点水打卡", user="两点水", method="fingerprint")
+```
+
+`structlog` 默认输出长这样——开发期间彩色、清爽：
+
+```
+2026-04-28 09:00:00 [info     ] 两点水打卡 method=fingerprint user=两点水
+```
+
+部署到生产时配一下，输出就变成 JSON：
+
+<!-- skip-ci -->
+```python
+import structlog
+
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.add_log_level,
+        structlog.processors.JSONRenderer(),
+    ]
+)
+
+logger = structlog.get_logger()
+logger.info("两点水打卡", user="两点水", method="fingerprint")
+```
+
+```json
+{"event": "两点水打卡", "user": "两点水", "method": "fingerprint", "level": "info", "timestamp": "2026-04-28T09:00:00"}
+```
+
+`structlog` 的核心思想是**「日志是一个 key=value 的事件」**，而不是一个字符串。各位写日志的方式从「拼接字符串」变成「填字段」，思路上整个不一样。
+
+「`logging` 和 `structlog` 怎么选？」水哥的建议是——
+
+- 小项目、库代码：`logging` 标准库就够
+- 中等项目，需要 JSON 日志：`logging` + `python-json-logger`
+- 大项目，对日志查询和上下文要求高（请求 ID、用户 ID 一路带下来）：`structlog`
+
+后两个也可以接进 `logging`——`structlog` 的官方推荐做法是「让 `structlog` 走 `logging` 后端」，这样和现有 `logging` 配置完美兼容。深入用法各位以后专门去查 `structlog` 文档，这里点到为止。
+
+
+
+## 小实战：打卡服务的日志配置
+
+各位前面看了一堆零散的概念，最后来一段端到端的小实战，把所有东西串起来。
+
+需求：
+
+- 项目叫 `attend`，里头有 `attend/app.py`（入口）、`attend/services/punch.py`（打卡）、`attend/services/report.py`（报表）
+- 控制台彩色打 INFO 及以上
+- `app.log` 滚动文件打所有 DEBUG 及以上，保留 30 天
+- `error.log` 单独把 ERROR 及以上抓出来
+- 第三方库（如 `urllib3`）只打 WARNING，避免噪声
+- 用 `yaml` 配置，业务代码里只写 `getLogger(__name__)`
+
+目录结构：
+
+```
+attend/
+├── pyproject.toml
+├── logging.yaml
+├── app.log
+├── error.log
+└── attend/
+    ├── __init__.py
+    ├── app.py
+    └── services/
+        ├── __init__.py
+        ├── punch.py
+        └── report.py
+```
+
+`logging.yaml`：
+
+```yaml
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+  detail:
+    format: "%(asctime)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: default
+    stream: ext://sys.stdout
+  app_file:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: DEBUG
+    formatter: detail
+    filename: app.log
+    when: midnight
+    backupCount: 30
+    encoding: utf-8
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: detail
+    filename: error.log
+    maxBytes: 10485760
+    backupCount: 5
+    encoding: utf-8
+
+loggers:
+  attend:
+    level: DEBUG
+    handlers: [console, app_file, error_file]
+    propagate: false
+  urllib3:
+    level: WARNING
+
+root:
+  level: WARNING
+  handlers: [console]
+```
+
+`attend/app.py`：
+
+<!-- skip-ci -->
+```python
+import logging
+import logging.config
+
+import yaml
+
+from attend.services import punch, report
+
+
+def setup_logging():
+    with open("logging.yaml", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    logging.config.dictConfig(config)
+
+
+def main():
+    setup_logging()
+    logger = logging.getLogger("attend.app")
+    logger.info("打卡服务启动")
+
+    try:
+        punch.do_punch("两点水")
+        report.generate_report()
+    except Exception:
+        logger.exception("主流程挂了")
+
+    logger.info("打卡服务退出")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+`attend/services/punch.py`：
+
+<!-- skip-ci -->
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def do_punch(user: str) -> None:
+    logger.info("用户 %s 开始打卡", user)
+    logger.debug("打卡机连接已建立")
+    if not user:
+        logger.error("空 user，打卡失败")
+        return
+    logger.info("用户 %s 打卡成功", user)
+```
+
+`attend/services/report.py`：
+
+<!-- skip-ci -->
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def generate_report() -> None:
+    logger.info("开始生成日报")
+    try:
+        result = 1 / 0
+        logger.info("日报生成完毕，结果 %s", result)
+    except Exception:
+        logger.exception("日报生成失败")
+```
+
+跑 `python -m attend.app`，控制台会看到：
+
+```
+2026-04-28 09:00:00 - attend.app - INFO - 打卡服务启动
+2026-04-28 09:00:00 - attend.services.punch - INFO - 用户 两点水 开始打卡
+2026-04-28 09:00:00 - attend.services.punch - INFO - 用户 两点水 打卡成功
+2026-04-28 09:00:00 - attend.services.report - INFO - 开始生成日报
+2026-04-28 09:00:00 - attend.services.report - ERROR - 日报生成失败
+Traceback (most recent call last):
+  File "attend/services/report.py", line 9, in generate_report
+    result = 1 / 0
+ZeroDivisionError: division by zero
+2026-04-28 09:00:00 - attend.app - INFO - 打卡服务退出
+```
+
+打开 `app.log`，DEBUG 级别的「打卡机连接已建立」也会出现在文件里。打开 `error.log`，只看到那一条 traceback。第三方库（如果有）只打 WARNING 及以上，不会污染日志。
+
+这套配置就是各位以后写任何 Python 服务的起点——抄过去改个 logger 名字就能用。
+
+
+
+## 几个易踩的坑
+
+最后讲几个老司机也容易翻车的坑，提前知道少走弯路。
+
+### 坑 1：`basicConfig` 调多次没用
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)   # 这一行没用
+```
+
+`basicConfig` 只在 root logger 还没 handler 时生效，第二次调用什么都不做。各位想换配置，要么用 `dictConfig`，要么手动 `logger.setLevel`、`logger.handlers.clear()`。
+
+### 坑 2：`disable_existing_loggers` 默认是 True
+
+```python
+import logging.config
+
+config = {
+    "version": 1,
+    # 没写 disable_existing_loggers
+    "root": {"level": "INFO", "handlers": []},
+}
+
+logging.config.dictConfig(config)
+```
+
+调完之后，**所有在 `dictConfig` 之前已经创建的 logger 全被禁了**——比如 `requests` 库自己有个 logger，要是它在 `dictConfig` 之前被 import 过，那它的日志全部消失。
+
+**生产环境一定写 `disable_existing_loggers: False`**。
+
+### 坑 3：多进程写同一个文件丢数据
+
+`RotatingFileHandler` 不是多进程安全的。Web 服务用 `gunicorn -w 4` 起 4 个 worker 同时写 `app.log`，滚动那一刻会数据错乱、文件互相覆盖。
+
+**解决**——
+
+- 换成 `concurrent-log-handler`（pip 装）
+- 或者每个进程写自己的文件（用 PID 当后缀）
+- 或者所有进程都把日志写到 stdout，让外面的 `journald` / `Docker logs` / `Filebeat` 收集——这是 12-factor app 推荐做法
+
+### 坑 4：日志里塞了 secret
+
+各位 debug 的时候顺手 `logger.debug("user=%s, password=%s", user, password)`，结果上线了忘了删，密码就明文留在 `app.log` 里几年。
+
+**解决**——
+
+- 写日志前过滤敏感字段（写一个 Filter 把 `password`、`token`、`secret` 全打码）
+- 用 `structlog` 时配一个 `processor` 自动打码
+- code review 时盯紧任何打 user 对象的日志
+
+### 坑 5：`%` 占位符和 f-string 混着用导致乱
+
+<!-- skip-ci -->
+```python
+logger.info(f"user={user}, count=%d", count)
+```
+
+这一行会挂——因为 f-string 已经把 `user` 算进去了，但 `%d` 还在等参数，结果 `count` 被当成 `%d` 的参数，但 f-string 里没有占位符等它，会抛 `TypeError`。
+
+**解决**——**两种方式选一种**，要么全用 `%`，要么全用 f-string，**不要混**。
+
+### 坑 6：`logger.error(e)` vs `logger.exception(e)`
+
+```python
+try:
+    ...
+except Exception as e:
+    logger.error(e)
+```
+
+只打了异常的「字符串表示」，没有 traceback。线上挂了之后看着只有一句 `division by zero`，根本不知道哪一行炸的。
+
+**解决**——`except` 里改成 `logger.exception("xxx 失败")`，自动带 traceback。
+
+### 坑 7：日志没刷盘，进程崩了找不到
+
+`logging` 默认是带缓冲的——日志先写到内存里，等缓冲满或者关闭时才落到磁盘。要是程序被 `kill -9`，最后一段没刷盘的日志就丢了。
+
+**解决**——
+
+- 调用 `logging.shutdown()` 在程序退出前主动刷一下（atexit 自动调用）
+- 或者用 `force=True` 之类的参数（具体看 handler）
+- 关键场景上 syslog 或者直接 stdout，让外面的系统兜底
+
+
+
+## FAQ
+
+**Q1：要不要用 `print` 调试？**
+
+短期临时调试可以——比 `pdb` 省事，比 `logger.debug` 不用配置就能看到。但养成一个习惯——**调试完删掉 `print`**，正式日志用 `logger.debug`。
+
+**Q2：日志写到 stdout 还是文件？**
+
+- 单机服务：写文件用 `RotatingFileHandler`
+- 容器化、12-factor：写 stdout/stderr，让外面的日志系统（Docker、Kubernetes、Filebeat）收集
+- Web 服务：水哥推荐写 stdout，运维收集进 ELK 或 Loki
+
+**Q3：日志会不会拖慢程序？**
+
+对绝大部分项目来说不会。`logging` 内部相当轻量，`logger.debug(...)` 在级别没开时几乎是 no-op。除非你疯狂在循环里 `logger.debug(big_object)`，否则别担心。
+
+要是真的性能敏感（每秒几十万条日志），换 `structlog` + 异步 handler 或者 `aiologger`。
+
+**Q4：库代码该不该自己 `basicConfig`？**
+
+**绝对不要**。库代码只负责 `logger = logging.getLogger(__name__)` 然后打日志，配置交给最终用户。要是库自己 `basicConfig`，会污染用户的配置。
+
+**Q5：日志里能打 emoji 和中文吗？**
+
+能。**前提是文件 handler 加 `encoding='utf-8'`**，不然 Windows 上 GBK 编码会挂。控制台一般没问题。
+
+**Q6：怎么把 traceback 字符串拿到？不打日志只想存数据库**
+
+```python
+import traceback
+
+try:
+    ...
+except Exception:
+    tb_str = traceback.format_exc()
+```
+
+`format_exc()` 拿到一个字符串，存哪儿都行。和 `logging` 是两件事。
+
+
+
+## 小结
+
+各位走完这一章，应该已经能：
+
+1. 不再用 `print` 调试，改用 `logging`
+2. 区分 5 个级别——DEBUG / INFO / WARNING / ERROR / CRITICAL
+3. 用 `logging.basicConfig` 一行起飞
+4. 用 `getLogger(__name__)` 给每个模块一个独立 logger
+5. 同时挂 `StreamHandler` + `RotatingFileHandler`，控制台和文件都不耽误
+6. 用 `logger.exception()` 在 except 里自动带 traceback
+7. 用 `dictConfig` + yaml 在生产环境集中管理日志配置
+8. 知道结构化日志（`python-json-logger` / `structlog`）什么时候用
+9. 避开多进程写文件、secret 进日志这些经典坑
+
+`logging` 这套体系学会之后，回头看 `print` 调试简直像穿越回石器时代——没时间戳、没级别、没模块名、上线后还看不见。水哥当年第一次给老项目接 `logging` 时那种感觉——前一天还在到处插 `print('111')`，第二天打开 `app.log`，每一条业务流程都清清楚楚长在文件里，哪个用户哪一秒打了卡、哪个接口超了时，全有据可查。这才叫「程序在自己说话」。
+
+下一章咱们讲讲怎么把代码打包发布——`uv build` + `pypi`，把自己写的库放到 PyPI 上让全世界都能 `pip install`，工程化的最后一公里。
+
+
+
+## 日志里留下能定位问题的信息
+
+假设一批学习记录正在保存，只打印「开始」「失败」很难知道出事的是哪一批。我们至少把科目、分钟数等与问题有关的信息写出来：
+
+```python
+import logging
+import sys
+
+logger = logging.getLogger('study-tracker-example')
+logger.handlers.clear()
+logger.propagate = False
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter('%(levelname)s %(message)s'))
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+logger.info('准备保存：科目=%s，分钟数=%s', 'Python', 15)
+logger.debug('这条调试信息当前不显示')
+```
+
+输出：
+
+```text
+INFO 准备保存：科目=Python，分钟数=15
+```
+
+这个小实验使用专门命名的 logger，并在重跑时清理自己的处理器，避免重复输出；它不修改其他 logger 的处理器。实际模块通常使用 `logging.getLogger(__name__)`，在程序入口统一配置。
+
+自己把级别改为 `DEBUG`，核对多出来的那条消息。然后给项目的读取和保存步骤各写一句有用的日志，说明它能帮助排查什么问题。
+
+日志是帮助定位问题的记录，用户需要看到的列表和统计结果仍然是程序输出。不要把密码、密钥或完整私人文件内容混进日志。没有实际测量时，也不要把打印一条「保存成功」当作数据已经正确落盘的证明，仍需读取核对。

@@ -4,18 +4,167 @@
   "description": "学习 Python 异常处理流程，掌握捕获错误、分支处理、资源清理与主动抛出异常的基本用法，理解 try、except 和 finally 的执行顺序。通过除零、类型转换和分数校验示例，认识异常对象、异常链与自定义异常，让程序错误更容易定位。",
   "chapter": "python19",
   "order": 1,
-  "estimatedMinutes": 40,
+  "estimatedMinutes": 100,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-try-except.mdx" },
-    { "kind": "exercise", "file": "01-safe-divide.json" },
-    { "kind": "step", "file": "03-multiple-except.mdx" },
-    { "kind": "exercise", "file": "02-parse-int.json" },
-    { "kind": "step", "file": "04-else-finally.mdx" },
-    { "kind": "exercise", "file": "03-finally.json" },
-    { "kind": "step", "file": "05-raise.mdx" },
-    { "kind": "exercise", "file": "04-raise-age.json" },
-    { "kind": "step", "file": "06-custom-exception.mdx" },
-    { "kind": "exercise", "file": "05-custom-exception.json" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 程序为什么会「炸」"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 最朴素的 try / except"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-safe-divide.json"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 一次捕获多种异常"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-parse-int.json"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 拿到异常对象——`as e`"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 万能兜底——`except Exception`"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 异常的家族——继承层级"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## else——没出错的时候才走"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## finally——不管啥情况都得跑"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-finally.json"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 主动抛异常——`raise`"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-raise-age.json"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 异常链——`raise ... from e`"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 自定义异常类"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-custom-exception.json"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 内置异常速查表"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 一次想报告多个错误？——异常组（Python 3.11+）"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 用 `except*` 拆解异常组"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## add_note——给异常加备注（Python 3.11+）"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 小实战：safe_divide 与批量除法"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 嵌套的异常组——递归结构"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## `eg.subgroup` 与 `eg.split`——手动玩异常组"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 别犯这些反模式"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## assert——调试期的轻量级断言"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## traceback 模块——把错误打印得更友好"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## logging.exception——日志推荐写法"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## warnings——比异常温柔的提醒"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## try/except 在表达式里——不能写"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## EAFP vs LBYL——Python 的哲学"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 最后碎碎念几句"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python19-1.mdx",
+      "section": "## 把错误缩小到一份输入"
+    }
   ]
 }

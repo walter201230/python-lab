@@ -4,17 +4,51 @@
   "description": "学习 Python 模块与包，掌握导入、别名和主模块判断，理解 __name__ 与作用域的关系。通过 math、datetime、json 等标准库示例练习数学计算、日期构造和数据序列化，了解如何拆分代码、引用已有功能并组织可复用程序。",
   "chapter": "python9",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 45,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-intro.mdx" },
-    { "kind": "step", "file": "03-import.mdx" },
-    { "kind": "exercise", "file": "01-import-math.json" },
-    { "kind": "exercise", "file": "02-from-import.json" },
-    { "kind": "step", "file": "04-main.mdx" },
-    { "kind": "step", "file": "05-package-scope.mdx" },
-    { "kind": "step", "file": "06-stdlib.mdx" },
-    { "kind": "exercise", "file": "03-datetime.json" },
-    { "kind": "exercise", "file": "04-json.json" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python9-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python9-1.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python9-2.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-import-math.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-from-import.json"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python9-3.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python9-4.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "12-original-source-python9-5.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "06-stdlib.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-datetime.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-json.json"
+    }
   ]
 }

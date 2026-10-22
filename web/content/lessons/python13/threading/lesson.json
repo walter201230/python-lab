@@ -4,11 +4,23 @@
   "description": "梳理 Python 线程与进程的基本概念，了解多任务程序的组织方式。结合代码示例，学习线程和进程的创建、启动、等待与通信，认识锁、条件变量、事件、队列和进程池的用途，理解共享资源需要协调的原因，为在本地实践并发编程建立基础。",
   "chapter": "python13",
   "order": 1,
-  "estimatedMinutes": 15,
+  "estimatedMinutes": 30,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-thread-vs-process.mdx" },
-    { "kind": "step", "file": "03-multithreading.mdx" },
-    { "kind": "step", "file": "04-multiprocessing.mdx" }
+    {
+      "kind": "step",
+      "file": "05-original-source-python13-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python13-1.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python13-2.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python13-3.mdx"
+    }
   ]
 }

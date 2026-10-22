@@ -333,6 +333,12 @@ body {
   --tw-prose-td-borders: var(--line);
 }
 
+/* 正文 SVG：小屏只滚动图示区域，避免把文字和节点缩到不可读。 */
+.tutorial-diagram { display: block; margin-block: 1.5rem; }
+.tutorial-diagram-scroll { display: block; max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+.tutorial-diagram-scroll:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+.prose .tutorial-diagram img { display: block; width: 100%; min-width: 600px; max-width: none; height: auto; margin: 0; }
+
 /* 行内代码：插件默认样式偏弱，这里统一成带底色的胶囊 */
 .prose code:not(pre code) {
   background: var(--code-inline-bg);

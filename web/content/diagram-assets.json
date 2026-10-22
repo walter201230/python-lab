@@ -1,0 +1,245 @@
+{
+  "figures": {
+    "variable-rebinding.svg": {
+      "title": "变量重新指向",
+      "height": 620,
+      "sha256": "84bab278eb6e58f4a211785c6a87ec5f049d267d82e9ee209b3a4dce57834793",
+      "width": 720
+    },
+    "list-mutation.svg": {
+      "title": "列表原地修改",
+      "height": 620,
+      "sha256": "5b7b926ce1000bf95e0f1429ffba62c7840ea9d4a8d4fb09d83a2b2b9a6a2bb4",
+      "width": 720
+    },
+    "print-call.svg": {
+      "title": "print() 的组成",
+      "height": 390,
+      "sha256": "6266969722e80900232bf03ae241dc022e15695b4778345cc29d18f42360fd7e",
+      "width": 720
+    },
+    "print-execution.svg": {
+      "title": "从调用到输出",
+      "height": 530,
+      "sha256": "85f592c6be73041a6f275b4459f35c2d06c8ad683c644b47db235e3503a5982e",
+      "width": 720
+    },
+    "list-literal.svg": {
+      "title": "列表的组成",
+      "height": 540,
+      "sha256": "d322249c836f2f0da525ba52d3519ce2593d1620b809cefdc1bc05d31d544262",
+      "width": 720
+    },
+    "variable-alias.svg": {
+      "title": "两个名字与两个对象",
+      "height": 690,
+      "sha256": "481d45e284f74308b91da6cb884741735078a93c5adc4ecf9657d0640be6bd13",
+      "width": 720
+    },
+    "if-flow.svg": {
+      "title": "if 条件判断",
+      "height": 610,
+      "sha256": "a4854dd66ea534f82d84c156ff31b32e086846dfecc52128144a801ea1bff978",
+      "width": 720
+    },
+    "while-flow.svg": {
+      "title": "循环的基本流程",
+      "height": 610,
+      "sha256": "d7da58b7c22f9332a09831e8c5c59cfbbeac5cb1b5875cfd78bf14381e7f8ef5",
+      "width": 720
+    },
+    "for-flow.svg": {
+      "title": "for 循环遍历序列",
+      "height": 800,
+      "sha256": "b76106c7506d49ddcb729f0d10b60f893011975596509d0ac6ab85c11ee20cce",
+      "width": 720
+    },
+    "class-structure.svg": {
+      "title": "类的结构",
+      "height": 610,
+      "sha256": "708ddcab3b5ad370a6e5b67e4dd521824360fea90ef321a254c60600b826c2a4",
+      "width": 720
+    },
+    "class-instances.svg": {
+      "title": "从类到实例",
+      "height": 640,
+      "sha256": "7abfc1dfcd63b36b8092e25bf4e566fb0f1bbfaafda58f405ec8d12945b25ef4",
+      "width": 720
+    },
+    "module-structure.svg": {
+      "title": "模块的组成",
+      "height": 630,
+      "sha256": "f801be8255fbe8ddcc527f4bf190a6bf36f62348d91140d94aa806f8638b0c64",
+      "width": 720
+    },
+    "tuple-list.svg": {
+      "title": "元组中的可变对象",
+      "height": 700,
+      "sha256": "4bb76e0bf2c0fbe587c944fd04e1909690d868b7deb69fc2c400a5b23eeb6982",
+      "width": 720
+    },
+    "instance-creation.svg": {
+      "title": "实例的创建与初始化",
+      "height": 770,
+      "sha256": "511078616e45279bbc1412206475015a4224f0976d22207ffaead75064087e9e",
+      "width": 720
+    },
+    "metaclass-selection.svg": {
+      "title": "Python 3 的元类选择",
+      "height": 900,
+      "sha256": "a0b281e0f834314ce8ba6afda5fd210d34ae52151a448516877ac1b0f2310d1a",
+      "width": 720
+    },
+    "condition-flow.svg": {
+      "title": "Condition 条件变量",
+      "height": 942,
+      "sha256": "fd4fe03601ac27ccff74d4ce2a57e724f32d5fce1e5138d525a2d7c2492cd2bb",
+      "width": 720
+    }
+  },
+  "uses": [
+    {
+      "step": "python8/oop/steps/10-original-source-python8-4.mdx",
+      "href": "../../images/diagrams/class-structure.svg",
+      "figure": "class-structure.svg",
+      "alt": "类的结构"
+    },
+    {
+      "step": "python8/oop/steps/11-original-source-python8-5.mdx",
+      "href": "../../images/diagrams/class-instances.svg",
+      "figure": "class-instances.svg",
+      "alt": "从类到实例"
+    },
+    {
+      "step": "python8/oop/steps/08-original-source-python8-2.mdx",
+      "href": "../../images/diagrams/class-structure.svg",
+      "figure": "class-structure.svg",
+      "alt": "类的结构"
+    },
+    {
+      "step": "python6/functions/steps/06-original-and-practice.mdx",
+      "href": "../../images/diagrams/variable-rebinding.svg",
+      "figure": "variable-rebinding.svg",
+      "alt": "变量重新指向"
+    },
+    {
+      "step": "python6/functions/steps/06-original-and-practice.mdx",
+      "href": "../../images/diagrams/list-mutation.svg",
+      "figure": "list-mutation.svg",
+      "alt": "列表原地修改"
+    },
+    {
+      "step": "python9/modules/steps/08-original-source-python9-1.mdx",
+      "href": "../../images/diagrams/class-structure.svg",
+      "figure": "class-structure.svg",
+      "alt": "类的结构"
+    },
+    {
+      "step": "python9/modules/steps/08-original-source-python9-1.mdx",
+      "href": "../../images/diagrams/module-structure.svg",
+      "figure": "module-structure.svg",
+      "alt": "模块的组成"
+    },
+    {
+      "step": "python10/magic-methods/steps/08-original-source-python10-2.mdx",
+      "href": "../../images/diagrams/instance-creation.svg",
+      "figure": "instance-creation.svg",
+      "alt": "实例的创建与初始化"
+    },
+    {
+      "step": "python2/data-types-and-variables/steps/12-original-source-python2-print.mdx",
+      "href": "../../images/diagrams/print-call.svg",
+      "figure": "print-call.svg",
+      "alt": "print() 的组成"
+    },
+    {
+      "step": "python2/data-types-and-variables/steps/12-original-source-python2-print.mdx",
+      "href": "../../images/diagrams/print-execution.svg",
+      "figure": "print-execution.svg",
+      "alt": "从调用到输出"
+    },
+    {
+      "step": "python2/data-types-and-variables/steps/16-original-source-python2-Variable.mdx",
+      "href": "../../images/diagrams/variable-alias.svg",
+      "figure": "variable-alias.svg",
+      "alt": "两个名字与两个对象"
+    },
+    {
+      "step": "python5/conditions-and-loops/steps/09-original-source-python5-If.mdx",
+      "href": "../../images/diagrams/if-flow.svg",
+      "figure": "if-flow.svg",
+      "alt": "if 条件判断"
+    },
+    {
+      "step": "python5/conditions-and-loops/steps/10-original-source-python5-Cycle.mdx",
+      "href": "../../images/diagrams/while-flow.svg",
+      "figure": "while-flow.svg",
+      "alt": "循环的基本流程"
+    },
+    {
+      "step": "python5/conditions-and-loops/steps/10-original-source-python5-Cycle.mdx",
+      "href": "../../images/diagrams/for-flow.svg",
+      "figure": "for-flow.svg",
+      "alt": "for 循环遍历序列"
+    },
+    {
+      "step": "python3/list-and-tuple/steps/11-original-source-python3-tuple.mdx",
+      "href": "../../images/diagrams/tuple-list.svg",
+      "figure": "tuple-list.svg",
+      "alt": "元组中的可变对象"
+    },
+    {
+      "step": "python3/list-and-tuple/steps/10-original-source-python3-List.mdx",
+      "href": "../../images/diagrams/list-literal.svg",
+      "figure": "list-literal.svg",
+      "alt": "列表的组成"
+    },
+    {
+      "step": "python13/threading/steps/07-original-source-python13-2.mdx",
+      "href": "../../images/diagrams/condition-flow.svg",
+      "figure": "condition-flow.svg",
+      "alt": "Condition 条件变量"
+    },
+    {
+      "step": "python12/metaclass/steps/10-original-source-python12-4.mdx",
+      "href": "../../images/diagrams/metaclass-selection.svg",
+      "figure": "metaclass-selection.svg",
+      "alt": "Python 3 的元类选择"
+    }
+  ],
+  "copies": {
+    "/lessons/images/diagrams/class-structure.svg": "class-structure.svg",
+    "/lessons/python8/images/diagrams/class-structure.svg": "class-structure.svg",
+    "/lessons/images/diagrams/class-instances.svg": "class-instances.svg",
+    "/lessons/python8/images/diagrams/class-instances.svg": "class-instances.svg",
+    "/lessons/images/diagrams/variable-rebinding.svg": "variable-rebinding.svg",
+    "/lessons/python6/images/diagrams/variable-rebinding.svg": "variable-rebinding.svg",
+    "/lessons/images/diagrams/list-mutation.svg": "list-mutation.svg",
+    "/lessons/python6/images/diagrams/list-mutation.svg": "list-mutation.svg",
+    "/lessons/python9/images/diagrams/class-structure.svg": "class-structure.svg",
+    "/lessons/images/diagrams/module-structure.svg": "module-structure.svg",
+    "/lessons/python9/images/diagrams/module-structure.svg": "module-structure.svg",
+    "/lessons/images/diagrams/instance-creation.svg": "instance-creation.svg",
+    "/lessons/python10/images/diagrams/instance-creation.svg": "instance-creation.svg",
+    "/lessons/images/diagrams/print-call.svg": "print-call.svg",
+    "/lessons/python2/images/diagrams/print-call.svg": "print-call.svg",
+    "/lessons/images/diagrams/print-execution.svg": "print-execution.svg",
+    "/lessons/python2/images/diagrams/print-execution.svg": "print-execution.svg",
+    "/lessons/images/diagrams/variable-alias.svg": "variable-alias.svg",
+    "/lessons/python2/images/diagrams/variable-alias.svg": "variable-alias.svg",
+    "/lessons/images/diagrams/if-flow.svg": "if-flow.svg",
+    "/lessons/python5/images/diagrams/if-flow.svg": "if-flow.svg",
+    "/lessons/images/diagrams/while-flow.svg": "while-flow.svg",
+    "/lessons/python5/images/diagrams/while-flow.svg": "while-flow.svg",
+    "/lessons/images/diagrams/for-flow.svg": "for-flow.svg",
+    "/lessons/python5/images/diagrams/for-flow.svg": "for-flow.svg",
+    "/lessons/images/diagrams/tuple-list.svg": "tuple-list.svg",
+    "/lessons/python3/images/diagrams/tuple-list.svg": "tuple-list.svg",
+    "/lessons/images/diagrams/list-literal.svg": "list-literal.svg",
+    "/lessons/python3/images/diagrams/list-literal.svg": "list-literal.svg",
+    "/lessons/images/diagrams/condition-flow.svg": "condition-flow.svg",
+    "/lessons/python13/images/diagrams/condition-flow.svg": "condition-flow.svg",
+    "/lessons/images/diagrams/metaclass-selection.svg": "metaclass-selection.svg",
+    "/lessons/python12/images/diagrams/metaclass-selection.svg": "metaclass-selection.svg"
+  }
+}

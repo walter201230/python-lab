@@ -10,6 +10,7 @@ interface RunnableCodeBlockProps {
   run: (code: string, opts?: RunOptions) => Promise<RunResult>;
   /** false 时只渲染代码与「复制」，不给「试运行」——见下方注释里的 no-run。 */
   runnable?: boolean;
+  usage?: string;
 }
 
 /**
@@ -20,12 +21,10 @@ interface RunnableCodeBlockProps {
  *   （Pyodide 已经在浏览器跑，零成本）。
  *   仅展示型——不参与解锁判分，与练习题严格分离。
  *
- *   并非每个 python 块都该给「试运行」：伪代码（`if 条件成立:`）、只定义不调用因而
- *   没有输出的片段、依赖前文变量的半截代码、以及 Pyodide 跑不了的东西（pytest、
- *   起线程、multiprocessing）点了只会得到报错或空白。这类块在 mdx 里标成
- *   ```python no-run，由 StepCard 传 runnable={false} 进来，只保留代码与「复制」。
+ *   仅展示用途清单中验证通过的独立示例的运行按钮；每次隔离名称空间，
+ *   避免先前示例留下的名称影响当前结果。其余片段保留代码、复制和用途提示。
  */
-export function RunnableCodeBlock({ code, pyStatus, run, runnable = true }: RunnableCodeBlockProps) {
+export function RunnableCodeBlock({ code, pyStatus, run, runnable = false, usage }: RunnableCodeBlockProps) {
   const [output, setOutput] = useState<{ stdout: string; stderr: string; error?: string } | null>(
     null,
   );
@@ -36,7 +35,7 @@ export function RunnableCodeBlock({ code, pyStatus, run, runnable = true }: Runn
 
   const handleRun = async () => {
     setRunning(true);
-    const result = await run(code);
+    const result = await run(code, { isolated: true });
     setOutput({ stdout: result.stdout, stderr: result.stderr, error: result.error });
     setRunning(false);
   };
@@ -55,7 +54,7 @@ export function RunnableCodeBlock({ code, pyStatus, run, runnable = true }: Runn
     <div className="not-prose my-4 overflow-hidden rounded-lg border border-line-strong/60 bg-code/80">
       <div className="flex items-center justify-between border-b border-line bg-surface/60 px-3 py-1.5">
         <span className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
-          python
+          Python{usage ? ` · ${usage}` : ''}
         </span>
         <div className="flex items-center gap-1">
           <button

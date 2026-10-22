@@ -4,13 +4,62 @@
   "description": "完成 Python 基础课程后，了解数据与人工智能、Web 后端、自动化脚本三个后续学习方向。结合常用工具与起步项目，认识数据分析、接口开发、文件备份和命令行应用的实践路径，梳理需要补充的共同技能，根据兴趣选择下一个小项目。",
   "chapter": "python28",
   "order": 1,
-  "estimatedMinutes": 12,
+  "estimatedMinutes": 20,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-direction-ai.mdx" },
-    { "kind": "step", "file": "03-direction-web.mdx" },
-    { "kind": "step", "file": "04-direction-ops.mdx" },
-    { "kind": "step", "file": "05-cross-skills.mdx" },
-    { "kind": "step", "file": "06-how-to-choose.mdx" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 方向一：数据 / AI / 机器学习"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 方向二：Web 后端开发"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 方向三：自动化运维 / 脚本 / 工具"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 横向技能：三个方向都要会的东西"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 怎么挑方向"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 持续学习：往下走的资源"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 结尾的话"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 先完成一个学习时间记录工具"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 下载参考文件与在本地运行"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python28-1.mdx",
+      "section": "## 完成以后，再换一个需求"
+    }
   ]
 }

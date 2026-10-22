@@ -7,12 +7,16 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Exercise, LessonMeta } from '@/types/content';
+import exampleCatalog from '../../content/code-examples.json';
+import type { CodeMode } from './markdownCode';
+import { selectTeachingSection } from './teachingSections';
 
 export type LoadedBlock =
   | {
       kind: 'step';
       file: string;
       content: string;
+      codeModes: CodeMode[];
       stepIndex: number;
       /** 从 content 第一个 markdown heading 提取，给 TOC 显示用 */
       title: string;
@@ -56,16 +60,20 @@ export async function loadLesson(
       ref,
       idx: ref.kind === 'step' ? stepIndex++ : exerciseIndex++,
     }));
+    const sourceFiles = new Map<string, Promise<string>>();
+    const sectionKeys = (file: string) => meta.blocks.flatMap((ref) =>
+      ref.kind === 'step' && ref.file === file && ref.section !== undefined ? [ref.section] : []);
 
     const blocks: LoadedBlock[] = await Promise.all(
       numbered.map(async ({ ref, idx }): Promise<LoadedBlock> => {
         if (ref.kind === 'step') {
-          const content = await readFile(
-            join(lessonDir, 'steps', ref.file),
-            'utf-8',
-          );
-          const title = extractStepTitle(content, `教学 ${idx + 1}`);
-          return { kind: 'step', file: ref.file, content, stepIndex: idx, title };
+          if (!sourceFiles.has(ref.file)) sourceFiles.set(ref.file, readFile(join(lessonDir, 'steps', ref.file), 'utf-8'));
+          const fullContent = await sourceFiles.get(ref.file)!;
+          const key = `${chapter}/${lessonId}/steps/${ref.file}`;
+          const examples = (exampleCatalog as Record<string, Array<{ mode: CodeMode }>>)[key] ?? [];
+          const selected = selectTeachingSection(fullContent, examples, ref.section, sectionKeys(ref.file));
+          const title = extractStepTitle(selected.content, `教学 ${idx + 1}`);
+          return { kind: 'step', file: ref.file, content: selected.content, codeModes: selected.examples.map((entry) => entry.mode), stepIndex: idx, title };
         }
         const exercise = JSON.parse(
           await readFile(join(lessonDir, 'exercises', ref.file), 'utf-8'),

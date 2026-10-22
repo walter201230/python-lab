@@ -4,16 +4,118 @@
   "description": "理解 Python with 语句背后的上下文管理协议，学习进入和退出方法如何完成资源准备与清理。通过自定义管理器与生成器示例，认识 yield、异常处理和 finally 的作用，再了解 contextlib 工具，减少资源管理中的重复代码。",
   "chapter": "python21",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 75,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-protocol.mdx" },
-    { "kind": "exercise", "file": "01-with-stringio.json" },
-    { "kind": "step", "file": "03-custom-class.mdx" },
-    { "kind": "exercise", "file": "02-custom-class.json" },
-    { "kind": "step", "file": "04-contextmanager.mdx" },
-    { "kind": "exercise", "file": "03-contextmanager.json" },
-    { "kind": "step", "file": "05-helpers.mdx" },
-    { "kind": "exercise", "file": "04-suppress.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## with 的本质：上下文管理协议"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-with-stringio.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 顺手回头看一眼 open"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 一个稍微有用一点的例子：打卡上下文"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-custom-class.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 同时管理多个上下文"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## __exit__ 的三个参数：异常处理"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## contextlib：标准库的好朋友"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-contextmanager.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## @contextmanager + 异常处理"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## contextlib 里的几个常客"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "### suppress：优雅地忽略异常"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-suppress.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 实战：临时改环境变量"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 临时切换工作目录"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## ExitStack：动态数量的上下文"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## async with：异步世界的 with"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 小实战：写一个 timer 上下文"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 一个常见的反模式"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 一个综合的小例子：可重用的「水哥打卡审计器」"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python21-1.mdx",
+      "section": "## 结果留下来，资源关起来"
+    }
   ]
 }

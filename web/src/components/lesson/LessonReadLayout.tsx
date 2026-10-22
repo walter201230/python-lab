@@ -49,6 +49,7 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
                 <ReadStepCard
                   key={`step-${block.stepIndex}`}
                   content={block.content}
+                  codeModes={block.codeModes}
                   index={block.stepIndex}
                   totalSteps={totalSteps}
                   practiceHref={practiceHref}

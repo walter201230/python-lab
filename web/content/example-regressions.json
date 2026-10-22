@@ -1,0 +1,543 @@
+[
+  {
+    "file": "python24/ruff/steps/06-original-source-python24-1.mdx",
+    "index": 17,
+    "sha256": "4a6e2d87cf11d0ab3a9dd8356e96f7672847039e9fa34178bb282478e321faef",
+    "mode": "context",
+    "setup": "other = (4, 5)",
+    "stdout": "",
+    "vars": {
+      "new_list": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  {
+    "file": "python24/ruff/steps/06-original-source-python24-1.mdx",
+    "index": 18,
+    "sha256": "e8ac1821b08e0928e87ad21965383a39153b0af2c84bc2450ab6e290855f0a10",
+    "mode": "context",
+    "setup": "other = (4, 5)",
+    "stdout": "",
+    "vars": {
+      "new_list": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 41,
+    "sha256": "e4330d28da38daba728e3aa23475a2303dee028bc4a728214c42e9c8c23fb26a",
+    "mode": "context",
+    "setup": "d={'key': 0}\nseen=[]\ndef use(value): seen.append(value)\ndef use_default(): seen.append('default')",
+    "stdout": "",
+    "vars": {
+      "seen": [
+        0
+      ]
+    }
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 44,
+    "sha256": "c5d43f27974fff679332a3b9cca74dc04a96fc60bb442aa670e87d0935310b9c",
+    "mode": "context",
+    "setup": "x='15'",
+    "stdout": "",
+    "vars": {
+      "n": 15
+    }
+  },
+  {
+    "file": "python15/closure/steps/05-original-and-practice.mdx",
+    "index": 0,
+    "sha256": "008bc9dff4979e0242a0d0c8ccc62d06c91fb8e74bcc4a4b61242469a7d792df",
+    "mode": "error",
+    "errorType": "UnboundLocalError"
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 0,
+    "sha256": "10bf715323cad4bb0b1786d950dc24bd51b1d7fb42df0650597f3ed7d9eceae1",
+    "mode": "error",
+    "errorType": "ZeroDivisionError"
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 1,
+    "sha256": "f40976181faca19ec49f940acc137ea8a55cbe58c02384d2a269b9fc4bd9a85a",
+    "mode": "error",
+    "errorType": "IndexError"
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 2,
+    "sha256": "242d26b5a019068d7f138adf3d5242673c2ad07db9beb59208f08b42a8f0d3ec",
+    "mode": "error",
+    "errorType": "KeyError"
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 29,
+    "sha256": "ff18c91a28f499daecef51093f4b97c344da0b83bb1952ac1666fd48c814c716",
+    "mode": "error",
+    "errorType": "KeyError"
+  },
+  {
+    "file": "python19/exception-handling/steps/07-original-source-python19-1.mdx",
+    "index": 51,
+    "sha256": "3cb72ac0e1a36f5db1191856a8216f31b40a8ae73920e8168529a0c7978f4e7e",
+    "mode": "error",
+    "errorType": "SyntaxError"
+  },
+  {
+    "file": "python2/data-types-and-variables/steps/13-original-source-python2-Type_of_data.mdx",
+    "index": 1,
+    "sha256": "e263525408411f39dc85856051d67e732836bd10c5325ce31d65556ba0aabf0f",
+    "mode": "error",
+    "errorType": "SyntaxError"
+  },
+  {
+    "file": "python2/data-types-and-variables/steps/15-original-source-python2-Type_conversion.mdx",
+    "index": 1,
+    "sha256": "6e95fa0088cc0b83cf47385119ec288b61644dfa186ebaeb14843ea9ab4dd50f",
+    "mode": "error",
+    "errorType": "ValueError"
+  },
+  {
+    "file": "python20/dataclass/steps/06-original-source-python20-1.mdx",
+    "index": 6,
+    "sha256": "6815cb3e575e5f6f2b1e97a7bf0b3d56cccd1f94efd797209b15c533e26c045b",
+    "mode": "error",
+    "errorType": "TypeError"
+  },
+  {
+    "file": "python20/dataclass/steps/06-original-source-python20-1.mdx",
+    "index": 7,
+    "sha256": "93a474b650ad65573ed2cfbf8be855620d726b17d84059f21bde794dcc6a5c8c",
+    "mode": "error",
+    "errorType": "ValueError"
+  },
+  {
+    "file": "python20/dataclass/steps/06-original-source-python20-1.mdx",
+    "index": 24,
+    "sha256": "360a81b03a2780f2b36108150063f47f47d6c5047e19193e1135132e87808e6e",
+    "mode": "error",
+    "errorType": "TypeError"
+  },
+  {
+    "file": "python5/conditions-and-loops/steps/09-original-source-python5-If.mdx",
+    "index": 4,
+    "sha256": "25f4f4da9dc3e335c9e122d90421c2ad4d4041d5fe528c17a9bf0fd94a71afaa",
+    "mode": "error",
+    "errorType": "IndentationError"
+  },
+  {
+    "file": "python5/conditions-and-loops/steps/10-original-source-python5-Cycle.mdx",
+    "index": 3,
+    "sha256": "f72e83c63a20b76eb3c6de44bb4ad6a6fa32a9ec687c409934483e84abda5ea4",
+    "mode": "error",
+    "errorType": "TypeError"
+  },
+  {
+    "file": "python6/functions/steps/09-original-source-python6-2.mdx",
+    "index": 1,
+    "sha256": "95c08ab9430ae78074c614ef727c677f2f211d3b545ce1aa76a715af901d58be",
+    "mode": "error",
+    "errorType": "TypeError"
+  },
+  {
+    "file": "python8/oop/steps/09-original-source-python8-3.mdx",
+    "index": 1,
+    "sha256": "32a0bb180ca4e335c1d0bf27c6000fefab60fe1321da5e3412155973cfdc31f6",
+    "mode": "error",
+    "errorType": "TypeError"
+  },
+  {
+    "file": "python8/oop/steps/11-original-source-python8-5.mdx",
+    "index": 7,
+    "sha256": "06d1c275255552adac5787ae249ca6cc7579428ff991e7ed2d0324ca71badf01",
+    "mode": "error",
+    "errorType": "TypeError"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 1,
+    "sha256": "22982a00a6e9a91400472d76489f9d015fd3543df6d4f17ee2740c6f84e63234",
+    "mode": "runnable",
+    "stdout": "data/foo.txt\n<class 'pathlib.PosixPath'>\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 3,
+    "sha256": "b75a20610c243163f425c2e26329ce3f8e6641bafd4d8b4d3dcb6c6d3df2468e",
+    "mode": "runnable",
+    "stdout": "/tmp/demo/sub/foo.txt\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 4,
+    "sha256": "31f28b2358e4eb14c54aa035ac952b8800ca8adf207cfaf9a7ec5f6ebe935698",
+    "mode": "runnable",
+    "stdout": "/tmp/demo/sub/foo.txt\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 5,
+    "sha256": "5387ad62a766039bf91f3184d2827b81d39bbfd73d562b169bc015ab83c94699",
+    "mode": "runnable",
+    "stdout": "/tmp/foo\n/tmp/foo\nfoo/tmp\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 6,
+    "sha256": "7353d2dea03b4027e772c4a7312c363aec417b910970b6bcebe1097cabf21b9e",
+    "mode": "runnable",
+    "stdout": "foo.txt\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 7,
+    "sha256": "83980fec5994e37d0ae30cbca3788dd50fca72036b4b05946dc9383ae0fc0215",
+    "mode": "runnable",
+    "stdout": "foo\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 8,
+    "sha256": "eba9188077f5905c6a827cecf3cd6187f8cac9bb98e256e0f5544f1eff2f353a",
+    "mode": "runnable",
+    "stdout": ".txt\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 9,
+    "sha256": "f945bbfe9681977c9b712445c3e1fae96a24fd5d6c69bad9ae9e46523cdf6529",
+    "mode": "runnable",
+    "stdout": ".gz\n['.tar', '.gz']\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 10,
+    "sha256": "8369afd0e56e6d2cf8f58723dd3278aa34bdba486fbdf48e067b9a6a78b7a148",
+    "mode": "runnable",
+    "stdout": "/tmp/demo/sub\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 11,
+    "sha256": "8fd5644a858e25b67d355473b0631abce050451853b27fd9a1c386fdba1353f6",
+    "mode": "runnable",
+    "stdout": "/tmp/demo/sub\n/tmp/demo\n/tmp\n/\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 12,
+    "sha256": "e9c433f65c02f26a726a34e45562a2424e94db35b2435cf3c83a0ed7061823d7",
+    "mode": "runnable",
+    "stdout": "/\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 13,
+    "sha256": "bf35a171a094ca0044f41fafc5f27e72ddd8f609d7c278dbdd49ae4dc2f3bbfd",
+    "mode": "runnable",
+    "stdout": "name    : main.py\nstem    : main\nsuffix  : .py\nparent  : /Users/two_water/projects/demo\nanchor  : /\nparts   : ('/', 'Users', 'two_water', 'projects', 'demo', 'main.py')\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 38,
+    "sha256": "41489908ab67cabf971025b8c245e87a840b8136bd93da7c359c7e8d214349a6",
+    "mode": "runnable",
+    "stdout": "demo/sub/foo.txt\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 41,
+    "sha256": "b93cb445cec573ee64f77f656268f3c060eff5b5e8c9396e870a5b7ade8532ba",
+    "mode": "runnable",
+    "stdout": "/tmp/foo.json\n/tmp/foo\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 43,
+    "sha256": "1645904e1cc1b0a01bef88d540992c802eba2d0de5ff8a1a96d9f74911243e63",
+    "mode": "runnable",
+    "stdout": "/tmp/demo/bar.md\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 44,
+    "sha256": "e76499100f5e3e1754cbe67b2b25b12ac8fc7485392eb2c4d0b1a969b46e8199",
+    "mode": "runnable",
+    "stdout": "/tmp/demo/bar.txt\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 45,
+    "sha256": "558c8faa993b25acd7b0134fe8121c88121040cef4e03ed50da09ec4607d50eb",
+    "mode": "runnable",
+    "stdout": "/tmp/report_v2.json\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 46,
+    "sha256": "3c2a4d33a7aaddabbf2788013a8a0933de24910ec3b511c8d828e54be2513e35",
+    "mode": "runnable",
+    "stdout": "foo.txt\nC:\\Users\\two_water\nfoo.txt\n/home/two_water\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 49,
+    "sha256": "b3708492164d3755c9a549a614d5013c36262a04edf84f94360355c1616722db",
+    "mode": "runnable",
+    "stdout": "''\n'Makefile'\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 52,
+    "sha256": "ec466142f605ff03b3295971710991ab108af2d7a1a6bd837dbdd7d41825756c",
+    "mode": "runnable",
+    "stdout": "../../tmp/foo\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 55,
+    "sha256": "dd3179116912b7ccdf528864d571a71c82502088f5eac04ba32e470a2ea79a91",
+    "mode": "runnable",
+    "stdout": "/tmp/foo.txt\n<class 'str'>\n"
+  },
+  {
+    "file": "python18/pathlib/steps/06-original-source-python18-1.mdx",
+    "index": 56,
+    "sha256": "f1df482eb9c3e4d82b7e772b2adc9ac30382c45546a315f3934ab5b7953dfdd8",
+    "mode": "runnable",
+    "stdout": "/tmp/foo.txt\n"
+  },
+  {
+    "file": "python16/decorator/steps/05-original-and-practice.mdx",
+    "index": 1,
+    "sha256": "756f7eeed91ed22cae233eb0a98a08a54a4672ea93257befdb602785114fd999",
+    "mode": "runnable",
+    "stdout": "<date>\n昵称：两点水  部门：做鸭事业部 上班打卡成功\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python16/decorator/steps/05-original-and-practice.mdx",
+    "index": 2,
+    "sha256": "dd8112ad744c28b8a268f84fc7f9e70d2eeceb339b992cc7d4ee07b5f33954ab",
+    "mode": "runnable",
+    "stdout": "<date>\n昵称：两点水  部门：做鸭事业部 上班打卡成功\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python16/decorator/steps/05-original-and-practice.mdx",
+    "index": 3,
+    "sha256": "04fd82d42087bf1c6a23582d7801b04d23d8acf2ba2f69a741208c5826342234",
+    "mode": "runnable",
+    "stdout": "<date>\n昵称：两点水  部门：做鸭事业部 上班打卡成功\n<date>\n天气太冷，今天放假\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python16/decorator/steps/05-original-and-practice.mdx",
+    "index": 4,
+    "sha256": "49ffc3f24e9a37b633e0dd09d9aa35c39727a1c4839d01f6a8139024ea852aba",
+    "mode": "runnable",
+    "stdout": "<date>\n昵称：两点水  部门：做鸭事业部 上班打卡成功\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python16/decorator/steps/05-original-and-practice.mdx",
+    "index": 5,
+    "sha256": "227eb9006ee38acd8e99d9e6862973bd92a41a906cae254000a9626fbc25c7aa",
+    "mode": "runnable",
+    "stdout": "<date>\n昵称：两点水  部门：做鸭事业部 上班打卡成功\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python16/decorator/steps/05-original-and-practice.mdx",
+    "index": 6,
+    "sha256": "e7967411da5ca67e7a8dd68c9a7b024bde31695747feec4f00e9a3075f26409a",
+    "mode": "runnable",
+    "stdout": "<date>\n昵称：两点水  部门：做鸭事业部 上班打卡成功\n<date>\n两点水\n{'sex': '男', 'age': 99}\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 5,
+    "sha256": "8ea971f1982d2d62a3324471485d7fc683c77ecd952561131bcb368ca80136af",
+    "mode": "runnable",
+    "stdout": "两点水好\n"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 6,
+    "sha256": "4f989df2c1b2cae3a4715dff3a4ddbc39989afd4d9fcc484b3a10e3eb39ffa89",
+    "mode": "runnable",
+    "stdout": "我在异步世界里\n我又在异步世界里\n"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 8,
+    "sha256": "ebdb0aef06f38da75ab2a81eba79237ce87a9974efefe87e536769bb556c65aa",
+    "mode": "runnable",
+    "stdout": "两点水开始打卡\n两点水打卡完成\nmain 跑完了\n"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 16,
+    "sha256": "a279b0f20a22769e3b46c0e9c1c5bae82dae941c71f4f3b866c7a85c49b8f885",
+    "mode": "runnable",
+    "stdout": "超时了，不等了\n"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 17,
+    "sha256": "2cdabff94535c3f43a1c4c64db656866a50f288a21439a0e5cd603c08d2a1eef",
+    "mode": "runnable",
+    "stdout": "超时了，不等了\n"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 19,
+    "sha256": "9b27699f161983813fb507614bc500d22037aeb1c92bad16c7f6293ab33fc6c2",
+    "mode": "runnable",
+    "stdout": "main 捕获到 坏了\n"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 20,
+    "sha256": "7e70b064921501e60fe98a4e80bf39df63bdf00dc8bb88dd9b765a6931264aeb",
+    "mode": "runnable",
+    "stdout": "TaskGroup 捕获到异常组： (ValueError('坏了'),)\n"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 15,
+    "sha256": "5a4546613c287a615457f7a90e959f39da1e66b125eebc3539e74608e91ed979",
+    "mode": "runnable",
+    "stdout": "继续划水……\n两点水 进入工位\n两点水 离开工位，停留 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 28,
+    "sha256": "625f0c275cb25bbbdd95942cbcb5ac799d0e17e3fd51617e4b29e224df262a77",
+    "mode": "runnable",
+    "stdout": "两点水的睡觉时间 耗时 <elapsed> ms\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 29,
+    "sha256": "cf69ae4a6f55e813d357b1c99736403f1dddd89ed96031bf27852efa3b429f58",
+    "mode": "runnable",
+    "stdout": "打卡用时 耗时 <elapsed> ms\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 30,
+    "sha256": "49658aeaf4dcfdedbacd39dd23f2944378840bcf56d37a582cbfe963f87dc33d",
+    "mode": "runnable",
+    "stdout": "两点水的函数 耗时 <elapsed> ms\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 31,
+    "sha256": "f9407dce2aa17f17b4726c0e98075ef9ae3b5f7098ce91c2fa28b10cd05fcce6",
+    "mode": "runnable",
+    "stdout": "打卡函数 耗时 <elapsed> ms\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python17/readable-code/steps/10-original-source-python17-1.mdx",
+    "index": 9,
+    "sha256": "9f862992046ef69cd9d24290b927491a234b59c8d1c4855bcde6c1ad1cd0a3b9",
+    "mode": "runnable",
+    "stdout": "<date>：昵称：两点水  部门：做鸭事业部 上班打卡成功\n",
+    "normalize": "dates"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 8,
+    "sha256": "e0d44b98214ef39054bb0fe0872f4f9e241930dd9cad0e3e6cd55af803b587e5",
+    "mode": "runnable",
+    "stdout": "正在划水……\n两点水 进入工位\n两点水 离开工位，停留 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python21/context-manager/steps/06-original-source-python21-1.mdx",
+    "index": 36,
+    "sha256": "542bbc9a98f3f4a7b5fb068d8ca29e6269c1a75028e6ecef1a9ab349e6dcd414",
+    "mode": "runnable",
+    "stdout": "共记录 7 条事件：\n  - {'name': '两点水', 'phase': 'enter'}\n  - {'name': '两点水', 'phase': 'leave', 'cost_ms': <elapsed>}\n  - {'name': '童鞋甲', 'phase': 'enter'}\n  - {'name': '童鞋甲', 'phase': 'error', 'exception': 'ValueError'}\n  - {'name': '童鞋甲', 'phase': 'leave', 'cost_ms': <elapsed>}\n  - {'name': '童鞋乙', 'phase': 'enter'}\n  - {'name': '童鞋乙', 'phase': 'leave', 'cost_ms': <elapsed>}\n",
+    "normalize": "timing-records"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 0,
+    "sha256": "96207be543d7db1dbb0e5fa430267bcf70777199e7e7fa8c80de6e18978ff670",
+    "mode": "runnable",
+    "stdout": "拿到 5 个，用了 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 1,
+    "sha256": "8fc17c50655933b57b4e4090d365e2f7a50c9d66842cfe65d3bc4a73a5eb9183",
+    "mode": "runnable",
+    "stdout": "打卡 完成 查询 完成 上传 完成\n总共 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 2,
+    "sha256": "bdd7ed889f2d3658d42e17a0d675df71c7bddedf54595731b6ed857077a426f5",
+    "mode": "runnable",
+    "stdout": "打卡 完成 查询 完成 上传 完成\n总共 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 9,
+    "sha256": "7e4a3e0f8e61d96b1dcf82cfb494311c5c8ef2b730144961eec3918dd7cca64e",
+    "mode": "runnable",
+    "stdout": "A 完成 B 完成 C 完成\n用了 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 10,
+    "sha256": "12d9ee9b0f79da3968999f767b22c358a05d0bc9ab424370bf51005288a169cd",
+    "mode": "runnable",
+    "stdout": "A 完成 B 完成 C 完成\n用了 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 11,
+    "sha256": "5eaf2eac02c9d547963b635a9fb5ae23115c229b14fc33d2d6b1bb17f8b197b8",
+    "mode": "runnable",
+    "stdout": "两个任务已经派出去了，main 还能干别的\n我先打个卡\nA 完成 B 完成\n用了 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  },
+  {
+    "file": "python22/async/steps/06-original-source-python22-1.mdx",
+    "index": 14,
+    "sha256": "db98e0da2ab72562d6ab622adaea68baac49dd9f6650cf891d2cb139842fd610",
+    "mode": "runnable",
+    "stdout": "用了 <elapsed> 秒\n",
+    "normalize": "elapsed"
+  }
+]

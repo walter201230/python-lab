@@ -4,16 +4,108 @@
   "description": "学习 Python async/await 的用法，理解协程函数、等待与事件循环的关系。通过模拟等待，对比顺序 await 和 gather 并发执行的过程，识别忘记等待与阻塞调用等常见问题，了解异步适合哪些任务，避免把并发误认为自动加速计算。",
   "chapter": "python22",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 60,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-coroutine-basics.mdx" },
-    { "kind": "exercise", "file": "01-hello.json" },
-    { "kind": "step", "file": "03-await-and-sleep.mdx" },
-    { "kind": "exercise", "file": "02-sleep-order.json" },
-    { "kind": "step", "file": "04-gather.mdx" },
-    { "kind": "exercise", "file": "03-gather-two.json" },
-    { "kind": "exercise", "file": "04-gather-fetch.json" },
-    { "kind": "step", "file": "05-when-to-use.mdx" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 直觉对比：串行 5 秒 vs 并发 1 秒"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 第一个 async 函数：和普通函数差在哪"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## await：让协程跑起来"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## asyncio.run()：进入异步世界的大门"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-hello.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-sleep-order.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 协程对象不 await 会怎样"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 一次等多个：asyncio.gather"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-gather-two.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-gather-fetch.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## Task：把协程「派出去」"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## asyncio.sleep vs time.sleep：阻塞坑"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 超时控制：wait_for 和 timeout"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 取消：Task.cancel()"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## TaskGroup：3.11 之后的 gather 升级版"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## async with 和 async for"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 什么时候用 async，什么时候不用"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 实战：100 个 URL，串行 vs 并发"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python22-1.mdx",
+      "section": "## 看清等待和结果，先不比较秒数"
+    }
   ]
 }

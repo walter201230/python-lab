@@ -4,16 +4,55 @@
   "description": "学习 Python re 模块处理文本的方法，掌握字符集、量词、贪婪与非贪婪匹配，区分查找开头、首次匹配和全部匹配的场景。结合数字提取、手机号格式校验、邮箱分组和空白替换示例，理解如何描述字符串规则，判断何时直接使用字符串方法更清楚。",
   "chapter": "python14",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 45,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-basic-syntax.mdx" },
-    { "kind": "exercise", "file": "01-findall-digits.json" },
-    { "kind": "step", "file": "03-functions.mdx" },
-    { "kind": "exercise", "file": "02-match-phone.json" },
-    { "kind": "step", "file": "04-groups.mdx" },
-    { "kind": "exercise", "file": "03-groups-email.json" },
-    { "kind": "step", "file": "05-replace.mdx" },
-    { "kind": "exercise", "file": "04-sub-spaces.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python14-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python14-1.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python14-2.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python14-3.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python14-4.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python14-5.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "12-original-source-python14-6.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-findall-digits.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-match-phone.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-groups-email.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-sub-spaces.json"
+    },
+    {
+      "kind": "step",
+      "file": "13-original-source-regex-reference.mdx"
+    }
   ]
 }

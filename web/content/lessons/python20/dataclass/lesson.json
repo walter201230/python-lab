@@ -4,16 +4,113 @@
   "description": "学习 Python dataclass 如何减少数据类的重复代码，理解字段类型注解、默认值与自动生成方法的关系。通过坐标类等示例掌握默认值工厂的用法，避开可变默认值问题，认识不可变实例、字段比较及初始化后处理，合理组织需要保存和比较的数据。",
   "chapter": "python20",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 80,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-basic.mdx" },
-    { "kind": "exercise", "file": "01-basic-point.json" },
-    { "kind": "step", "file": "03-defaults.mdx" },
-    { "kind": "exercise", "file": "02-default-factory.json" },
-    { "kind": "step", "file": "04-frozen.mdx" },
-    { "kind": "exercise", "file": "03-frozen-hash.json" },
-    { "kind": "step", "file": "05-comparison.mdx" },
-    { "kind": "exercise", "file": "04-eq.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 第一个 dataclass，长什么样"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-basic-point.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 比较两个 dataclass 对象"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 默认值——给字段一个偷懒的初始值"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## `field()`——字段的高级配置"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-default-factory.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 不可变 dataclass——`frozen=True`"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-frozen-hash.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-eq.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## `__post_init__`——构造完之后再算点东西"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## `kw_only=True`——强制关键字参数（Python 3.10+）"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## `slots=True`——让 dataclass 更省内存（Python 3.10+）"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## dataclass 跟继承"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 不止 dataclass——还有 NamedTuple 和 TypedDict"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## dataclass 的局限——它不做运行时校验"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## Pydantic 入场——带运行时校验的数据模型"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## dataclass vs Pydantic vs attrs——三选一指南"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 小实战——`Order` + `OrderRequest` 模拟一个下单接口"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 一点小提醒——dataclass 跟 Pydantic 的常见踩坑"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python20-1.mdx",
+      "section": "## 两份数据的默认列表是不是同一份"
+    }
   ]
 }

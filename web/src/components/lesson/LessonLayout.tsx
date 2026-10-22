@@ -155,6 +155,7 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
               <StepCard
                 key={`step-${block.stepIndex}`}
                 content={block.content}
+                codeModes={block.codeModes}
                 index={block.stepIndex}
                 totalSteps={totalSteps}
                 state={

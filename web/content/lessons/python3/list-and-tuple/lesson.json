@@ -4,22 +4,47 @@
   "description": "系统学习 Python 列表与元组的创建、索引、切片和常用操作，掌握列表元素的修改、追加与删除，理解可变和不可变容器的区别。通过拼接、长度计算、类型转换及单元素元组示例，辨认容易写错的逗号和下标用法，学会根据数据是否需要变化选择合适的序列类型。",
   "chapter": "python3",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 65,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-list-create.mdx" },
-    { "kind": "exercise", "file": "01-create-list.json" },
-    { "kind": "step", "file": "03-list-access.mdx" },
-    { "kind": "exercise", "file": "02-list-access.json" },
-    { "kind": "step", "file": "04-list-update.mdx" },
-    { "kind": "exercise", "file": "03-list-update.json" },
-    { "kind": "step", "file": "05-list-ops.mdx" },
-    { "kind": "exercise", "file": "04-list-ops.json" },
-    { "kind": "step", "file": "06-tuple-create.mdx" },
-    { "kind": "exercise", "file": "05-tuple-create.json" },
-    { "kind": "step", "file": "07-tuple-access.mdx" },
-    { "kind": "exercise", "file": "06-tuple-access.json" },
-    { "kind": "step", "file": "08-tuple-ops.mdx" },
-    { "kind": "exercise", "file": "07-tuple-ops.json" }
+    {
+      "kind": "step",
+      "file": "09-original-source-python3-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python3-List.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-create-list.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-list-access.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-list-update.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-list-ops.json"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python3-tuple.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-tuple-create.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "06-tuple-access.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "07-tuple-ops.json"
+    }
   ]
 }

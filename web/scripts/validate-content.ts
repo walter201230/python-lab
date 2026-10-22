@@ -12,6 +12,9 @@ import { join, relative } from 'node:path';
 import type { Exercise, LessonMeta, ValidationError } from '../src/types/content';
 import { CHAPTERS } from '../src/lib/chapters';
 import { validateCatalog, type CatalogLesson } from './catalogValidation';
+import exampleCatalog from '../content/code-examples.json';
+import { validateTeachingText, validateCodeExamples, type CodeExample } from './contentQuality';
+import { splitTeachingSections } from '../src/lib/teachingSections';
 
 const CONTENT_ROOT = join(process.cwd(), 'content', 'lessons');
 
@@ -75,6 +78,7 @@ function validateLesson(lessonDir: string, errors: ValidationError[], lessons: C
   const stepsDir = join(lessonDir, 'steps');
   const exercisesDir = join(lessonDir, 'exercises');
   let exerciseCount = 0;
+  const checkedSteps = new Set<string>();
 
   if (!Array.isArray(lesson.blocks)) {
     errors.push({ file: relative(CONTENT_ROOT, lessonJsonPath), message: 'blocks 必须是数组' });
@@ -91,6 +95,26 @@ function validateLesson(lessonDir: string, errors: ValidationError[], lessons: C
           file: relative(CONTENT_ROOT, lessonJsonPath),
           message: `step 文件不存在 — ${block.file}`,
         });
+      } else {
+        if (checkedSteps.has(block.file)) continue;
+        checkedSteps.add(block.file);
+        const file = join(stepsDir, block.file);
+        const text = readFileSync(file, 'utf-8');
+        const key = relative(CONTENT_ROOT, file).replaceAll('\\', '/');
+        const entries = (exampleCatalog as Record<string, CodeExample[]>)[key];
+        const refs = lesson.blocks.filter((ref) => ref.kind === 'step' && ref.file === block.file);
+        const keys = refs.flatMap((ref) => ref.kind === 'step' && ref.section !== undefined ? [ref.section] : []);
+        if (keys.length) {
+          try {
+            if (keys.length !== refs.length) throw new Error('同一文件不能混用整篇与小节引用');
+            splitTeachingSections(text, keys);
+          } catch (error) {
+            errors.push({ file: key, message: (error as Error).message });
+          }
+        } else if (refs.length > 1) errors.push({ file: key, message: '同一来源被重复整篇展示' });
+        for (const message of [...validateTeachingText(text), ...validateCodeExamples(text, entries)]) {
+          errors.push({ file: key, message });
+        }
       }
     } else if (block.kind === 'exercise') {
       const exPath = join(exercisesDir, block.file);

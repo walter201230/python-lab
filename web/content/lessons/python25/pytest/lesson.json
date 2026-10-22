@@ -4,13 +4,102 @@
   "description": "从第一个测试函数开始学习 Python pytest，掌握断言、测试发现、异常检查、fixture 和参数化用法。结合临时目录、输出捕获、标记与覆盖率示例，理解如何组织测试数据、定位失败原因并隔离用例，为本地项目建立测试流程。",
   "chapter": "python25",
   "order": 1,
-  "estimatedMinutes": 22,
+  "estimatedMinutes": 55,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-first-test.mdx" },
-    { "kind": "step", "file": "03-fixture.mdx" },
-    { "kind": "step", "file": "04-parametrize.mdx" },
-    { "kind": "step", "file": "05-coverage-and-config.mdx" },
-    { "kind": "step", "file": "06-pitfalls.mdx" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 第一个测试"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## pytest vs unittest——为什么选 pytest"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## assert 重写——pytest 最神奇的地方"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 测试发现——pytest 怎么找到你的测试"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## fixture——测试界的依赖注入"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## fixture scope——什么时候建、什么时候销毁"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 内置 fixture——pytest 自带的几个救命神器"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 参数化——同一个测试跑多组数据"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 异常断言——测「会不会抛错」"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 跳过和标记——挑着跑测试"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 覆盖率——哪些代码还没被测到"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## conftest.py——共享 fixture"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## pyproject.toml 里配置 pytest"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 一个完整小实战——给 Wallet 类写测试"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 几个常见踩坑"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## FAQ"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python25-1.mdx",
+      "section": "## 从需求里找测试，不从实现里抄答案"
+    }
   ]
 }

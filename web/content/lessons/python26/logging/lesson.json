@@ -4,16 +4,108 @@
   "description": "学习 Python logging 标准库，将 print 调试改为分级日志。认识五种日志级别、基础配置与消息格式，理解日志筛选和命名 logger 的作用，结合示例记录模块行为与异常堆栈，了解重复配置的注意事项，让程序运行更容易观察和排查。",
   "chapter": "python26",
   "order": 1,
-  "estimatedMinutes": 30,
+  "estimatedMinutes": 70,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-first-logger.mdx" },
-    { "kind": "exercise", "file": "01-first-log.json" },
-    { "kind": "step", "file": "03-levels.mdx" },
-    { "kind": "exercise", "file": "02-five-levels.json" },
-    { "kind": "exercise", "file": "04-warning-only.json" },
-    { "kind": "step", "file": "04-format.mdx" },
-    { "kind": "step", "file": "05-getLogger.mdx" },
-    { "kind": "exercise", "file": "03-named-logger.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 第一个 logger"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-first-log.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 5 个日志级别"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-five-levels.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## basicConfig：最简的一行配置"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-warning-only.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 正经做法：getLogger(\\_\\_name\\_\\_)"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-named-logger.json"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## format 字符串：常用占位符"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 多个 handler：控制台 + 文件 + 滚动文件"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## Logger 的层级：getLogger('a.b.c') 的玄机"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## logger.exception()：在 except 里自动带 traceback"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 配置文件：dictConfig 和 yaml"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## logging vs print：什么时候用哪个"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 结构化日志（JSON）：让日志能被机器查"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 小实战：打卡服务的日志配置"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 几个易踩的坑"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## FAQ"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python26-1.mdx",
+      "section": "## 日志里留下能定位问题的信息"
+    }
   ]
 }

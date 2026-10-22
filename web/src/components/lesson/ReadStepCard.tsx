@@ -2,9 +2,13 @@ import { Children, isValidElement, type ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { headingComponents } from '@/lib/markdownHeadings';
+import { remarkHideComments } from '@/lib/markdownComments';
+import { TeachingImage } from './TeachingImage';
+import { remarkCodeModes, getCodeMode, codeModeLabels, type CodeMode } from '@/lib/markdownCode';
 
 interface ReadStepCardProps {
   content: string;
+  codeModes?: CodeMode[];
   index: number;
   totalSteps: number;
   /** 闯关页地址，供代码块的「到闯关页运行」入口使用 */
@@ -22,16 +26,18 @@ interface ReadStepCardProps {
  */
 export function ReadStepCard({
   content,
+  codeModes = [],
   index,
   totalSteps,
   practiceHref,
 }: ReadStepCardProps) {
   const components: Components = {
     ...headingComponents,
-    pre({ children }) {
+    img: TeachingImage,
+    pre({ children, node }) {
       const code = extractCodeFromPre(children);
-      if (code && code.lang === 'python') {
-        return <StaticCodeBlock code={code.text} practiceHref={practiceHref} />;
+      if (code && code.lang.toLowerCase() === 'python') {
+        return <StaticCodeBlock code={code.text} practiceHref={practiceHref} mode={getCodeMode(node)} />;
       }
       return <pre>{children}</pre>;
     },
@@ -50,7 +56,7 @@ export function ReadStepCard({
         </span>
       </div>
       <article className="prose max-w-none prose-headings:mt-0 prose-strong:text-accent-strong prose-code:text-accent-strong">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        <ReactMarkdown remarkPlugins={[remarkGfm, [remarkCodeModes, { modes: codeModes }], remarkHideComments]} components={components}>
           {content}
         </ReactMarkdown>
       </article>
@@ -59,19 +65,19 @@ export function ReadStepCard({
 }
 
 /** 静态 python 代码块：外观对齐 RunnableCodeBlock，但把交互按钮换成回闯关页的链接。 */
-function StaticCodeBlock({ code, practiceHref }: { code: string; practiceHref: string }) {
+function StaticCodeBlock({ code, practiceHref, mode }: { code: string; practiceHref: string; mode: CodeMode }) {
   return (
     <div className="not-prose my-4 overflow-hidden rounded-lg border border-line-strong/60 bg-code/80">
       <div className="flex items-center justify-between border-b border-line bg-surface/60 px-3 py-1.5">
         <span className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
-          python
+          Python · {codeModeLabels[mode]}
         </span>
-        <a
+        {mode === 'runnable' && <a
           href={practiceHref}
           className="rounded px-2 py-0.5 text-xs font-medium text-accent-strong transition hover:bg-emerald-500/15 focus-ring"
         >
-          到闯关页运行这段 →
-        </a>
+          在闯关页练习 →
+        </a>}
       </div>
       <pre className="overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-accent-stronger">
         <code>{code}</code>

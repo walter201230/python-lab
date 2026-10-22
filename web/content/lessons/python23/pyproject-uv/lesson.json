@@ -4,13 +4,97 @@
   "description": "了解 Python 项目的配置与依赖管理，学习 pyproject.toml 的主要字段和 uv 日常命令。沿着创建项目、添加依赖、运行代码、同步环境和保存锁文件的流程，认识虚拟环境与版本约束，理解如何让不同开发环境使用一致的依赖。",
   "chapter": "python23",
   "order": 1,
-  "estimatedMinutes": 20,
+  "estimatedMinutes": 25,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-pyproject.mdx" },
-    { "kind": "step", "file": "03-uv-install.mdx" },
-    { "kind": "step", "file": "04-uv-workflow.mdx" },
-    { "kind": "step", "file": "05-uv-sync.mdx" },
-    { "kind": "step", "file": "06-comparison.mdx" }
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "$intro"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 老办法到底惨在哪"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## pyproject.toml 是个啥"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 最简 pyproject.toml 逐字段拆解"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## uv 是什么 & 怎么装"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## uv init 创建一个项目"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## uv add 添加依赖"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## uv run 跑命令"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## uv sync 同步依赖"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 自动管理虚拟环境"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 从 requirements.txt 迁移过来"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## uv vs pip vs poetry vs pipenv 一桌对比"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 实战：从零到「能跑、能锁、能测」"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 几个常见坑和小技巧"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 单文件脚本也能用 uv"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 关于发布到 PyPI"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 小结"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python23-1.mdx",
+      "section": "## 用一个能交给别人运行的小项目验收环境"
+    }
   ]
 }

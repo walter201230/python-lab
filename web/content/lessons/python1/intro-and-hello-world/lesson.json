@@ -6,10 +6,29 @@
   "order": 1,
   "estimatedMinutes": 15,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-introduction.mdx" },
-    { "kind": "step", "file": "03-installation-skip.mdx" },
-    { "kind": "step", "file": "04-first-program.mdx" },
-    { "kind": "exercise", "file": "01-hello-python.json" }
+    {
+      "kind": "step",
+      "file": "05-original-source-python1-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "06-original-source-python1-Introduction.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python1-Installation.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python1-The_first_procedure.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-hello-python.json"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python1-IDE.mdx"
+    }
   ]
 }

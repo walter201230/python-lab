@@ -4,14 +4,18 @@ import { Children, isValidElement, type ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { headingComponents } from '@/lib/markdownHeadings';
+import { remarkHideComments } from '@/lib/markdownComments';
+import { remarkCodeModes, getCodeMode, codeModeLabels, type CodeMode } from '@/lib/markdownCode';
 import { STICKY_BAR_SCROLL_OFFSET } from '@/lib/layoutConstants';
 import { RunnableCodeBlock } from './RunnableCodeBlock';
+import { TeachingImage } from './TeachingImage';
 import type { PyodideStatus, RunOptions, RunResult } from '@/lib/usePyodide';
 
 type StepState = 'read' | 'current' | 'unread';
 
 interface StepCardProps {
   content: string;
+  codeModes?: CodeMode[];
   index: number;
   totalSteps: number;
   state: StepState;
@@ -25,18 +29,20 @@ interface StepCardProps {
  * - state='read' / 'current' / 'unread' 控制视觉节奏：当前 step 高亮，已读降饱和度
  * - python 代码块替换为 RunnableCodeBlock（带"试运行"按钮）
  */
-export function StepCard({ content, index, totalSteps, state, pyStatus, run }: StepCardProps) {
+export function StepCard({ content, codeModes = [], index, totalSteps, state, pyStatus, run }: StepCardProps) {
   const components: Components = {
     ...headingComponents,
+    img: TeachingImage,
     pre({ children, node }) {
       const code = extractCodeFromPre(children);
-      if (code && code.lang === 'python') {
+      if (code && code.lang.toLowerCase() === 'python') {
         return (
           <RunnableCodeBlock
             code={code.text}
             pyStatus={pyStatus}
             run={run}
-            runnable={!hasNoRunMeta(node)}
+            runnable={getCodeMode(node) === 'runnable' && !hasNoRunMeta(node)}
+            usage={codeModeLabels[getCodeMode(node)]}
           />
         );
       }
@@ -85,7 +91,7 @@ export function StepCard({ content, index, totalSteps, state, pyStatus, run }: S
         {state === 'read' && <span className="text-fg-subtle">· 已读</span>}
       </div>
       <article className="prose max-w-none prose-headings:mt-0 prose-strong:text-accent-strong prose-code:text-accent-strong">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        <ReactMarkdown remarkPlugins={[remarkGfm, [remarkCodeModes, { modes: codeModes }], remarkHideComments]} components={components}>
           {content}
         </ReactMarkdown>
       </article>

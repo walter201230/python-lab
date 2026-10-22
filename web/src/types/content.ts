@@ -10,7 +10,7 @@
 
 /** lesson.json 中 blocks 数组的元素：step 或 exercise，按顺序渲染。 */
 export type LessonBlockRef =
-  | { kind: 'step'; file: string }
+  | { kind: 'step'; file: string; section?: string }
   | { kind: 'exercise'; file: string };
 
 /** 一节课的元数据（lesson.json）。 */

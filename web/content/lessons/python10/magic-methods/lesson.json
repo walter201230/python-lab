@@ -4,17 +4,63 @@
   "description": "学习 Python 魔法方法，理解对象如何参与打印、比较、取长度、下标访问和加法运算。通过自定义容器与向量加法示例，掌握 __str__、__eq__ 等方法的基本用法，认识对象协议与内置操作的联系，让自己的类具备符合预期的行为。",
   "chapter": "python10",
   "order": 1,
-  "estimatedMinutes": 35,
+  "estimatedMinutes": 50,
   "blocks": [
-    { "kind": "step", "file": "01-preface.mdx" },
-    { "kind": "step", "file": "02-str-repr.mdx" },
-    { "kind": "exercise", "file": "01-str.json" },
-    { "kind": "step", "file": "03-eq-hash.mdx" },
-    { "kind": "exercise", "file": "02-eq.json" },
-    { "kind": "step", "file": "04-len-getitem.mdx" },
-    { "kind": "exercise", "file": "03-len.json" },
-    { "kind": "exercise", "file": "05-getitem.json" },
-    { "kind": "step", "file": "05-add.mdx" },
-    { "kind": "exercise", "file": "04-add.json" }
+    {
+      "kind": "step",
+      "file": "06-original-source-python10-Preface.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "07-original-source-python10-1.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "08-original-source-python10-2.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "09-original-source-python10-3.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "10-original-source-python10-4.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "11-original-source-python10-5.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "12-original-source-python10-6.mdx"
+    },
+    {
+      "kind": "step",
+      "file": "02-str-repr.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "01-str.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "02-eq.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "03-len.json"
+    },
+    {
+      "kind": "exercise",
+      "file": "05-getitem.json"
+    },
+    {
+      "kind": "step",
+      "file": "05-add.mdx"
+    },
+    {
+      "kind": "exercise",
+      "file": "04-add.json"
+    }
   ]
 }
