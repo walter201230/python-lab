@@ -3,22 +3,19 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CHAPTERS } from '@/lib/chapters';
-import { chapterNeighbors, lessonHref, type LessonMode, type LessonOutlineItem } from '@/lib/lessonNavigation';
+import { lessonHref, type LessonMode, type LessonOutlineItem } from '@/lib/lessonNavigation';
 import { LessonToc } from './LessonToc';
 
 interface LessonNavigationProps {
   chapter: string;
-  lessonId: string;
   title: string;
   mode: LessonMode;
   outline: LessonOutlineItem[];
-  exerciseNavigation?: ReactNode;
   children: ReactNode;
 }
 
 /** 仅导航需要客户端交互；阅读正文通过 children 保留为静态服务端内容。 */
-export function LessonNavigation({ chapter, lessonId, title, mode, outline, exerciseNavigation, children }: LessonNavigationProps) {
-  const { prevChapter, nextChapter } = chapterNeighbors(chapter);
+export function LessonNavigation({ chapter, title, mode, outline, children }: LessonNavigationProps) {
   const shellRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -41,58 +38,20 @@ export function LessonNavigation({ chapter, lessonId, title, mode, outline, exer
     dialogRef.current?.close();
   }
 
-  const chapterLink = (direction: 'prev' | 'next') => {
-    const target = direction === 'prev' ? prevChapter : nextChapter;
-    const label = direction === 'prev' ? '← 上一章' : '下一章 →';
-    return target ? (
-      <Link
-        href={lessonHref(target.slug, target.lessons[0].id, mode)}
-        title={`${label}：${target.title}`}
-        aria-label={`${label}：${target.title}`}
-        className="focus-ring flex min-h-11 items-center gap-2 rounded-lg border border-line px-2.5 text-xs text-fg-body transition hover:border-emerald-500/40 hover:text-accent-strong sm:px-3 sm:text-sm"
-      >
-        <span className="whitespace-nowrap">{label}</span>
-        <span className="hidden max-w-36 truncate min-[1440px]:inline">{target.title}</span>
-      </Link>
-    ) : (
-      <span className="flex min-h-11 items-center px-2.5 text-xs text-fg-disabled sm:px-3 sm:text-sm" aria-disabled="true">{label}</span>
-    );
-  };
-
   return (
     <div ref={shellRef} className="lesson-shell bg-tech-grid relative min-h-[calc(100vh-var(--spacing-header))] bg-canvas">
-      <div ref={toolbarRef} data-lesson-toolbar className="sticky top-header z-30 border-b border-line bg-canvas">
+      <div ref={toolbarRef} data-lesson-toolbar className="sticky top-header z-30 border-b border-line bg-canvas lg:hidden">
         <div className="mx-auto max-w-[1600px] px-4 py-2 sm:px-6">
-          <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-            <button
-              ref={openButtonRef}
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => {
-                dialogRef.current?.showModal();
-                setDirectoryOpen(true);
-              }}
-              className="focus-ring min-h-11 shrink-0 rounded-lg border border-line px-3 text-sm text-fg-body min-[1440px]:hidden"
-            >目录</button>
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-fg" title={title}>{title}</span>
-            <nav aria-label="快捷章节导航" className="flex shrink-0 items-center gap-1 sm:gap-2">
-              {chapterLink('prev')}
-              {chapterLink('next')}
-            </nav>
-          </div>
-          <div className="mt-1 flex min-w-0 items-center gap-3">
-            <nav aria-label="学习模式" className="flex shrink-0 rounded-lg border border-line p-0.5 text-xs">
-              {(['read', 'practice'] as const).map((item) => (
-                <Link
-                  key={item}
-                  href={lessonHref(chapter, lessonId, item)}
-                  aria-current={mode === item ? 'page' : undefined}
-                  className={`focus-ring flex min-h-9 items-center rounded-md px-3 ${mode === item ? 'bg-raised font-semibold text-accent-strong' : 'text-fg-subtle hover:text-fg'}`}
-                >{item === 'read' ? '阅读' : '闯关'}</Link>
-              ))}
-            </nav>
-            {exerciseNavigation}
-          </div>
+          <button
+            ref={openButtonRef}
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => {
+              dialogRef.current?.showModal();
+              setDirectoryOpen(true);
+            }}
+            className="focus-ring min-h-11 rounded-lg border border-line px-3 text-sm text-fg-body"
+          >目录</button>
         </div>
       </div>
 
@@ -101,7 +60,7 @@ export function LessonNavigation({ chapter, lessonId, title, mode, outline, exer
           <CourseDirectory chapter={chapter} mode={mode} />
         </aside>
         <div className="min-w-0">{children}</div>
-        <aside className="lesson-sidebar lesson-directory-scroll hidden min-w-0 border-l border-line pl-4 min-[1440px]:block" aria-label="本章内容">
+        <aside className="lesson-sidebar lesson-directory-scroll hidden min-w-0 pl-4 min-[1440px]:block" aria-label="本章内容">
           <LessonToc items={outline} lessonTitle={title} />
         </aside>
       </div>

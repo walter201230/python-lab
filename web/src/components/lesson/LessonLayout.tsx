@@ -7,7 +7,6 @@ import { useProgress } from '@/store/progress';
 import { ExerciseCard } from './ExerciseCard';
 import { StepCard } from './StepCard';
 import { PyodideToast } from './PyodideToast';
-import { LessonStickyBar } from './LessonStickyBar';
 import { LessonBottomNav } from './LessonBottomNav';
 import { CompletionBanner } from './CompletionBanner';
 import { Confetti } from './Confetti';
@@ -107,11 +106,9 @@ export function LessonLayout({ meta, blocks, exercises }: LoadedLesson) {
   return (
     <LessonNavigation
       chapter={meta.chapter}
-      lessonId={meta.id}
       title={meta.title}
       mode="practice"
       outline={outline}
-      exerciseNavigation={<LessonStickyBar items={outline} completedCount={completedCount} />}
     >
       <PyodideToast status={pyStatus} />
       <Confetti key={confettiKey} trigger={confettiKey > 0} />

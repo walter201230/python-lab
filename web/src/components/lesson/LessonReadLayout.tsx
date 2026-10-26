@@ -19,7 +19,7 @@ export function LessonReadLayout({ meta, blocks, exercises }: LoadedLesson) {
   const { prevChapter, nextChapter } = chapterNeighbors(meta.chapter);
 
   return (
-    <LessonNavigation chapter={meta.chapter} lessonId={meta.id} title={meta.title} mode="read" outline={lessonOutline(blocks, 'read')}>
+    <LessonNavigation chapter={meta.chapter} title={meta.title} mode="read" outline={lessonOutline(blocks, 'read')}>
         <article className="py-8 sm:py-10">
           <header className="mb-2">
             <h1 className="text-3xl font-bold text-fg sm:text-4xl">{meta.title}</h1>

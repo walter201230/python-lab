@@ -337,7 +337,7 @@ body {
 /* 正文 SVG：小屏只滚动图示区域，避免把文字和节点缩到不可读。 */
 .tutorial-diagram { display: block; margin-block: 1.5rem; }
 .lesson-shell {
-  --lesson-toolbar-height: 116px;
+  --lesson-toolbar-height: 59px;
   --lesson-scroll-offset: calc(var(--spacing-header) + var(--lesson-toolbar-height) + 16px);
 }
 .lesson-columns { grid-template-columns: minmax(0, 1fr); }
@@ -383,6 +383,7 @@ body {
 }
 html:has(.lesson-directory-dialog[open]) { overflow: hidden; }
 @media (min-width: 1024px) {
+  .lesson-shell { --lesson-toolbar-height: 0px; }
   .lesson-columns { grid-template-columns: 208px minmax(0, 1fr); }
 }
 @media (min-width: 1440px) {
