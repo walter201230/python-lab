@@ -7,9 +7,12 @@ import { HomeStats } from '@/components/HomeStats';
 import { SmartHeroCta } from '@/components/SmartHeroCta';
 import { HeroTerminal } from '@/components/HeroTerminal';
 import { PyodideBootstrap } from '@/components/PyodideBootstrap';
+import { JsonLd } from '@/components/JsonLd';
+import { SITE_DESCRIPTION, SITE_TITLE, socialMetadata, websiteJsonLd } from '@/lib/siteMetadata';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
+  ...socialMetadata({ title: SITE_TITLE, description: SITE_DESCRIPTION, path: '/' }),
 };
 
 export default async function HomePage() {
@@ -19,6 +22,7 @@ export default async function HomePage() {
 
   return (
     <div className="bg-canvas">
+      <JsonLd data={websiteJsonLd()} />
       <PyodideBootstrap />
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-line/50">

@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
+import { socialMetadata } from '@/lib/siteMetadata';
+
+const title = '隐私政策 — 小白学 Python';
+const description = '小白学 Python（learn-py.org）的隐私政策：本地存储、Cookie、Google Analytics 统计与 Google AdSense 广告说明。';
 
 export const metadata: Metadata = {
-  title: '隐私政策 — 小白学 Python',
-  description: '小白学 Python（learn-py.org）的隐私政策：本地存储、Cookie、Google Analytics 统计与 Google AdSense 广告说明。',
+  title,
+  description,
   alternates: { canonical: '/privacy/' },
+  ...socialMetadata({ title, description, path: '/privacy/' }),
 };
 
 export default function PrivacyPage() {

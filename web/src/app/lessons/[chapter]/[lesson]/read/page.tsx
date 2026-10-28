@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import { CHAPTERS } from '@/lib/chapters';
 import { loadLesson } from '@/lib/loadLesson';
 import { LessonReadLayout } from '@/components/lesson/LessonReadLayout';
-
-const SITE_NAME = '小白学 Python';
+import { JsonLd } from '@/components/JsonLd';
+import { SITE_NAME, breadcrumbJsonLd, socialMetadata } from '@/lib/siteMetadata';
 
 export function generateStaticParams() {
   return CHAPTERS
@@ -32,12 +32,12 @@ export async function generateMetadata({
       : '本页集中展示全部讲解与示例，可按顺序通读，也可随时查阅，适合学习前预习和课后复习。'
   );
 
+  const path = `/lessons/${chapter}/${lesson}/read/`;
   return {
     title,
     description,
-    alternates: { canonical: `/lessons/${chapter}/${lesson}/read/` },
-    openGraph: { title, description, type: 'article' },
-    twitter: { card: 'summary_large_image', title, description },
+    alternates: { canonical: path },
+    ...socialMetadata({ title, description, path, type: 'article' }),
   };
 }
 
@@ -49,5 +49,10 @@ export default async function LessonReadPage({
   const { chapter, lesson } = await params;
   const data = await loadLesson(chapter, lesson);
   if (!data) notFound();
-  return <LessonReadLayout meta={data.meta} blocks={data.blocks} exercises={data.exercises} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbJsonLd({ title: data.meta.title, path: `/lessons/${chapter}/${lesson}/read/` })} />
+      <LessonReadLayout meta={data.meta} blocks={data.blocks} exercises={data.exercises} />
+    </>
+  );
 }

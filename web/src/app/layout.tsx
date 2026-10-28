@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Toast } from '@/components/Toast';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { THEME_INIT_SCRIPT } from '@/lib/useTheme';
+import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/lib/siteMetadata';
 import './globals.css';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -12,9 +13,10 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 export const metadata: Metadata = {
   // 站点绝对基址：canonical、OG 等 URL 型字段据此从相对路径解析成绝对地址。
   // 域名须与 scripts/generate-sitemap.mjs 的 SITE_URL 保持一致。
-  metadataBase: new URL('https://learn-py.org'),
-  title: '小白学 Python — 浏览器里就能跑',
-  description: '小白学 Python 是面向零基础的免费中文 Python 在线教程，提供 29 章讲解和 100 道练习，覆盖变量、容器、函数、面向对象、装饰器、异步编程及现代项目工具。无需安装环境或注册账号，在浏览器中编写代码、查看结果并自动判分，做对一题解锁下一段；也可通过完整阅读页系统通读，学习进度保存在当前浏览器。',
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  // 不设 openGraph：子页面会整体覆盖它，404 若继承则会冒用首页分享信息，各页经 socialMetadata 自行声明。
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

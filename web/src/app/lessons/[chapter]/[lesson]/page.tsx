@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation';
 import { CHAPTERS } from '@/lib/chapters';
 import { loadLesson } from '@/lib/loadLesson';
 import { LessonLayout } from '@/components/lesson/LessonLayout';
-
-const SITE_NAME = '小白学 Python';
+import { SITE_NAME, socialMetadata } from '@/lib/siteMetadata';
 
 export function generateStaticParams() {
   return CHAPTERS
@@ -30,22 +29,15 @@ export async function generateMetadata({
       : '本章为概念阅读，无需提交练习代码。结合示例梳理知识要点，为后续学习和本地实践做好准备。'
   );
 
+  const title = `${data.meta.title} — ${SITE_NAME}`;
+  // 闯关页与阅读页内容同源，但闯关页受渐进解锁影响、静态产物只含前半章，
+  // 因此规范版本指向内容完整的阅读页（design.md D2：方向不可反），分享网址同样指向阅读页。
+  const canonical = `/lessons/${chapter}/${lesson}/read/`;
   return {
-    title: `${data.meta.title} — ${SITE_NAME}`,
+    title,
     description,
-    // 闯关页与阅读页内容同源，但闯关页受渐进解锁影响、静态产物只含前半章，
-    // 因此规范版本指向内容完整的阅读页（design.md D2：方向不可反）。
-    alternates: { canonical: `/lessons/${chapter}/${lesson}/read/` },
-    openGraph: {
-      title: `${data.meta.title} — ${SITE_NAME}`,
-      description,
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${data.meta.title} — ${SITE_NAME}`,
-      description,
-    },
+    alternates: { canonical },
+    ...socialMetadata({ title, description, path: canonical, type: 'article' }),
   };
 }
 

@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
 import { ContactLinks } from '@/components/ContactLinks';
+import { socialMetadata } from '@/lib/siteMetadata';
+
+const title = '联系方式 — 小白学 Python';
+const description = '反馈内容错误、题目问题或功能建议的渠道：通过 GitHub Issues 联系小白学 Python（learn-py.org）。';
 
 export const metadata: Metadata = {
-  title: '联系方式 — 小白学 Python',
-  description: '反馈内容错误、题目问题或功能建议的渠道：通过 GitHub Issues 联系小白学 Python（learn-py.org）。',
+  title,
+  description,
   alternates: { canonical: '/contact/' },
+  ...socialMetadata({ title, description, path: '/contact/' }),
 };
 
 export default function ContactPage() {

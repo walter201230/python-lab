@@ -1,12 +1,17 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ContactLinks } from '@/components/ContactLinks';
+import { socialMetadata } from '@/lib/siteMetadata';
+
+const title = '关于本站 — 小白学 Python';
+const description =
+  '小白学 Python（learn-py.org）的内容整理自开源中文 Python 教程 walter201230/Python（GitHub 25k+ Star），把每一章拆成分步讲解并配上可运行、可判分的练习题。';
 
 export const metadata: Metadata = {
-  title: '关于本站 — 小白学 Python',
-  description:
-    '小白学 Python（learn-py.org）的内容整理自开源中文 Python 教程 walter201230/Python（GitHub 25k+ Star），把每一章拆成分步讲解并配上可运行、可判分的练习题。',
+  title,
+  description,
   alternates: { canonical: '/about/' },
+  ...socialMetadata({ title, description, path: '/about/' }),
 };
 
 export default function AboutPage() {
