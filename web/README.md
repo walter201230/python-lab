@@ -31,8 +31,6 @@ scripts/                资源复制、内容及课程目录校验、回归测�
 content/lessons/         <chapter>/<lesson>/{lesson.json, steps/*.mdx, exercises/*.json}
 ```
 
-项目规范见 [仓库 AGENTS.md](../AGENTS.md) 与 [Web 局部约束](AGENTS.md) 。功能规范统一位于 [仓库根 openspec/](../openspec/README.md) ；OpenSpec 命令在仓库根执行。
-
 当前静态站无需配置 JWT、SQLite 或其他环境变量。预览导出产物时，在构建后执行 `python3 -m http.server 3000 --bind 127.0.0.1 --directory out`，访问 `http://127.0.0.1:3000/`；该预览命令需要本机 Python 3。静态导出不使用 `next start`。
 
 ## 练习题反馈
@@ -107,4 +105,4 @@ npx wrangler pages deploy out --project-name <你的项目名>
   新页面 JS 配旧缓存 worker 的混配
 - 进度仅存用户浏览器 `localStorage`：换浏览器/清缓存会丢；这是本站当前的设计折中
 
-旧腾讯云 CVM、PM2、SQLite 部署方案已失效，仅保留在 [历史资料](../docs/archive/2026-09-11-structure/README.md) 中；不适用于当前静态站。
+旧腾讯云 CVM、PM2、SQLite 部署方案已失效，不适用于当前静态站。

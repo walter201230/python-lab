@@ -39,12 +39,6 @@
 
 应用位于 `web/`，统一使用其 `package.json` 指定的 pnpm 版本。安装、开发、验证与当前部署命令见 [Web 开发说明](web/README.md) 。
 
-## 维护入口
-
-- [项目规范](AGENTS.md) ：目录边界、工作流与文档维护。
-- [功能规范](openspec/README.md) ：唯一 OpenSpec 入口；当前要求与历史方案分开维护。
-- [项目文档](docs/README.md) ：专项资料与已失效部署说明的归档入口。
-
 ## 反馈与贡献
 
 教学内容、判分逻辑、UI 体验任何问题，欢迎到 [walter201230/Python issues](https://github.com/walter201230/Python/issues) 反馈（站内每道题右下角有"反馈此题"入口会自动带上 lesson-id）。
