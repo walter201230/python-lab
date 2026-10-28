@@ -6,7 +6,7 @@
 
 ## 目录结构与路径边界
 
-项目绝对路径：`/Users/walter/project/python-tutorial/python-lab`。本目录是独立 Git 仓库，应用工作目录为 `web/`。
+本文件所在目录为独立 Git 仓库根目录，应用工作目录为 `web/`。除非另有说明，以下路径均相对于仓库根目录；本规范中的路径与链接不使用机器专属绝对路径。
 
 ```text
 python-lab/
@@ -52,7 +52,7 @@ python-lab/
   └─ 提交、推送、部署须在各自明确授权范围内执行
 ```
 
-详细命令见 [Web 开发说明](/Users/walter/project/python-tutorial/python-lab/web/README.md) ，功能入口见 [OpenSpec 索引](/Users/walter/project/python-tutorial/python-lab/openspec/README.md) 。
+详细命令见 [Web 开发说明](web/README.md) ，功能入口见 [OpenSpec 索引](openspec/README.md) 。
 
 ## 文档维护约定
 

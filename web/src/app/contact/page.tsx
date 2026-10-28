@@ -4,6 +4,7 @@ import { ContactLinks } from '@/components/ContactLinks';
 export const metadata: Metadata = {
   title: '联系方式 — 小白学 Python',
   description: '反馈内容错误、题目问题或功能建议的渠道：通过 GitHub Issues 联系小白学 Python（learn-py.org）。',
+  alternates: { canonical: '/contact/' },
 };
 
 export default function ContactPage() {

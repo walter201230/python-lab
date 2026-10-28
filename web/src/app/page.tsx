@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CHAPTERS, findFirstAvailable, groupChapters, type Chapter } from '@/lib/chapters';
 import { getChapterStats, type ChapterStat } from '@/lib/chapterStats';
@@ -6,6 +7,10 @@ import { HomeStats } from '@/components/HomeStats';
 import { SmartHeroCta } from '@/components/SmartHeroCta';
 import { HeroTerminal } from '@/components/HeroTerminal';
 import { PyodideBootstrap } from '@/components/PyodideBootstrap';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
 export default async function HomePage() {
   const first = findFirstAvailable();

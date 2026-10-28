@@ -28,7 +28,6 @@ async function walk(dir) {
 }
 
 const files = await walk(OUT_DIR);
-const today = new Date().toISOString().split('T')[0];
 
 // 规范版本收敛：闯关页受渐进解锁影响、静态产物只含前半章，其 canonical 指向同章阅读页。
 // sitemap 只列规范版本——凡是自身目录下带 read/index.html 的页面（即闯关页）都不列出，
@@ -43,6 +42,8 @@ const urls = canonicalFiles
   .map((rel) => (rel === 'index.html' ? '/' : '/' + rel.replace(/index\.html$/, '')))
   .sort();
 
+// 没有可靠的内容更新时间来源，省略 lastmod，避免把构建日期当成内容更新。
+// Google 忽略 changefreq 和 priority，因此只输出规范网址。
 const xml =
   `<?xml version="1.0" encoding="UTF-8"?>\n` +
   `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -51,9 +52,6 @@ const xml =
       (p) =>
         `  <url>\n` +
         `    <loc>${SITE_URL}${p}</loc>\n` +
-        `    <lastmod>${today}</lastmod>\n` +
-        `    <changefreq>weekly</changefreq>\n` +
-        `    <priority>${p === '/' ? '1.0' : '0.8'}</priority>\n` +
         `  </url>`,
     )
     .join('\n') +

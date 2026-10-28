@@ -6,9 +6,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Web 局部约束
 
-项目定位、路径边界、主工作流与文档维护见 [仓库规范](/Users/walter/project/python-tutorial/python-lab/AGENTS.md) 。本文件只补充应用工程约束。
+项目定位、路径边界、主工作流与文档维护见 [仓库规范](../AGENTS.md) 。本文件只补充应用工程约束。
 
-- 应用绝对路径为 `/Users/walter/project/python-tutorial/python-lab/web`。依赖安装与开发命令在此执行；统一使用 `package.json` 指定版本的 pnpm 和 `pnpm-lock.yaml`，不维护 npm/yarn 锁文件。只运行包脚本并不需要另一种包管理器。
+- 应用工作目录为仓库下的 `web/`，即本文件所在目录；以下路径除非另有说明，均相对于该目录。依赖安装与开发命令在此执行；统一使用 `package.json` 指定版本的 pnpm 和 `pnpm-lock.yaml`，不维护 npm/yarn 锁文件。只运行包脚本并不需要另一种包管理器。
 - OpenSpec 的唯一根目录为上一级 `../openspec/`；执行 OpenSpec 命令先回仓库根，不在 `web/` 初始化第二套规范。
 - `src/` 为应用逻辑，`content/lessons/<chapter>/<lesson>/` 为内容源；课程路径、lesson/练习 ID 同时用于路由与浏览器进度，变更时须评估旧链接和已有进度。
 - `public/pyodide.worker.js` 是手工维护的源文件；`public/pyodide/`、`public/monaco/` 是资源复制脚本生成物。修改 worker 中的 Python 字符串须做等价 CPython 测试与真实 Pyodide 验证；消息协议变化须同步核对 worker URL 的版本参数。

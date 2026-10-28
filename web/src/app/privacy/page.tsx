@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: '隐私政策 — 小白学 Python',
   description: '小白学 Python（learn-py.org）的隐私政策：本地存储、Cookie、Google Analytics 统计与 Google AdSense 广告说明。',
+  alternates: { canonical: '/privacy/' },
 };
 
 export default function PrivacyPage() {
